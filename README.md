@@ -88,5 +88,6 @@ __variable_analysis.py__
 __write_routines.py__ 
 >Functions that write needed .F90 files (e.g., duplicateMod.F90)
 
-### Notes
+#### Notes
+SPEL has been developed mainly on Summit computer. The software environment includes NVIDIA HPC 21.3 and several libraries:  spectrum-mpi (10.4), NetCDF (4.8), pnetcdf(1.12), HDF (1.10), and CUDA (11.1).
 +Uses CUDA Fortran to manage memory, so needs to be adapted to work without NVHPC.
