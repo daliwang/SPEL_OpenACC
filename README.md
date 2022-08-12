@@ -2,7 +2,7 @@
 This is accompany code and data associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'. This software tool builds off of previous work done by Dali Wang and Yao Cindy to create a robust method for developing the E3SM Land Model (ELM).
 
 SPEL contains two folders: 
-./SourceFiles/: folder contains the original ELM source files and the GPU-ready test Modules 
+./SourceFiles/: folder contains the ELM Fortran source files and the GPU-ready ELM Test Modules 
 ./scripts/: folder contains SPEL Python scripts
 
 ## SPEL setup and usage
