@@ -15,7 +15,7 @@ Currently, these SPEL Python scripts are used to:
 * Understand code by generating simple call tree and dependency graph of the modules.
 * write Fortran routines to generate input/output needed to initialize variables and verify the results and a needed Makefile
 
-__Setup__ : In scripts directory, edit __mod_config.py__ with specific file layout as needed and  __add_input_output.py__ with a list of subroutines to parse (only parent subroutine needs to be listed) and a name for the case. While running with __python3 add_input_output.py__, a directory will be created in __./unit-test/{casename}__ to contain the Functional Unit Test.
+__Setup__ : In scripts directory, edit __mod_config.py__ with specific file layout as needed and  __add_input_output.py__ with a list of subroutines to parse (only parent subroutine needs to be listed) and a name for the case. While running with __python3 add_input_output.py__, a directory will be created in __./unit-test/{casename}__ to contain the Function Unit Test program.
 
 A Makefile will automatically be generated for the chosen subroutines to test.  
 __elm_initializeMod.F90__ and __main.F90__ will be modified by the scripts to 
@@ -31,9 +31,10 @@ the lnd_cpl_mct and elm_drv routines and is where all testing is done and config
 Compilation of unit-test only requires NV Fortran compiler, CUDA 10+, and potentially LAPACK.
 
 __make__ command will create the _elmtest.exe_ which is then run with __./elmtest.exe [numSetsOfSites] [clump-pproc]__ where _numSetsOfSites_ controls the number of unique sites used for the reference output to be computed and _clump-pproc_ (optional default = 1) are the number of clumps to have per mpi task. 
-Example:
+
+Unit Test Example:
 >./elmtest.exe 2
-Is used to perform a Unit Test for 2 sets of the 42 Ameriflux sites.
+Perform a Unit Test for 2 sets of the 42 Ameriflux sites.
 
 ### SPEL Script Description
 __edit_file.py__ :
