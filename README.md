@@ -90,4 +90,5 @@ __write_routines.py__
 
 #### Notes
 SPEL has been developed mainly on Summit computer. The software environment includes NVIDIA HPC 21.3 and several libraries:  spectrum-mpi (10.4), NetCDF (4.8), pnetcdf(1.12), HDF (1.10), and CUDA (11.1).
-+Uses CUDA Fortran to manage memory, so needs to be adapted to work without NVHPC.
+
+SPEL uses CUDA Fortran (NVHPC package) to manage memory.
