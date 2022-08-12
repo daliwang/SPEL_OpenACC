@@ -5,7 +5,7 @@ SPEL contains two folders:
 ./SourceFiles/: folder contains the ELM Fortran source files and the GPU-ready ELM Test Modules 
 ./scripts/: folder contains SPEL Python scripts
 
-## SPEL setup and usage
+## SPEL setup and instructions
 Currently, these SPEL Python scripts are used to:
 * extract and prepare ELM files to run and compile without MPI and netcdf.
 * modify ELM routines to remove modules that cannot or are undesired to run on the GPU.
