@@ -1,5 +1,5 @@
 # Introduction
-This is accompany code associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'. This software tool builds off of previous work done by Dali Wang and Yao Cindy to create a robust method for developing the E3SM Land Model (ELM).
+This is accompany code associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'. This software tool builds off of previous work done by Dali Wang and Yao Cindy to create a robust method for developing the E3SM Land Model (ELM) onto GPUs.
 
 SPEL contains two folders: 
 
