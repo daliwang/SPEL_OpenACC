@@ -1,7 +1,14 @@
-# Overview
-This unit-test builds off of previous work done by Dali Wang and Yao Cindy to
-create a robust method for developing the Earth Land Model (ELM) component of E3SM.
-Currently, the unit-testing contains Python scripts (in _./scripts_ directory) used to:
+# Introduction
+This is accompany code and data associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'.
+
+This software tool builds off of previous work done by Dali Wang and Yao Cindy to
+create a robust method for developing the E3SM Land Model (ELM).
+
+# File Structure
+./SourceFiles/: folder contains the original ELM source files and the GPU-ready test Modules 
+./scripts/: folder contains SPEL Python scripts
+
+Currently, these SPEL Python scripts are used to:
 * extract and prepare ELM files to run and compile without MPI and netcdf.
 * modify ELM routines to remove modules that cannot or are undesired to run on the GPU.
 * Perform automatic OpenACC acceleration using either the __routine__ directive or __parallel loop__ directives.
