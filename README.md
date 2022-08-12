@@ -3,7 +3,7 @@ This is accompany code and data associated with the paper submission 'SPEL: Soft
 
 SPEL contains two folders: 
 
-./SourceFiles/: folder contains the ELM Fortran source files and the GPU-ready ELM Test Modules 
+./SourceFiles/: folder contains the ELM Fortran source files and the GPU-ready ELM test modules 
 
 ./scripts/: folder contains SPEL Python scripts and few Fortran modelules to generate ELM test modules
 
