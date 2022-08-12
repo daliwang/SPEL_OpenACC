@@ -33,8 +33,7 @@ Compilation of unit-test only requires NV Fortran compiler, CUDA 10+, and potent
 __make__ command will create the _elmtest.exe_ which is then run with __./elmtest.exe [numSetsOfSites] [clump-pproc]__ where _numSetsOfSites_ controls the number of unique sites used for the reference output to be computed and _clump-pproc_ (optional default = 1) are the number of clumps to have per mpi task. 
 
 Unit Test Example:
->./elmtest.exe 2
-Perform a Unit Test for 2 sets of the 42 Ameriflux sites.
+>./elmtest.exe 2. ->> Perform a Unit Test for 2 sets of the 42 Ameriflux sites.
 
 ### SPEL Script Description
 __edit_file.py__ :
