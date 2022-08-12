@@ -1,13 +1,11 @@
 # Introduction
-This is accompany code and data associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'.
+This is accompany code and data associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'. This software tool builds off of previous work done by Dali Wang and Yao Cindy to create a robust method for developing the E3SM Land Model (ELM).
 
-This software tool builds off of previous work done by Dali Wang and Yao Cindy to
-create a robust method for developing the E3SM Land Model (ELM).
-
-# File Structure
+SPEL contains two folders: 
 ./SourceFiles/: folder contains the original ELM source files and the GPU-ready test Modules 
 ./scripts/: folder contains SPEL Python scripts
 
+## SPEL setup and usage
 Currently, these SPEL Python scripts are used to:
 * extract and prepare ELM files to run and compile without MPI and netcdf.
 * modify ELM routines to remove modules that cannot or are undesired to run on the GPU.
@@ -35,7 +33,7 @@ Example:
 >./elmtest.exe 2
 Is used to perform a Unit Test for 2 sets of the 42 Ameriflux sites.
 
-### Script Description
+### SPEL Script Description
 __edit_file.py__ :
 >Contains functions that are intended to be used on entire .F90 files rather than
 >on specific subroutines.  These functions were created for the purpose of preparing
