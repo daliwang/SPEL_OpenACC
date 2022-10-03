@@ -183,7 +183,7 @@ module elm_initializeMod
     
     call veg_vp%Init()
     
-    call read_vars(in_file_vars, bounds_clump,mode=1)
+    call read_vars(in_file_vars, bounds_proc, mode=1,nsets=clump_input)
     if(clump_input > 1) then
       print *, "Duplicating physical properties"
       call duplicate_clumps(mode = 0,unique_sites=number_of_sites, num_sites=ni)
@@ -318,7 +318,7 @@ module elm_initializeMod
     
     call get_clump_bounds(1,bounds_clump)
     print *, "READING IN REST OF VARIABLES"
-    call read_vars(in_file_vars, bounds_proc, mode=0)
+    call read_vars(in_file_vars, bounds_proc, mode=0,nsets=clump_input)
     
     ! Only duplicate if desired simulation is greater than
     ! number of gridcells in input data file 

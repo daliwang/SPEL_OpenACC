@@ -90,7 +90,7 @@ program main()
 
   !=======================================!
   implicit none
-  type(bounds_type)  ::  bounds_clump
+  type(bounds_type)  ::  bounds_clump, bounds_proc 
   integer :: beg=1,fin=10, p, nclumps, nc, step_count
   real*8 :: temp
   integer :: err

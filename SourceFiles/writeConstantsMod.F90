@@ -25,10 +25,10 @@ contains
     use SurfaceAlbedoMod
     use SoilLittDecompMod
     use Tracer_varcon
-
+    use timeInfoMod
     implicit none
     integer :: fid = 23
-    character(len=256) :: ofile = "E3SM_constants.txt"
+    character(len=256) :: ofile = "test-E3SM_constants.txt"
 
     call fio_open(fid, ofile, 2)
 
@@ -53,6 +53,42 @@ contains
     write(fid,*) nlevtrc_full
     write(fid,"(A)") "nlevsno"
     write(fid,*) nlevsno
+    
+    !timeInfoMod
+    write(fid, "(A)")"dtime_mod"
+    write(fid,*) dtime_mod       
+    write(fid, "(A)")"dayspyr_mod"
+    write(fid,*) dayspyr_mod
+    write(fid, "(A)")"first"
+    write(fid,*) first
+    write(fid, "(A)")"year_curr"
+    write(fid,*) year_curr
+    write(fid, "(A)")"mon_curr"
+    write(fid,*) mon_curr
+    write(fid, "(A)")"day_curr"
+    write(fid,*) day_curr
+    write(fid, "(A)")"secs_curr"
+    write(fid,*) secs_curr
+    write(fid, "(A)")"nstep_mod"
+    write(fid,*) nstep_mod
+    write(fid, "(A)")"jday_mod"
+    write(fid,*) jday_mod
+    write(fid, "(A)")"thiscalday_mod"
+    write(fid,*) thiscalday_mod
+    write(fid, "(A)")"nextsw_cday_mod"
+    write(fid,*) nextsw_cday_mod
+    write(fid, "(A)")"end_cd_mod"
+    write(fid,*) end_cd_mod
+    write(fid, "(A)")"doalb"
+    write(fid,*) doalb
+    write(fid, "(A)")"year_prev"
+    write(fid,*) year_prev
+    write(fid, "(A)")"mon_prev"
+    write(fid,*) mon_prev
+    write(fid, "(A)")"day_prev"
+    write(fid,*) day_prev
+    write(fid, "(A)")"secs_prev"
+    write(fid,*) secs_prev
 
     !from pftconrd
     write(fid, "(A)") "dleaf    "

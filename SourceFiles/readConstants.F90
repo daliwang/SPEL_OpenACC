@@ -9,6 +9,7 @@ contains
     use soilorder_varcon
     use elm_varcon
     use elm_varpar
+    use timeInfoMod
     !#USE_START
     use AllocationMod
     use PhenologyMod
@@ -42,6 +43,26 @@ contains
     call fio_read(18,"nlevdecomp_full",nlevdecomp_full,errcode=errcode)
     call fio_read(18,"nlevtrc_soil",nlevtrc_soil,errcode=errcode)
     call fio_read(18,"nlevtrc_full",nlevtrc_full,errcode=errcode)
+    
+    !from timeInfoMod 
+    call fio_read(18,"dtime_mod",dtime_mod,errcode=errcode)       
+    call fio_read(18,"dayspyr_mod",dayspyr_mod,errcode=errcode)
+    call fio_read(18,"first",first,errcode=errcode)
+    call fio_read(18,"year_curr",year_curr,errcode=errcode)
+    call fio_read(18,"mon_curr",mon_curr,errcode=errcode)
+    call fio_read(18,"day_curr",day_curr,errcode=errcode)
+    call fio_read(18,"secs_curr",secs_curr,errcode=errcode)
+    call fio_read(18,"nstep_mod",nstep_mod,errcode=errcode)
+    call fio_read(18,"jday_mod",jday_mod,errcode=errcode)
+    call fio_read(18,"thiscalday_mod",thiscalday_mod,errcode=errcode)
+    call fio_read(18,"nextsw_cday_mod",nextsw_cday_mod,errcode=errcode)
+    call fio_read(18,"end_cd_mod",end_cd_mod,errcode=errcode)
+    call fio_read(18,"doalb",doalb,errcode=errcode)
+    call fio_read(18,"year_prev",year_prev,errcode=errcode)
+    call fio_read(18,"mon_prev",mon_prev,errcode=errcode)
+    call fio_read(18,"day_prev",day_prev,errcode=errcode)
+    call fio_read(18,"secs_prev",secs_prev,errcode=errcode)
+
 
   else
     !from pftconrd
