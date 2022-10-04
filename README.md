@@ -132,9 +132,12 @@ SPEL uses CUDA Fortran (NVIDIA HPC package) to manage memory.
        git clone https://github.com/peterdschwartz/SPEL_OpenACC.git
  
 ===== create LakeTemperature Test module
+
        cd SPEL_OpenACC/scripts
+       
        python3 UnitTestforELM.py   # It creates a LakeTemperature module 
                                    # at SPEL_OpenACC/unit-tests/LakeTemparature
+                                   
        cd SPEL_OpenACC/unit-tests/LakeTemperature  
  
 ====== compilation on Summit
