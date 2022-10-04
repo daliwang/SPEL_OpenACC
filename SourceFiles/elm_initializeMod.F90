@@ -54,8 +54,7 @@ module elm_initializeMod
     integer :: nc
     integer :: begp, endp, begc, endc, begg, endg, begl, endl, begt,endt
     integer :: i,j
-    character(len=256) :: in_file_clumps = 'clump_filter.txt'
-    character(len=256) :: in_file_vars = 'output_{unit-test}_vars.txt'
+    character(len=256) :: in_file_vars = 'output_LakeTemperature_vars.txt'
     character(len=256) :: in_file_constants = "E3SM_constants.txt"
     type(bounds_type)  :: bounds_proc
     type(bounds_type)  :: bounds_clump

@@ -2,6 +2,7 @@ module writeMod
 contains
 subroutine write_vars()
      use fileio_mod, only : fio_open, fio_close
+     use elm_varsur, only : wt_lunit, urban_valid
      use GridcellType, only : grc_pp 
      use LandunitType, only : lun_pp 
      use ColumnType, only : col_pp 
@@ -16,9 +17,15 @@ subroutine write_vars()
      use elm_instMod, only : lakestate_vars 
      implicit none 
       integer :: fid 
-     character(len=256) :: ofile = "output_/home/peter/ELM_OpenACC_test-unit/unit-tests/newtest_vars.txt" 
+     character(len=256) :: ofile = "output_LakeTemperature_vars.txt" 
      fid = 23 
      call fio_open(fid,ofile, 2) 
+
+     write(fid,"(A)") "wt_lunit"
+     write(fid,*) wt_lunit
+     write(fid,"(A)") "urban_valid"
+     write(fid,*) urban_valid
+
      
      !====================== grc_pp ======================!
      
@@ -331,6 +338,8 @@ subroutine write_vars()
      write (fid, *) lakestate_vars%ws_col
      write (fid, "(A)") "lakestate_vars%lake_icefrac_col" 
      write (fid, *) lakestate_vars%lake_icefrac_col
+     write (fid, "(A)") "lakestate_vars%lake_icethick_col" 
+     write (fid, *) lakestate_vars%lake_icethick_col
      call fio_close(fid) 
 end subroutine write_vars
 end module writeMod

@@ -21,15 +21,16 @@ class derived_type(object):
             self.components = []
         else :
             self.components = components
+        # Flag to see if Derived Type has been analyzed
+        self.analyzed = False
 
-    def _add_components(self,li, lines,array):
+    def _add_components(self,li, lines,array,datatype):
 
         name = li[1]
         n = '%'+name
         ct = 0
-        #need to find the allocation of component
-        #to get the bounds.  Necessary for duplicateMod.F90
-        #creation
+        # Need to find the allocation of component
+        # to get the bounds.  Necessary for duplicateMod.F90 creation
         if(array):
             for line in lines:
                 ct+=1
@@ -44,18 +45,18 @@ class derived_type(object):
                     line = line.split(';')[0]
                     line = line[len(string):].strip()
                     l = line[0:len(line)-1]
-                    self.components.append([False,name,l])
+                    self.components.append([False,name,l,datatype])
                     break
                 match_alloc_name = alloc_name.search(line.lower())
                 if match_alloc_name :
                     line = line.split(';')[0]
                     line = line[len(string_name):].strip()
                     l = line[0:len(line)-1]
-                    self.components.append([False,name,l])
+                    self.components.append([False,name,l,datatype])
                     break
 
         else:
-            self.components.append([False,name,''])
+            self.components.append([False,name,'',datatype])
 
     def _print_derived_type(self):
         print("-----------------------------")
@@ -66,7 +67,7 @@ class derived_type(object):
             print(c[0],c[1],c[2])
 
 
-    def _analyze_derived_type(self):
+    def analyzeDerivedType(self):
         #
         # This function will open each mod file, find the variable type
         # and fill out the components of the variable
@@ -146,6 +147,7 @@ class derived_type(object):
                     data_type = re.compile(r'^(real|integer|logical|character)')
                     m = data_type.search(line)
                     if(m):
+                        datatype = m.group()
                         line = line.replace(',',' ')
                         line = line.replace('pointer','')
                         line = line.replace('private','')
@@ -155,11 +157,12 @@ class derived_type(object):
                         x[2] = re.sub(r'[^\w]','',x[2])
                         line = line.replace('::',' ')
                         if ':' in line: array = True
-                        self._add_components([x[0],x[2]],lines,array)
+                        self._add_components([x[0],x[2]],lines,array,datatype=datatype)
                 else:
                     type_end_line = ct
                     break
         ifile.close()
+        self.analyzed = True
 
     def _create_write_read_functions(self, rw,ofile):
         #
@@ -198,7 +201,7 @@ class derived_type(object):
                 if(c13c14): continue
                 fname = self.name+'%'+component[1]
                 dim = component[2]
-                dim1 = wr.get_delta_from_dim(dim,'n'); dim1 = dim1.replace('_all','')
+                dim1 = wr.get_delta_from_dim(dim,'y'); dim1 = dim1.replace('_all','')
                 str1 = "call fio_read(18,'{}', {}{}, errcode=errcode)\n".format(fname,fname,dim1)
                 str2 = 'if (errcode .ne. 0) stop\n'
                 ofile.write(spaces + str1)

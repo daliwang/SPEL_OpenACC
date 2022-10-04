@@ -239,12 +239,31 @@ program main()
      call update_acc_variables()
      !$acc enter data copyin(filter(:),gpu_clumps(:), gpu_procinfo, proc_filter, bounds_proc )
      call get_proc_bounds(bounds_proc)
-     !
+
+     !Note: copy/paste enter data directives here for FUT. 
+     !      Will make this automatic in the future 
      !#ACC_COPYIN
-     
+      !$acc enter data copyin( &
+      !$acc ch4_vars     , &
+      !$acc col_ef     , &
+      !$acc col_es     , &
+      !$acc col_pp     , &
+      !$acc col_wf     , &
+      !$acc col_ws     , &
+      !$acc grc_pp     , &
+      !$acc lakestate_vars     , &
+      !$acc lun_pp     , &
+      !$acc soilstate_vars     , &
+      !$acc solarabs_vars     , &
+      !$acc top_pp     , &
+      !$acc veg_ef     , &
+      !$acc veg_pp      &
+      !$acc   )
+
 #if _CUDA
-    !Heap Limit may need to be increased for certain routines
-    !if using routine directives with many auto-arrays
+    ! Heap Limit may need to be increased for certain routines
+    ! if using routine directives with many automatic arrays
+    ! should be adjusted based on problem size
     istat = cudaDeviceGetLimit(heapsize, cudaLimitMallocHeapSize)
     print *, "SETTING Heap Limit from", heapsize
     heapsize = 10_8*1024_8*1024_8
@@ -259,22 +278,51 @@ program main()
     !      is output from 
     !TODO: make this info apart of input file itself
 
-    !$acc enter data copyin( doalb, declinp1, declin )
-    !$acc serial default(present)
-    doalb = .true.
-    nstep_mod =  1
-    year_curr  = 1
-    mon_curr = 1
-    day_curr = 1
-    secs_curr = 3600
-    !nextsw_cday_mod = 1.458333333333333
-    !call increment_time_vars()
+   !$acc enter data copyin( doalb, declinp1, declin )
+   !$acc update device(dtime_mod, dayspyr_mod, &
+   !$acc    year_curr, mon_curr, day_curr, secs_curr, nstep_mod, thiscalday_mod &
+   !$acc  , nextsw_cday_mod, end_cd_mod, doalb )  
+
+    ! Note: should add these to writeConstants in the future (as arguments?) 
+    !$acc serial 
     declin = -0.4023686267583503
     declinp1 = -0.4023686267583503
     !$acc end serial
 
+   #ifdef _OPENACC 
+     #define gpuflag 1 
+   #else 
+     #define gpuflag 0
+   #endif 
+
     !NOTE: Put ELM Subroutine call here 
+    ! Default is currently LakeTemperature for others to reproduce
+    ! and gain familiarity with this framework. 
+    ! SPEL will be updated to auto-insert the all the appropriate
+    ! calls for a given FUT in the future
     
+    ! This is the "Naive" Implementation
+    !$acc parallel loop independent gang vector default(present) private(bounds_clump) 
+    do nc=1, nclumps
+      call get_clump_bounds_gpu(nc, bounds_clump)
+     ! Set lake temperature
+     if(filter(nc)%num_lakec > 0 ) then
+         call  LakeTemperature(bounds_clump, filter(nc)%num_lakec, filter(nc)%lakec, &
+            filter(nc)%num_lakep, filter(nc)%lakep, &
+            solarabs_vars, soilstate_vars, ch4_vars, &
+            lakestate_vars)
+      end if
+    end do
+
+    ! This call should be used if running SPEL with "opt = True" and "add_acc = True" 
+    ! and all internal loops have been accelerated -- must comment out the above
+
+   !  call LakeTemperature(bounds_proc,             &
+   !      proc_filter%num_lakec, proc_filter%lakec,   &
+   !      proc_filter%num_lakep, proc_filter%lakep,   &
+   !      solarabs_vars, soilstate_vars,  ch4_vars, &
+   !      lakestate_vars)
+
     #if _CUDA
       istat = cudaMemGetInfo(free1, total)
       print *, "free after kernel:",free1/1.E+9

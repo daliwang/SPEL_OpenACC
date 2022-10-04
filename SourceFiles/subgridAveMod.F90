@@ -339,7 +339,7 @@ contains
        sumwt(bounds%begc : bounds%endc) = 0._r8
        do p = bounds%begp,bounds%endp
           if (veg_pp%active(p) .and. veg_pp%wtcol(p) /= 0._r8) then
-             if (parr(p,j) /= spval) the
+             if (parr(p,j) /= spval) then
                 c = veg_pp%column(p)
                 if (sumwt(c) == 0._r8) carr(c,j) = 0._r8
                 carr(c,j) = carr(c,j) + parr(p,j) * scale_p2c(p) * veg_pp%wtcol(p)

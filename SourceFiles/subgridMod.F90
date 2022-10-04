@@ -9,12 +9,13 @@ module subgridMod
   !use spmdMod     , only : masterproc
   !use abortutils  , only : endrun
   use elm_varctl  , only : iulog
+  use elm_varsur  , only : wt_lunit, urban_valid, wt_glc_mec
 
   implicit none
 
-  real *8, public, allocatable     :: wt_lunit(:,:)
-  integer, public, allocatable     :: urban_valid(:)
-  real*8  ,public, dimension(1,1)  :: wt_glc_mec = reshape((/1.6127168011336070D-312/),shape(wt_glc_mec))
+  !real *8, public, allocatable     :: wt_lunit(:,:)
+  !integer, public, allocatable     :: urban_valid(:)
+  !real*8  ,public, dimension(1,1)  :: wt_glc_mec = eshape((/0D0/),shape(wt_glc_mec)) !reshape((/1.6127168011336070D-312/),shape(wt_glc_mec))
 
   integer :: fates_maxElementsPerSite = 1
   integer :: max_topounits=1
@@ -48,7 +49,7 @@ contains
     ! !USES
     use elm_varpar  , only : natpft_size, cft_size, maxpatch_urb, maxpatch_glcmec
     use elm_varctl  , only : create_crop_landunit
-    !use elm_varsur  , only : wt_lunit, urban_valid, wt_glc_mec
+    use elm_varsur  , only : wt_lunit, urban_valid, wt_glc_mec
     use landunit_varcon  , only : istsoil, istcrop, istice, istice_mec, istdlak, istwet, &
                              isturb_tbd, isturb_hd, isturb_md
     !use FatesInterfaceMod, only : fates_maxElementsPerSite

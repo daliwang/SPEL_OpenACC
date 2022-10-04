@@ -1,9 +1,10 @@
 import re
 import sys
-from process_associate import get_rid_of_associate
-import subprocess as sp
-from mod_config import elm_files,home_dir
-from LoopConstructs import Loop, exportVariableDependency 
+import os.path
+from process_associate import getAssociateClauseVars
+from mod_config import elm_files,home_dir,_bc
+from LoopConstructs import Loop, exportVariableDependency
+from utilityFunctions import adjust_array_access_and_allocation, find_file_for_subroutine,getLocalVariables
 
 def debug_print(str_debug, verbose):
     if (verbose <= DEBUG_PRINT_VERBOSE):
@@ -46,36 +47,6 @@ def replace_key(key):
     else:
         return key    
     
-
-def find_file_for_subroutine(name):
-    """
-    finds file, start and end line numbers for subroutines
-    find file and start of interface for interfaces
-    """
-    interface_list = get_interface_list()
-    if(name not in interface_list):
-        cmd = f'grep -in -E "^[[:space:]]*(subroutine {name})\\b" {elm_files}*.F90 | head -1'
-        cmd_end = f'grep -in -E "^[[:space:]]*(end subroutine {name})\\b" {elm_files}*.F90 | head -1'
-    else:
-        cmd = f'grep -in -E "^[[:space:]]+(interface {name})" {elm_files}*.F90 | head -1'
-        cmd_end = ''
-
-    output = sp.getoutput(cmd)
-    file = output.split(':')[0]
-    file = file.replace(elm_files,'')
-    startline = int(output.split(':')[1])
-    if(cmd_end!=''):
-        output = sp.getoutput(cmd_end)
-        endline = int(output.split(':')[1])
-        
-    else:
-        endline = 0
-
-    if(file == 'grep'):
-        print(f"ERROR FILE FOR {name} NOT PRESENT")
-        sys.exit(1)
-
-    return file, startline, endline
 
 def determine_level_in_tree(branch,tree_to_write):
     """
@@ -132,173 +103,96 @@ def add_acc_routine_info(sub):
     with open(elm_files+filename,'w') as ofile:
         ofile.writelines(lines)
 
-def get_interface_list():
-    """
-    returns a list of all interfaces!
-    """
-    cmd = f'grep -in -E "^[[:space:]]+(interface)" {elm_files}*.F90'
-    output = sp.getoutput(cmd)
-    output = output.split('\n')
-
-    interface_list = []
-    for el in output:
-        el = el.split()
-        interface = el[2]
-        interface_list.append(interface)
-
-    return interface_list
-
-def remove_bounds(line):
-    """
-    This function matches (beg:end) style phrases in
-    subroutine calls.  They must be removed to use !$acc routine
-
-    """
-    cc = "[ a-zA-Z0-9%\-\+]*?:[ a-zA-Z0-9%\-\+]*?"
-    non_greedy1D = re.compile(f"\({cc}\)")
-    non_greedy2D = re.compile(f"\({cc},{cc}\)")
-    non_greedy3D = re.compile(f"\({cc},{cc},{cc}\)")
-    non_greedy4D = re.compile(f"\({cc},{cc},{cc},{cc}\)")
-    newline = line
-
-    m1D = non_greedy1D.findall(newline)
-    for bound in m1D: newline = newline.replace(bound,'')
-
-    m2D = non_greedy2D.findall(newline)
-    for bound in m2D:
-        print(bound)
-        newline = newline.replace(bound,'')
-
-    m3D = non_greedy3D.findall(newline)
-    for bound in m3D: newline = newline.replace(bound,'')
-
-    m4D = non_greedy4D.findall(newline)
-    for bound in m4D: newline = newline.replace(bound,'')
-    return newline
-
-def get_args(line):
-    """
-    This function returns the arguments used to call a subroutine
-    Needed to resolve interfaces
-    """
-    par = re.compile("(?<=\().+(?=\))")
-    m = par.search(line)
-    args = m.group()
-    print("==============================")
-    print(args)
-
-    newargs = remove_bounds(args)
-
-    print("done taking out bounds ")
-    print(newargs)
-    args = newargs.split(',')
-    return args
-
-def getLocalVariables(sub,verbose=False,class_var=False ):
-    """
-    this function will retrieve  the local variables from
-    the subroutine at startline, endline in the given file
-
-    Note: currently only looks at type declaration for class object
-    """
-    filename = elm_files+sub.filepath
-    subname = sub.name 
-    file = open(filename,'r');
-    lines = file.readlines()
-    startline = sub.startline; endline=sub.endline;
-    
-    if(verbose): print(f"getLocalVariables::{filename},{subname} at L{startline}-{endline}")
-    #Doesn't actaully get rid of associate (can though) should rename .
-    sub.associate_vars, sub.status, associate_start, associate_end = get_rid_of_associate(sub)
-    
-    #initialize global_vars 
-    global_vars = [key for key in sub.associate_vars.keys()]
-    local_vars = {}
-    cc = "." 
-    # non-greedy capture
-    ng_regex_array = re.compile(f'\w+?\({cc}+?\)')
-    find_arg = re.compile(r'(intent)',re.IGNORECASE)
-    find_this = re.compile(r'(this)$',re.IGNORECASE)
-    find_type = re.compile(r'(?<=\()\w+(?=\))')
-    find_variables = re.compile('(type\(|integer|real|logical|character)',re.IGNORECASE)
-    regex_var = re.compile(r'\w+')
-    regex_subgrid_index = re.compile('(?<=bounds\%beg)[a-z]',re.IGNORECASE)
-
-    found_this = False
-    for i in range(startline,associate_start):
-        line = lines[i].split("!")[0]
-        line = line.strip()
-        line = line.strip("\n")
-        if(not(line)): continue
-        match_variable = find_variables.search(line.lower())
-        if(match_variable):
-            temp_vars = line.split("::")[1]
-            temp_decl = line.split("::")[0]
-            match_arg = find_arg.search(temp_decl)
-            if(match_arg): continue 
-            
-            match_arrays = ng_regex_array.findall(temp_vars) 
-            if(match_arrays): 
-                varname = regex_var.search(temp_vars).group()
-   
-                print(temp_vars,match_arrays)
-                for v in match_arrays:
-                    varname = regex_var.search(v).group()
-                    index = regex_subgrid_index.search(v)
-                    if(not index): 
-                        if(verbose): print(f"{v} Not allocated by bounds")
-                        local_vars[varname] = '' 
-                    else:
-                        if(verbose): print(f"var = {varname}; subgrid = {index.group()}")
-                        local_vars[varname] = [index.group(), i]
-
-
-        if(class_var):
-            m_this = find_this.search(line.lower())
-            m_type = find_type.findall(line.lower())
-            if(m_this and m_type):
-                # the derived type should always be 1st
-                var_type = m_type[0]
-                found_this = True 
-                return var_type
-
-    if(class_var and not found_this):
-        print("Error: Couldn't not find declaration for class variable (this)")
-        sys.exit()
-    return local_vars
-
-def replaceArrayBounds(sub,var,Loops):
-        """
-        search through all loops and declarations that use var
-        and replace the declarations with num_filter and the loop access 
-        with the filter index 
-        """
-        
-
-
 class Subroutine(object):
-    def __init__(self, name,file,calltree):
+    def __init__(self, name,file,calltree,start,end):
         self.name = name
-        self.filepath = file
-        self.subroutine_init = None
-        self.clmtype_r = {}
-        self.clmtype_w = {}
-        self.clmtype_rw = {}
-        self.child_clmtype_r = {}
-        self.child_clmtype_w = {}
-        self.child_clmtype_rw = {}
-        self.child_subroutine_list = []
-        self.child_Subroutine = {}
-        self.status = False
-        self.startline = 0
-        self.endline = 0
-        self.associate_vars = []
-        self.local_vars = []
-        self.acc_status = False
+
+        if(os.path.exists(home_dir+f"modified-files/{file}")):
+            print(file,"has already been modified -- setting new filepath")
+            self.filepath = f"../modified-files/{file}"
+            # Have to get subroutine start and endline just in case it's different:
+            f, self.startline, self.endline = find_file_for_subroutine(name,fn=self.filepath)
+        else:
+            self.filepath = file
+            self.startline = start
+            self.endline = end
+        
         self.calltree = list(calltree)
         self.calltree.append(name)
-        self.clmtypes = []
+
+        self.associate_vars = []
+        # Testing this: will probably make it the default
+        if(start != 0 and end != 0):
+            self.associate_vars, self.status, jstart,jend = getAssociateClauseVars(self)
+            self.associate_start = jstart; self.associate_end = jend
+        
+        self.dummy_args_list = self._get_dummy_args()
+
+        self.subroutine_init = None
+        self.elmtype_r = {}
+        self.elmtype_w = {}
+        self.elmtype_rw = {}
+        self.child_subroutine_list = []
+        self.child_Subroutine = {}
+        self.acc_status = False
+
+        self.elmtypes = []
         self.DoLoops = []
+        self.Arguments = [] # Order is important here 
+        self.LocalVariables = {}
+        self.LocalVariables['arrays'] = []; self.LocalVariables['scalars'] = []
+        
+        self.status = False
+
+    def printSubroutineInfo(self,long=False):
+        from mod_config import _bc
+
+        print(_bc.OKCYAN+f"Subroutine {self.name} in {self.filepath} L{self.startline}-{self.endline}")
+        print(f"Has Arguments: ")
+        for arg in self.Arguments:
+            if(arg.optional): 
+                _str = "OPTIONAL "
+            else:
+                _str = ""
+            print(_str+f"{arg.type} {arg.name} {arg.dim}-D {arg.subgrid} {arg.ln}")
+        print(f"+++++ Local Variables ++++++")
+        print(f"+++++++++ Arrays  ++++++++++")
+        for arg in self.LocalVariables['arrays']:
+            print(f"{arg.type} {arg.name} {arg.dim}-D {arg.subgrid} {arg.ln}")
+        if(long):
+            print(f"+++++++++ Scalars ++++++++++")
+            for arg in self.LocalVariables['scalars']:
+                print(f"{arg.type} {arg.name} {arg.subgrid} {arg.ln}")
+        print("+++++++++++++++++++++++++++++")
+        print(f"+++++ Child Subroutines +++++")
+        for s in self.child_subroutine_list:
+            print(f"{s.name}")
+        print("+++++++++++++++++++++++++++++"+_bc.ENDC)
+
+    def _get_dummy_args(self):
+        """
+        This function gets the full dummy args list 
+        for the subroutine.
+        """
+        from utilityFunctions import getArguments
+
+        ifile = open(elm_files+self.filepath,'r')
+        lines = ifile.readlines()
+        ifile.close() 
+        ln = self.startline-1 
+        l = lines[ln].strip('\n')
+        l = l.strip()
+        # print(_bc.BOLD+_bc.HEADER,lines[ln],_bc.ENDC)
+        # print(_bc.BOLD+_bc.HEADER,lines[ln+1],_bc.ENDC)
+
+        while(l.endswith('&')):
+            ln += 1 
+            l = l[:-1] + lines[ln].strip('\n').strip()
+        l = l.strip() 
+        # print(f"For subroutine {self.name}",l)
+        args = getArguments(l)
+        return args
+
 
     def _get_global_constants(self,constants):
         """
@@ -327,49 +221,20 @@ class Subroutine(object):
             ct+=1
         print(constants)
 
-
-
-    def _determine_subroutine_from_interface(self,args,name):
-        ## USED FOR INTERFACES!!
-        ## opens file containing subroutine and returns
-        ## the start line and end line of subroutine
-        ## and stores to be reused in processing.
-        file,startline,endline = find_file_for_subroutine(name)
-        iofile = open('../'+file, 'r')
-        lines = iofile.readlines()
-        iofile.close()
-        ct = startline
-        #logical that tracks being inside the interface
-        interface = True
-        procedures = []
-        while (interface ):
-            line = lines[ct]
-
-            mod_proc = re.compile(f"^[\s]+(module procedure)")
-            end_interface = re.compile(f"^[\s]+(end interface)")
-
-            if(mod_proc.search(line.lower()) ):
-                temp = line.replace('module procedure', '')
-                temp = temp.split(',')
-                for proc in temp: procedures.append(proc.rstrip('\n'))
-            if(end_interface.search(line.lower() ) ): interface = False
-            ct = ct + 1
-
-        print(procedures)
-
-
-        return name
-
-    def _preprocess_file(self):
+    def _preprocess_file(self,varlist,interface_list,verbose=False):
         """
         This function will find child subroutines and variables used
         in the associate clause to be used for parsing for ro and wr derived types
         """
-        rewrite = False
+        from mod_config import _bc
+        from utilityFunctions import getArguments
+        from interfaces import resolve_interface 
 
-        interface_list = get_interface_list()
+        # Logical that tracks if subroutine file needs to be overwritten.
+        rewrite = False
+        
         #Doesn't actaully get rid of associate (can though) should rename .
-        self.associate_vars, self.status, associate_start, associate_end = get_rid_of_associate(self)
+        self.associate_vars, self.status, associate_start, associate_end = getAssociateClauseVars(self)
 
         self._check_acc_status()
         if(not self.acc_status):
@@ -391,14 +256,23 @@ class Subroutine(object):
                 ignore = bool(x[1].lower() in ['cpu_time','get_curr_date'] or 'update_vars' in x[1].lower())
                 if(not ignore):
                     child_sub_name = x[1]
-
+                    if(child_sub_name.lower() in interface_list):
+                        l = lines[ct].strip('\n')
+                        l = l.strip()
+                        while(l.endswith('&')):
+                            ct += 1
+                            l = l[:-1] + lines[ct].strip('\n').strip()
+                        l = l.strip()
+                        args = getArguments(l)
+                        child_sub_name = resolve_interface(self,child_sub_name,args,varlist,verbose=True)
+                        print("New child sub name is:", child_sub_name)
                     if('%' in child_sub_name):
                         print(f"WARNING CALLING CLASS METHOD at LINE {ct}!")
                         print(line)
                         method = True
 
-                    child_subs = self.child_subroutine_list
-
+                    child_subs = self.child_subroutine_list.copy()
+                    
                     if(child_sub_name not in child_subs and not method):
                         self.child_subroutine_list.append(child_sub_name)
 
@@ -408,8 +282,8 @@ class Subroutine(object):
             with open(elm_files+self.filepath,'w') as ofile:
                 ofile.writelines(lines)
 
-        #cover case where no derived types but still has child
-        #subroutines to analyze
+        # cover case where no derived types but still has child
+        # subroutines to analyze
         if(self.child_subroutine_list):
             self.status = False
 
@@ -417,17 +291,18 @@ class Subroutine(object):
 
     def _check_acc_status(self):
         """
-        checks if subroutine already has !$acc routine directives
+        checks if subroutine already has !$acc directives
         """
         filename = self.filepath
         file = open(elm_files+filename,'r')
         lines = file.readlines() # read entire file
         for ct in range(self.startline, self.endline):
             line = lines[ct]
-            # checks for any !$acc pragmas to determine if 
-            # !$acc routine seq is needed.
-            match_acc_routine = re.search(r'[\s]+(\!\$acc)',line)
-            if(match_acc_routine): self.acc_status = True; return
+            # checks for any !$acc directives
+            match_acc_routine = re.search(r'^[\s]+(\!\$acc)',line)
+            if(match_acc_routine): 
+                self.acc_status = True; 
+                return
 
     def _analyze_variables(self,associate_end,vars, class_routine_info):
         """
@@ -482,7 +357,7 @@ class Subroutine(object):
                         print(split_line)
                         if(len(split_line) > 4): sys.exit("too many equals")
                     # if on left-hand side of '=' it's an output variable
-                    # ignore rest for now -- USING clmtype_rw for NOW
+                    # ignore rest for now -- USING elmtype_rw for NOW
                     lhs = split_line[0]
                     rhs = split_line[1]
                     match_lhs = re.search(f'(?<={c}){v}(?=\W)', lhs)
@@ -518,120 +393,129 @@ class Subroutine(object):
         for key in vardict.keys():  vardict[key] = list(set(vardict[key]))
         return vardict
 
-    def parse_subroutine(self,clmvar,verbose=False):
-            """
-            This function parses temp.F90 to find which variables are ro,wo,rw
-            clmvars is a list of derived_type variables.
-            This function is called in main() after process_for_unit_test
-            currently varlist holds all derived types known to be used in ELM.
-            """
-            ignoreList = ['this','self','colpf','colnf','colps','colcf','colns',
-                          'vegcf','vegcs','vegps','vegpf','vegns','vegnf','bounds',
-                          'spm','spm_d','spm_p','isocol_cs', 'isoveg_cs','colcs',
-                          'isocol_cf', 'isoveg_cf','cs','cf','col_cf_input']
+    def parse_subroutine(self,elmvar,verbose=False):
+        """
+        This function parses temp.F90 to find which variables are ro,wo,rw
+        elmvars is a list of derived_type variables.
+        This function is called in main() after process_for_unit_test
+        currently varlist holds all derived types known to be used in ELM.
+        """
+        from utilityFunctions import get_interface_list # just make this a global variable? 
 
-            associate_end   = self._preprocess_file()
-            associated_list = [ key for key in self.associate_vars.keys() ]
-            temp_dtype_names = []
-            dtype_var_list = []
-            class_routine_info = {"bool":False, "var" : ""}
-            for val in self.associate_vars.values():
-                for x in val:
-                    dtype = x.split('%')[0]
-                    temp_dtype_names.append(dtype)
-            #Create list that holds the names of the derived types only
-            elm_var_names = [v.name for v in clmvar]
-            if(associate_end == 0):
-                ct = self.startline
-            else:
-                ct = associate_end
+        ignoreList = ['this','self','colpf','colnf','colps','colcf','colns',
+                      'vegcf','vegcs','vegps','vegpf','vegns','vegnf','bounds',
+                      'spm','spm_d','spm_p','isocol_cs', 'isoveg_cs','colcs',
+                      'isocol_cf', 'isoveg_cf','cs','cf','col_cf_input']
 
-            fname = elm_files+self.filepath
-            file = open(elm_files+self.filepath,'r')
-            lines = file.readlines()
-            file.close()
-            class_routine = False
-            class_routine_info["bool"] = False
-            while( ct < self.endline ):
-                line = lines[ct]
-                #get rid of comments
-                line = line.strip().split('!')[0]
-                #take into account line continuations
-                line = line.rstrip('\n')
-                while line.endswith('&'):
-                    ct+=1
-                    line = line[:-1] + lines[ct].strip().rstrip('\n')
+        interface_list = get_interface_list()
 
-                match = bool('%' in line and not('call' in line))
-                if(match):
-                    match_var = re.findall(r"\w+%\w+",line)
-                    for dtype in match_var:
-                        typename = dtype.split('%')[0]
-                        if(typename.lower() in ['this'] and not class_routine ):
-                            if(verbose ): print(f"Inside 'class' routine {self.name}")
-                            class_routine = True
-                            class_routine_info["bool"] = True
-                            #
-                            var_type = getLocalVariables(self,class_var=True)
-                            err = True
-                            for vname in clmvar:
-                                if(vname.dtype == var_type):
-                                    err = False
-                                    if(verbose): print(f"{typename} is {vname.name}")
-                                    typename = vname.name
-                                    dtype = re.sub("this%",vname.name +"%",dtype)
-                                    if(verbose): print(f"var is {dtype}")
-                                    class_routine_info["var"] = vname.name
+        # preprocess file so to get child subroutines
+        associate_end   = self._preprocess_file(elmvar,interface_list,verbose=verbose)
 
-                            if(err): sys.exit("Couldn't find var_type from list")
+        associated_list = [ key for key in self.associate_vars.keys() ]
+        temp_dtype_names = []
+        dtype_var_list = []
+        class_routine_info = {"bool":False, "var" : ""}
+        for val in self.associate_vars.values():
+            for x in val:
+                dtype = x.split('%')[0]
+                temp_dtype_names.append(dtype)
+        #
+        #Create list that holds the names of the derived types only
+        elm_var_names = [v.name for v in elmvar]
+        if(associate_end == 0):
+            ct = self.startline
+        else:
+            ct = associate_end
 
+        fname = elm_files+self.filepath
+        file = open(elm_files+self.filepath,'r')
+        lines = file.readlines()
+        file.close()
+        class_routine = False
+        class_routine_info["bool"] = False
+        while( ct < self.endline ):
+            line = lines[ct]
+            #get rid of comments
+            line = line.strip().split('!')[0]
 
-                        if(typename.lower() not in ignoreList):
-                            temp_dtype_names.append(typename)
-                            dtype_var_list.append(dtype)
-                #end of if(match)
+            #take into account line continuations
+            line = line.rstrip('\n')
+            while line.endswith('&'):
                 ct+=1
-            dtype_var_list = list(set(dtype_var_list))
-            self.clmtypes  = list(set(temp_dtype_names))
+                line = line[:-1] + lines[ct].strip().rstrip('\n')
 
-            if(verbose): print(f"analyzing associate list variables for sub {self.name}")
-            vardict_associate = self._analyze_variables(associate_end,associated_list, class_routine_info)
-            #Need to match read/write status of associate pointer to the derived type:
-            for key, values in vardict_associate.items():
-                dtypes_li = self.associate_vars[key] #list of derivedtypes pointed to by key
-                for var in dtypes_li:
-                    varname   = var.split('%')[0]
-                    varname = replace_key(varname)
-                    if(varname == 'vegcf'): varname = 'veg_cf'
-                    if(varname == 'col_cf_input'): varname = 'col_cf'
-                    try:
-                        component = var.split('%')[1]
-                    except:
-                        print('Error:',var)
+            # Check for derived types but not class methods
+            # derived type arguments to subroutines handled elsewhere
+            match = bool('%' in line and not('call' in line))
+            if(match):
+                match_var = re.findall(r"\w+%\w+",line)
+                for dtype in match_var:
+                    typename = dtype.split('%')[0]
+                    if(typename.lower() in ['this'] and not class_routine ):
+                        if(verbose ): print(f"Inside 'class' routine {self.name}")
+                        class_routine = True
+                        class_routine_info["bool"] = True
+                        #
+                        var_type, varname = getLocalVariables(self,class_var=True)
+                        err = True
+                        for vname in elmvar:
+                            if(vname.name == varname):
+                                err = False
+                                if(verbose): print(f"{typename} is {vname.name}")
+                                typename = vname.name
+                                dtype = re.sub("this%",vname.name +"%",dtype)
+                                if(verbose): print(f"var is {dtype}")
+                                class_routine_info["var"] = vname.name
 
-                    if( varname.lower() in ['this']):
-                        if(verbose): print(f"ajusting class procedure associate list")
-                        for vname in elm_var_names:
-                            match_class_var = re.search(f'{vname}',self.name)
-                            if (match_class_var):
-                                if(verbose): print(f"{varname} is {vname}")
-                                varname = vname
+                        if(err): sys.exit(f"Couldn't find {varname} in list")
+                        
+                    if(typename.lower() not in ignoreList):
+                        temp_dtype_names.append(typename)
+                        dtype_var_list.append(dtype)
+            #end of if(match)
+            ct+=1
+        dtype_var_list = list(set(dtype_var_list))
+        self.elmtypes  = list(set(temp_dtype_names))
 
-                    if('r' in values): self.clmtype_r.setdefault(varname,[]).append(component)
-                    if('w' in values): self.clmtype_w.setdefault(varname,[]).append(component)
+        if(verbose): print(f"analyzing associate list variables for sub {self.name}")
+        vardict_associate = self._analyze_variables(associate_end,associated_list, class_routine_info)
+        #Need to match read/write status of associate pointer to the derived type:
+        for key, values in vardict_associate.items():
+            dtypes_li = self.associate_vars[key] #list of derivedtypes pointed to by key
+            for var in dtypes_li:
+                varname   = var.split('%')[0]
+                varname = replace_key(varname)
+                if(varname == 'vegcf'): varname = 'veg_cf'
+                if(varname == 'col_cf_input'): varname = 'col_cf'
+                try:
+                    component = var.split('%')[1]
+                except:
+                    print('Error:',var)
+
+                if( varname.lower() in ['this']):
+                    if(verbose): print(f"ajusting class procedure associate list")
+                    for vname in elm_var_names:
+                        match_class_var = re.search(f'{vname}',self.name)
+                        if (match_class_var):
+                            if(verbose): print(f"{varname} is {vname}")
+                            varname = vname
+
+                if('r' in values): self.elmtype_r.setdefault(varname,[]).append(component)
+                if('w' in values): self.elmtype_w.setdefault(varname,[]).append(component)
 
 
-            print(f"analyzing other list variables for sub {self.name}")
-            vardict_dtypes = self._analyze_variables(associate_end, dtype_var_list,class_routine_info)
-            for key, values in vardict_dtypes.items():
-                varname   = key.split('%')[0]
-                component = key.split('%')[1]
-                if('r' in values): self.clmtype_r.setdefault(varname,[]).append(component)
-                if('w' in values): self.clmtype_w.setdefault(varname,[]).append(component)
+        print(f"analyzing other list variables for sub {self.name}")
+        vardict_dtypes = self._analyze_variables(associate_end, dtype_var_list,class_routine_info)
+        for key, values in vardict_dtypes.items():
+            varname   = key.split('%')[0]
+            component = key.split('%')[1]
+            if('r' in values): self.elmtype_r.setdefault(varname,[]).append(component)
+            if('w' in values): self.elmtype_w.setdefault(varname,[]).append(component)
 
-            #clean up!
-            for key in self.clmtype_r.keys(): self.clmtype_r[key] = list(set(self.clmtype_r[key]))
-            for key in self.clmtype_w.keys(): self.clmtype_w[key] = list(set(self.clmtype_w[key]))
+        #clean up!
+        for key in self.elmtype_r.keys(): self.elmtype_r[key] = list(set(self.elmtype_r[key]))
+        for key in self.elmtype_w.keys(): self.elmtype_w[key] = list(set(self.elmtype_w[key]))
             
 
     def child_subroutines_analysis(self,clmvar):
@@ -639,32 +523,36 @@ class Subroutine(object):
         This function handles parsing child_subroutines and merging
         variable dictionaries...
         """
-        #print(self.clmtype_ro)
+        from utilityFunctions import get_interface_list
+        #print(self.elmtype_ro)
         interface_list = get_interface_list()
         for child_sub in self.child_subroutine_list:
 
+            print(f"child_sub = {child_sub}")
             file,startline,endline = find_file_for_subroutine(child_sub)
-            self.child_Subroutine[child_sub] = Subroutine(child_sub,file,self.calltree)
+            self.child_Subroutine[child_sub] = Subroutine(child_sub,file,self.calltree
+                             ,start=startline,end=endline)
             sub = self.child_Subroutine[child_sub]
             sub.startline = startline; sub.endline = endline
+            
             if(child_sub in interface_list):  continue
             self.child_Subroutine[child_sub].parse_subroutine(clmvar)
 
             if(sub.child_subroutine_list):
                 sub.child_subroutines_analysis(clmvar)
 
-            #add needed clmtypes to parent subroutine
-            self.clmtypes.extend(sub.clmtypes)
-            self.clmtypes = list(set(self.clmtypes))
+            #add needed elmtypes to parent subroutine
+            self.elmtypes.extend(sub.elmtypes)
+            self.elmtypes = list(set(self.elmtypes))
 
-            for key, values in sub.clmtype_r.items():
+            for key, values in sub.elmtype_r.items():
                 for var in values:
-                    self.clmtype_r.setdefault(key,[]).append(var)
-                self.clmtype_r[key] = list(set(self.clmtype_r[key]))
-            for key, values in sub.clmtype_w.items():
+                    self.elmtype_r.setdefault(key,[]).append(var)
+                self.elmtype_r[key] = list(set(self.elmtype_r[key]))
+            for key, values in sub.elmtype_w.items():
                 for var in values:
-                    self.clmtype_w.setdefault(key,[]).append(var)
-                self.clmtype_w[key] = list(set(self.clmtype_w[key]))
+                    self.elmtype_w.setdefault(key,[]).append(var)
+                self.elmtype_w[key] = list(set(self.elmtype_w[key]))
                 
 
         for s in self.child_Subroutine.values():
@@ -701,7 +589,7 @@ class Subroutine(object):
         ofile.write("subroutine update_vars_{}(gpu,desc)\n".format(self.name))
         replace_inst = ['soilstate_inst','waterflux_inst','canopystate_inst','atm2lnd_inst','surfalb_inst',
                         'solarabs_inst','photosyns_inst','soilhydrology_inst','urbanparams_inst']
-        for v in self.clmtype_w.keys():
+        for v in self.elmtype_w.keys():
             if(v in replace_inst): v = v.replace('_inst','_vars')
 
             mod = clmvars_dict[v].declaration
@@ -726,7 +614,7 @@ class Subroutine(object):
         ofile.write(spaces+"if(gpu) then\n")
         acc = "!$acc "
 
-        for v,comp_list in self.clmtype_w.items():
+        for v,comp_list in self.elmtype_w.items():
             if(v in replace_inst): v = v.replace('_inst','_vars')
             ofile.write(spaces+acc+"update self(& \n")
             i = 0
@@ -749,7 +637,7 @@ class Subroutine(object):
         ofile.write(spaces+"end if \n")
         ofile.write(spaces+"!! CPU print statements !! \n")
         ## generate cpu print statements
-        for v,comp_list in self.clmtype_w.items():
+        for v,comp_list in self.elmtype_w.items():
             if(v in replace_inst): v = v.replace('_inst','_vars')
             for c in comp_list:
                 name = f"{v}%{c}"
@@ -763,85 +651,126 @@ class Subroutine(object):
         ofile.close()
     
     
-    def examineLoops(self,global_vars,add_acc=False,subcall=False,verbose=False,adjust_allocation=False):
+    def examineLoops(self,global_vars,varlist,add_acc=False,subcall=False,
+                        verbose=False,adjust_allocation=False):
         """
         Function that will parse the loop structure of a subroutine
         Add loop parallel directives if desired
         """
         from mod_config import _bc
+        from utilityFunctions import lineContinuationAdjustment,getLocalVariables
+        from utilityFunctions import find_file_for_subroutine, getArguments, get_interface_list
+        from utilityFunctions import convertAssociateDict
+        from interfaces import resolve_interface
+
+        interface_list = get_interface_list() # move this to a global variable in mod_config?
         if(not subcall):
-            self.associate_vars, self.status, associate_start, associate_end = get_rid_of_associate(self)
             associate_keys = self.associate_vars.keys()
             temp_global_vars = [key for key in associate_keys]
             global_vars = temp_global_vars[:]
         
+        # Check if associated derived types need to be analyzed 
+        convertAssociateDict(self.associate_vars,varlist)
+
+        if(adjust_allocation): 
+            # dict with 'arg' : Subroutine
+            # where 'arg' is a local array, and 'sub' is child subroutine that uses it.
+            passed_to_sub = {} 
+            local_array_list = [v.name for v in self.LocalVariables['arrays']]
+
         if(verbose): print(f"Opening file {elm_files+self.filepath} ")
         ifile = open(elm_files+self.filepath,'r')
         lines = ifile.readlines() # read entire file
         ifile.close()
-    
+
         loop_start = 0 
         loop_end = 0
-        #regex_do= re.compile(r'^\s*(do)\s+[a-z].') #match do
-        regex_do= re.compile(r'\s*(do)\s+\w+\s*(?=[=])',re.IGNORECASE)
+        regex_do = re.compile(r'\s*(do)\s+\w+\s*(?=[=])',re.IGNORECASE)
         regex_dowhile = re.compile(f'\s*(do while)',re.IGNORECASE)
-        regex_enddo = re.compile(r'^\s*(end)\s*(do)')
-        regex_subcall = re.compile(r'^(call)')
+        regex_enddo = re.compile(r'^\s*(end)\s*(do)',re.IGNORECASE)
+        regex_subcall = re.compile(r'^(call)',re.IGNORECASE)
 
         # Starting parsing lines at the subroutine start
         sublines = lines[self.startline-1:self.endline]
         loopcount = 0
         print(f"Examing Loops for {self.name}")
         dowhile = False 
+        lines_to_skip = 0 
         for n,line in enumerate(sublines):
-            #get rid of comments 
-            l = line.split('!')[0]
-            l = l.strip()
+            if(lines_to_skip > 0):
+               lines_to_skip -= 1 
+               continue 
+            l, lines_to_skip = lineContinuationAdjustment(sublines,n,verbose)
+            
             # Use RegEx
-            m_call = regex_subcall.search(l.lower()) 
-            m_do = regex_do.search(l.lower())
-            m_enddo = regex_enddo.search(l.lower())
-            m_dowhile = regex_dowhile.search(l.lower())
+            m_call = regex_subcall.search(l) 
+            m_do = regex_do.search(l)
+            m_enddo = regex_enddo.search(l)
+            m_dowhile = regex_dowhile.search(l)
             if(m_dowhile): 
-                dowhile = True  #Inside do while loop 
-                print(n,line)
+                dowhile = True  # Inside do while loop 
                 if(verbose): print("Inside do while loop")
-            # if we match subroutine call 
-            # we should analyze it now so that the 
-            # DoLoops array has the Loops in order of use
+            # If we match subroutine call we should analyze it now so that the 
+            # DoLoops array has the Loops in order of use. 
+            #
             if(m_call):
                 x = l.replace('(',' ').replace(')',' ').split()
                 child_sub_name = ''
                 if(x[1].lower() not in ['cpu_time','get_curr_date'] and 'update_vars' not in x[1].lower()):
                     child_sub_name = x[1]
+                    args = getArguments(l)
+                    if(child_sub_name in interface_list):
+                        child_sub_name = resolve_interface(self,child_sub_name,args,varlist,verbose=True)
+                    
                     file,startline,endline = find_file_for_subroutine(child_sub_name)
-                    childsub = Subroutine(child_sub_name,file,[self.name])
-                    childsub.startline = startline; childsub.endline = endline;
+                    childsub = Subroutine(child_sub_name,file,[self.name],startline,endline)
+                    getLocalVariables(childsub,verbose=verbose)
+                    
+                    if(adjust_allocation):
+                        # To adjust memory allocation, need to keep track
+                        # of if a Local variable is passed as an argument.
+                        # If it's a subcall then must check the arguments as well.
+                        for numarg,arg in enumerate(args):
+                            if(arg in local_array_list):
+                                passed_to_sub[arg] = [childsub,n+self.startline-1,numarg]
+                                
+                        if(subcall): # check if an argument is passed to another subroutine
+                            arg_list = [v.name for v in self.Arguments]
+                            for arg in args:
+                                if(arg in arg_list):
+                                    print(f"{arg} passed to {child_sub_name}")
+                    #
                     # get global variable aliases 
-                    childsub.associate_vars, childsub.status, associate_start, associate_end = get_rid_of_associate(childsub)
+                    # 
                     associate_keys = childsub.associate_vars.keys()
                     temp_global_vars = [key for key in associate_keys]
                     global_vars.extend(temp_global_vars)
                     global_vars = list(dict.fromkeys(global_vars).keys())
+                    #
                     # Examine Do loops in child subs
+                    #
                     if(verbose): 
                         print(f"Instantiated new Subroutine {child_sub_name}\n in file {file} L{startline}-{endline}")
-                    childloops = childsub.examineLoops(global_vars=global_vars, subcall=True,verbose=verbose)
+                    
+                    childloops = childsub.examineLoops(global_vars=global_vars,varlist=varlist,subcall=True,
+                            verbose=verbose,adjust_allocation=adjust_allocation,add_acc=False)
+                    if(verbose): 
+                        print(f"Adding {len(childloops)} loops from {childsub.name}")
                     self.DoLoops.extend(childloops)
-
+                    self.child_subroutine_list.append(childsub)
             if(m_do): 
                 #get index 
                 index = m_do.group().split()[1]
                 #outer most loop
                 if(loopcount == 0):
-                    if(verbose): print(f"============{self.name}===============")
+                    if(verbose): print(f"============ {self.name} ===============")
                     if(verbose): print("New loop at line ",n+self.startline)
                     loop_start = n+self.startline
-                    newloop = Loop(loop_start,index,self.filepath,self.name)
+                    newloop = Loop(loop_start,index,self.filepath,self)
                 #Found an inner loop
                 else :
                     newloop.index.append(index)
-                    loop_start = n+self.startline; newloop.nested += 1;
+                    loop_start = n+self.startline; newloop.nested += 1
                     newloop.start.append(loop_start)
                     newloop.end.append(0)
                 loopcount += 1
@@ -863,80 +792,112 @@ class Subroutine(object):
                     
                     newloop.lines = sublines[lstart:lend+1]
                     self.DoLoops.append(newloop)
-                    #if(verbose): 
-                    #    print(f"Appending new Loop in {self.name}")
-                    #    print(f"Loop Starts at {lstart+self.startline} - {lend+self.startline}")
-                    #    newloop.printLoop()
                 else:
                     loop_end = n+self.endline
                     newloop.end[loopcount] = loop_end 
         
-        #Parse variables used in Loop
-        
+        # Parse variables used in Loop
         print(f"Parsing variables for Loops in {self.name}")
         for n, loop in enumerate(self.DoLoops):
-            if(loop.subcall is self.name):
-                # if(verbose): loop.printLoop(substartline=self.startline,long=False)
+            if(loop.subcall.name is self.name):
                 # loops in child subroutines have already been Parsed!
                 loop.parseVariablesinLoop(verbose=verbose)
-        
+                if(loop.reduction): 
+                    print("loop may contain a race condition:",loop.reduce_vars)
+
         if(adjust_allocation):
-            local_vars = getLocalVariables(self,verbose=verbose)
+            print(_bc.BOLD+_bc.WARNING+f"Adjusting Allocation for {self.name}"+_bc.ENDC)
+            # TODO: 
+            # Insert function call to check if any local 
+            # variables are passed as subroutine arguments 
             if(verbose): print("Checking if variables can be allocated by filter")
-            for lcl_arr, vals in local_vars.items():
+            ok_to_replace = {}
+            
+            # List that accumulates all info necessary for memory adjustment
+            local_vars = []  # [Variable, filter_used]
+
+            for lcl_var in self.LocalVariables["arrays"]:
+                if(lcl_var.subgrid == "?"): continue 
+                lcl_arr = lcl_var.name 
+                if(lcl_arr in passed_to_sub):
+                    print(_bc.WARNING+f"{lcl_arr} passed to {passed_to_sub[lcl_arr][0].name}"+_bc.ENDC)
+
+                ok_to_replace[lcl_arr] = False 
                 filter_used = ''
-                indx, ln = vals
+                indx, ln = lcl_var.subgrid, lcl_var.ln 
+
                 for loop in self.DoLoops: 
-                    if(lcl_arr in loop.vars):
-                        fvar, fidx = loop.filter
-                        #Case where no filter is used 
+                    if(loop.subcall.name != self.name): continue 
+                    if(lcl_arr in loop.vars or lcl_arr in loop.reduce_vars):
+                        
+                        if(not loop.filter): # Loop doesn't use a filter?
+                            filter_used = "None"
+                            continue
+                        fvar, fidx, newidx = loop.filter
+                        # Case where no filter is used 
                         if(not fvar): 
                             if(indx not in loop.index):
-                                print("Can't replace?")
-                                print(f"{lcl_arr} {indx} used in {loop.subcall}:L{loop.start[0]} {fvar},{fidx}{loop.index}")
-                                sys.exit() 
+                                print(f"{lcl_arr} {indx} used in {loop.subcall.name}:L{loop.start[0]} {fvar},{fidx}{loop.index}")
+                                # sys.exit()
                         if(not filter_used):
                             # Get rid of the subgrid info
                             filter_used = fvar[:-1]
                         elif(filter_used != fvar[:-1]):
                             print("Incorrect filter?")
-                            print(f"{lcl_arr} {indx} used in {loop.subcall}:L{loop.start[0]} {fvar},{fidx}{loop.index}")
-                            sys.exit()
-                # If make it through the loops then time to replace?
+                            print(f"{lcl_arr} {indx} used in {loop.subcall.name}:L{loop.start[0]} {fvar},{fidx}{loop.index}")
+                            # sys.exit()
+                
+                if(filter_used == "None"):
+                    print(f"No filter being used -- won't adjust {lcl_arr}")
+                elif(filter_used):
+                    print(f"{lcl_arr} only uses {filter_used}{indx}")
+                    ok_to_replace[lcl_arr] = True 
+                    local_vars.append([lcl_var,filter_used])
+                else: 
+                    print(_bc.WARNING + f"{lcl_arr} is not used by any loops!!"+ _bc.ENDC)
+            
+            if(local_vars):
+                list_of_var_names = [v[0].name for v in local_vars]
+                print(_bc.BOLD+_bc.HEADER+f"Adjusting vars:{list_of_var_names}"+_bc.ENDC)
+                adjust_array_access_and_allocation(local_vars, passed_to_sub, sub=self,verbose=True)
+            else:
+                print(_bc.BOLD+_bc.HEADER+f"No variables need to be adjusted for {self.name}"+_bc.ENDC)
 
-
-            sys.exit()
+            # Check and fix !$acc enter/exit data directives for the subroutine
+            self.generate_unstructured_data_regions()
 
         if(subcall):
             return self.DoLoops
-
+        
         if(add_acc): 
             # Create dictionary to hold subroutines found so far 
             # and their initial startlines to help adjust for line insertions later.
             sub_dict = {}
+
             # dictionary of the loops to avoid adding OpenACC directives to the same 
             # Loop more than once 
             loop_dict = {} 
             for loop in self.DoLoops: 
-                loopkey = f"{loop.subcall}:L{loop.start[0]}"
+                loopkey = f"{loop.subcall.name}:L{loop.start[0]}"
                 if(loopkey not in loop_dict):
                     loop_dict[loopkey] = loop
                     loop.printLoop(long=False)
-                if(loop.subcall not in sub_dict):
-                    file,startline,endline = find_file_for_subroutine(loop.subcall)
-                    sub_dict[loop.subcall] = startline
-
+                if(loop.subcall.name not in sub_dict):
+                    file,startline,endline = find_file_for_subroutine(loop.subcall.name)
+                    sub_dict[loop.subcall.name] = startline
+            
+            print("Final subroutine dictionary:",sub_dict)
             lines_adjusted = {}
             for key, loop in loop_dict.items(): 
                 if(not loop.reduction):
                     loop.printLoop(long=False)
-                    if(loop.subcall not in lines_adjusted):
+                    if(loop.subcall.name not in lines_adjusted):
                         # This keeps track of the number of line adjustments
                         # inside a given subroutine.  The start of the subroutine 
                         # is rechecked inside addOpenACCFlags function
-                        lines_adjusted[loop.subcall] = 0
-                    file,startline,endline = find_file_for_subroutine(loop.subcall)
-                    subline_adjust = startline - sub_dict[loop.subcall]
+                        lines_adjusted[loop.subcall.name] = 0
+                    file,startline,endline = find_file_for_subroutine(loop.subcall.name)
+                    subline_adjust = startline - sub_dict[loop.subcall.name]
 
                     loop.addOpenACCFlags(lines_adjusted,subline_adjust)
 
@@ -946,19 +907,26 @@ class Subroutine(object):
                     print(_bc.WARNING + f"Reduction in {loop.file}::{keys} for:\n {loop.reduce_vars}"+_bc.ENDC)
 
         #Note: Can't use List Comprehension here with class attributes
-        var_list = []       
+        var_list = []
+        local_vars_only = []
         for loop in self.DoLoops:
             for key in loop.vars.keys():
                 var_list.append(key) 
+                if(key not in global_vars):
+                    local_vars_only.append(key)
+
         var_list = list(dict.fromkeys(var_list).keys())
+        local_vars_only = list(dict.fromkeys(local_vars_only).keys())
+
 
         # print only the global variable list:
         global_loop_vars = [] 
+        all_array_vars = []
         for v in var_list:
             if(v in global_vars or "filter" in v):
                 global_loop_vars.append(v)
         
-        exportVariableDependency(self.name,var_list,self.DoLoops[0:10])
+        exportVariableDependency(self.name,var_list,global_loop_vars,local_vars_only,self.DoLoops)
 
         return
 
@@ -973,15 +941,15 @@ class Subroutine(object):
         maxlen = 0
         #read variables
         print("exportReadWriteVariables ===================") 
-        print(self.clmtype_r)
-        for varname, components in self.clmtype_r.items():
+        print(self.elmtype_r)
+        for varname, components in self.elmtype_r.items():
             for c in components:
                 var = f"{varname}%{c}"
                 read_flat.append(var)
                 all_flat.append(var)
                 if(len(var) > maxlen): maxlen = len(var)
 
-        for varname, components in self.clmtype_w.items():
+        for varname, components in self.elmtype_w.items():
             for c in components:
                 var = f"{varname}%{c}"
                 write_flat.append(var)
@@ -1004,81 +972,183 @@ class Subroutine(object):
             if(len(status)<2): status +='o'
             string = f"{var:<{maxlen}} {status:5}\n"
             ofile.write(string)
-        ofile.close()                 
+        ofile.close()             
 
         return 
+    
+    def generate_unstructured_data_regions(self, remove=True): 
+        """
+        Function generates appropriate enter and exit data
+        directives for the local variables of this Subroutine.
 
+        First step is to remove any existing directives
+        Next, create new directives from local variable list
+        Compare new and old directives and overwrite if they are different
+        """
+        # Open File:
+        if(os.path.exists(home_dir+"modified-files/"+self.filepath)):
+            print(_bc.BOLD+_bc.WARNING+f"Opening file "+home_dir+"modified-files/"+self.filepath+_bc.ENDC)
+            ifile = open(home_dir+"modified-files/"+self.filepath,'r')
+        else:
+            print(_bc.BOLD+_bc.WARNING+f"Opening file {elm_files}{self.filepath}"+_bc.ENDC)
+            ifile = open(elm_files+self.filepath,'r')
+        lines = ifile.readlines() 
+        ifile.close() 
 
-    # def analyze_local_arrays(self):
-    #     """
-    #     This function will look at the local variables of the subroutine
-    #     and find the automatic arrays.  Then, the function will determine if
-    #     it's safe to replace automatic arrays with scalar.
-    #     """
-    #     print("file:",self.filepath,f"Subroutine {self.name}")
-    #
-    #
-    #     file = open(source_dir+self.filepath,'r')
-    #     lines = file.readlines()
-    #
-    #     ct = self.startline
-    #     while (ct < self.endline ):
-    #         ct+=1
-    #         line = lines[ct]
-    #         #get rid of comments
-    #         line = line.strip().split('!')[0]
-    #
-    #         #take into account line continuations
-    #         line = line.rstrip('\n')
-    #         while line.endswith('&'):
-    #             ct+=1
-    #             line = line[:-1] + lines[ct].strip().rstrip('\n')
-    #
-    #         match_auto_arr = re.search(r'^(real|integer|logical)',line)
-    #
-    #         if(match_auto_arr and "bounds" in line and "intent" not in line):
-    #             l    = line.split('::')[1].strip()
-    #             type = line.split('::')[0].strip()
-    #             if('begp' in l or 'endp' in l): dim = 'p'
-    #             if('begc' in l or 'endc' in l): dim = 'c'
-    #             if('begt' in l or 'endt' in l): dim = 't'
-    #             if('begg' in l or 'endg' in l): dim = 'g'
-    #             var = l.split('(')[0].strip()
-    #
-    #             if var not in self.local_vars:
-    #                 print(type,var,dim)
-    #                 self.local_vars.append([type,var,dim])
-    #
-    #     if(not self.local_vars):
-    #         print("No local auto arrays found")
-    #         for child_Sub in self.child_Subroutine.values():
-    #             child_Sub.analyze_local_arrays()
-    #         return
-    #     file.close()
-    #     #go back through file and identify where each auto array is used
-    #     outname = self.filepath+".bak"
-    #
-    #     for el in self.local_vars:
-    #         file = open(source_dir+self.filepath,'r')
-    #         lines = file.readlines()
-    #         ofile = open(f"{outname}",'w')
-    #         type, var, dim = el
-    #         #print("searching for var:",type,var,dim)
-    #         ct = 0
-    #         for line in lines:
-    #             ct += 1
-    #             if (ct > self.startline and ct < self.endline):
-    #                 declaration = re.compile(f'^\s*(real|integer|logical)\s*::')
-    #                 match_var = re.compile(f'{var}')
-    #                 m_var = match_var.search(line)
-    #                 m_dec = declaration.match(line)
-    #                 repl = re.compile(f"{var}\([^\)]*\)")
-    #                 if(m_dec and m_var): line = repl.sub(f'{var}',line)
-    #                 if(m_var and not m_dec): line = repl.sub(f'{var}',line)
-    #             ofile.write(line)
-    #         ofile.close()
-    #         file.close()
-    #         #os.system('mv '+outname+' '+self.filepath)
-    #
-    #     for child_Sub in self.child_Subroutine.values():
-    #         child_Sub.analyze_local_arrays()
+        regex_enter_data = re.compile(r'^\s*\!\$acc enter data', re.IGNORECASE)
+        regex_exit_data = re.compile(r'^\s*\!\$acc exit data', re.IGNORECASE)
+        
+        lstart = self.startline - 1
+        lend = self.endline 
+        old_enter_directives = []
+        old_exit_directives = []
+        if(remove): 
+            for ln in range(lstart,lend):
+                line = lines[ln]
+                
+                match_enter_data = regex_enter_data.search(line)
+                match_exit_data  = regex_exit_data.search(line)
+                if(match_enter_data):
+                    directive_start = ln 
+                    old_enter_directives.append(line) # start of enter data directive
+                    line = line.rstrip('\n')
+                    line = line.strip()
+                    while(line.endswith('&')):
+                        ln += 1 
+                        line = lines[ln]
+                        old_enter_directives.append(line) # end of enter data directive
+                        line = line.rstrip('\n')
+                        line = line.strip()
+                    
+                    directive_end = ln
+                    del(lines[directive_start:directive_end+1])
+                    num_lines_removed = directive_end - directive_start + 1
+                    lend -= num_lines_removed
+
+                if(match_exit_data):
+                    directive_start = ln  # start of exit data directive 
+                    old_exit_directives.append(line)
+                    line = line.rstrip('\n')
+                    line = line.strip()
+                    while(line.endswith('&')):
+                        ln += 1 
+                        line = lines[ln]
+                        old_exit_directives.append(line)
+                        line = line.rstrip('\n')
+                        line = line.strip()
+
+                    directive_end = ln # end of exit data directive
+                    del(lines[directive_start:directive_end+1])
+                    num_lines_removed = directive_end - directive_start + 1
+                    lend -= num_lines_removed
+                    print(f"Removed {num_lines_removed} lines from subroutine")
+        
+        # Create New directives
+        vars = [] # list to hold all vars needed to be one the device
+        for v in self.LocalVariables['arrays']:
+            varname = v.name 
+            dim = v.dim 
+            li_ = [":"]*dim
+            dim_str = ",".join(li_)
+            dim_str = "("+dim_str+")"
+            print(f"adding {varname}{dim_str} to directives")
+            vars.append(f"{varname}{dim_str}")
+
+        # Only add scalars to if they are a reduction variables
+        # Only denoting that by if it has "sum" in the name
+        for v in self.LocalVariables['scalars']:
+            varname = v.name
+            for loop in self.DoLoops:
+                if(loop.subcall.name == self.name):
+                    if(varname in loop.reduce_vars and varname not in vars):
+                        print(f"Adding scalar {varname} to directives")
+                        vars.append(varname)
+
+        num_vars = len(vars)
+        if(num_vars == 0):
+            print(f"No Local variables to make transfer to device, returning")
+            return
+        else:
+            print(f"Generating create directives for {num_vars} variables")
+
+        # Get appropriate indentation for the new directives:
+        padding = ""
+        first_line = 0
+
+        for ln in range(lstart,lend):
+            line = lines[ln]
+            # Before ignoring comments, check if it's an OpenACC directive
+            m_acc = re.search(r"\s*(\!\$acc routine seq)",line)
+            if(m_acc):
+                sys.exit("Error: Trying to add data directives to an OpenACC routine")
+            
+            m_acc = re.search(r"\s*(\!\$acc)\s+(parallel|enter|update)",line,re.IGNORECASE)
+            if(m_acc and first_line == 0):
+                first_line = ln
+            
+            l = line.split("!")[0]
+            l = l.strip()
+            if(not l): continue
+
+            m_use = re.search(r'^(implicit|use|integer|real|character|logical|type\()',line.lstrip())
+            if(m_use and not padding):
+                padding = " "*(len(line) - len(line.lstrip()))
+            elif(padding and not m_use and first_line == 0):
+                first_line = ln
+            
+            if(ln == lend-1 and not padding): 
+                sys.exit("Error: Couldn't get spacing")
+
+        new_directives = [] 
+        
+        for v in vars[0:num_vars-1]:
+            new_directives.append(padding+f"!$acc {v}, &\n")
+        new_directives.append(padding+f"!$acc {vars[num_vars-1]})\n\n")
+        
+        new_enter_data = [padding+"!$acc enter data create(&\n"]
+        new_enter_data.extend(new_directives)
+        #
+        new_exit_data = [padding+"!$acc exit data delete(&\n"]
+        new_exit_data.extend(new_directives)
+
+        if(new_enter_data != old_enter_directives or new_exit_data != old_exit_directives):
+            # Insert the enter data directives
+            if(self.associate_end != 0):
+                # insert new directives just after last associate statement: 
+                for l in reversed(new_enter_data):
+                    lines.insert(self.associate_end+1,l)
+            else: # use first_line found above 
+                for l in reversed(new_enter_data):
+                    lines.insert(first_line,l)
+            lend += len(new_enter_data)
+            print(_bc.BOLD+_bc.WARNING+f"New Subroutine Ending is {lend}"+_bc.ENDC)
+            # Inster the exit data directives
+            if(self.associate_end !=0):
+                end_associate_ln = 0
+                regex_end = re.compile(r'^(end associate)',re.IGNORECASE)
+                for ln in range(lend,lstart,-1):
+                    m_end = regex_end.search(lines[ln].lstrip())
+                    if(m_end):
+                        end_associate_ln = ln
+                        break
+                for l in reversed(new_exit_data):
+                    lines.insert(end_associate_ln,l)
+            else:
+                for l in reversed(new_exit_data):
+                    lines.insert(lend-1,l)
+            lend += len(new_exit_data)
+            print(_bc.BOLD+_bc.WARNING+f"New Subroutine Ending is {lend}"+_bc.ENDC)
+
+            # Overwrite File:
+            if("modified-files" in self.filepath):
+                print(_bc.BOLD+_bc.WARNING+f"Writing to file {elm_files}{self.filepath}"+_bc.ENDC)
+                ofile = open(elm_files+self.filepath,'w')
+            else:
+                print(_bc.BOLD+_bc.WARNING+f"Writing to file "+home_dir+"modified-files/"+self.filepath+_bc.ENDC)
+                ofile = open(home_dir+"modified-files/"+self.filepath,'w')
+
+            ofile.writelines(lines)
+            ofile.close() 
+        else:
+            print(_bc.BOLD+_bc.WARNING+"NO CHANGE"+_bc.ENDC)
+            

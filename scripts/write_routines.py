@@ -17,7 +17,7 @@ def get_delta_from_dim(dim,delta):
     dim = dim.replace(')','');
     dim_li = dim.split(',')
 
-    ct = 0;
+    ct = 0
 
     if(delta == 'y'):
         for el in dim_li:
@@ -62,8 +62,8 @@ def generate_makefile(files,casename):
     """
     noF90 = [f.replace('.F90','') for f in files]
     #preproc_dict = {k : False for k in preproc_list}
-    FC = "pgfortran"
-    FC_FLAGS_ACC = " -ta=tesla:deepcopy -Minfo=all -acc -Mcuda\n"
+    FC = "nvfortran"
+    FC_FLAGS_ACC = " -ta=tesla:deepcopy -Minfo=accel -acc -Mcuda\n"
     FC_FLAGS_DEBUG = " -g -O0 -Mbounds -Mchkptr -Mchkstk\n"
     MODEL_FLAGS = " -DMODAL_AER -DCPL_BYPASS"
 
@@ -189,7 +189,6 @@ def clean_main_elminstMod(vardict,type_list,files,casename):
     clean_use_statements(mod_list=files, file="main",casename=casename)
     clean_use_statements(mod_list=files, file="elm_initializeMod",casename=casename)
     clean_use_statements(mod_list=files, file="update_accMod",casename=casename)
-
 
     ifile = open(f"{casename}/elm_initializeMod.F90",'r')
     lines = ifile.readlines()
@@ -362,6 +361,7 @@ def create_write_vars(vardict,read_types,subname,use_isotopes=False):
     ofile.write('contains\n')
     ofile.write('subroutine write_vars()\n')
     ofile.write(spaces + "use fileio_mod, only : fio_open, fio_close\n")
+    ofile.write(spaces+"use elm_varsur, only : wt_lunit, urban_valid\n")
     #use statements
     print(read_types)
 
@@ -377,8 +377,12 @@ def create_write_vars(vardict,read_types,subname,use_isotopes=False):
     ofile.write(spaces +' integer :: fid \n')
     ofile.write(spaces + f'character(len=256) :: ofile = "output_{subname}_vars.txt" \n')
     ofile.write(spaces + 'fid = 23 \n')
-    ofile.write(spaces + "call fio_open(fid,ofile, 2) \n")
+    ofile.write(spaces + "call fio_open(fid,ofile, 2) \n\n")
     li = ['veg_pp','col_pp','lun_pp','grc_pp','top_pp']
+    ofile.write(spaces+'write(fid,"(A)") "wt_lunit"\n')
+    ofile.write(spaces+'write(fid,*) wt_lunit\n')
+    ofile.write(spaces+'write(fid,"(A)") "urban_valid"\n')
+    ofile.write(spaces+'write(fid,*) urban_valid\n\n')
 
     for key in vardict.keys():
         if(key in li):
@@ -397,7 +401,7 @@ def create_write_vars(vardict,read_types,subname,use_isotopes=False):
 
 def create_read_vars(vardict,read_types):
     ##======================= READ VARS ==================================#
-    print("Creating subroutine read_vars in readMod.F90")
+    print("Creating subroutine read_vars / read_weights in readMod.F90")
     spaces = "     " #holds tabs indentations without using \t
     ofile = open('readMod.F90','w')
     ofile.write('module readMod \n')
@@ -415,23 +419,52 @@ def create_read_vars(vardict,read_types):
     ofile.write('use elm_varctl \n')
     ofile.write('use landunit_varcon \n')
     ofile.write('contains \n')
-    ofile.write('subroutine read_vars(in_file,bounds,mode)\n')
+
+    # read_weights
+    ofile.write('subroutine read_weights(in_file,numg)\n')
+    ofile.write(spaces+'use fileio_mod, only : fio_open, fio_read, fio_close\n')
+    ofile.write(spaces+'use elm_varsur, only : wt_lunit, urban_valid\n')
+    ofile.write(spaces+"implicit none\n")
+    ofile.write(spaces+"character(len=256), intent(in) :: in_file\n")
+    ofile.write(spaces+"integer, intent(in) :: numg\n")
+    ofile.write(spaces+"integer :: errcode = 0\n\n")
+    ofile.write(spaces+"call fio_open(18,in_file,1)\n") 
+    ofile.write(spaces+"call fio_read(18,'wt_lunit',wt_lunit(1:numg,:),errcode=errcode)\n")
+    ofile.write(spaces+"if(errcode .ne. 0) stop\n")
+    ofile.write(spaces+"call fio_read(18,'urban_valid',urban_valid(1:numg),errcode=errcode)\n")
+    ofile.write(spaces+"if(errcode .ne. 0) stop\n\n")
+    ofile.write(spaces+"end subroutine read_weights\n\n")
+
+    # read_vars 
+    ofile.write('subroutine read_vars(in_file,bounds,mode,nsets)\n')
     ofile.write(spaces + "use fileio_mod, only : fio_open, fio_read, fio_close\n")
     ofile.write(spaces+'implicit none \n')
+
+    # Dummy Variables 
     ofile.write(spaces+'character(len=256),intent(in) :: in_file \n')
     ofile.write(spaces+'type(bounds_type), intent(in) :: bounds \n')
     ofile.write(spaces+'integer, intent(in) :: mode\n')
+    ofile.write(spaces+'integer, intent(in) :: nsets\n')
+
+    # Local Variables 
     ofile.write(spaces+'integer :: errcode = 0 \n')
     ofile.write(spaces+'integer :: begp,  endp  \n')
     ofile.write(spaces+'integer :: begc,  endc  \n')
     ofile.write(spaces+'integer :: begg,  endg; \n')
     ofile.write(spaces+'integer :: begl,  endt; \n')
     ofile.write(spaces+'integer :: begt,  endl; \n')
-    ofile.write(spaces+"begp = bounds%begp; endp = bounds%endp \n")
-    ofile.write(spaces+"begc = bounds%begc; endc = bounds%endc \n")
-    ofile.write(spaces+"begl = bounds%begl; endl = bounds%endl \n")
-    ofile.write(spaces+"begt = bounds%begt; endt = bounds%endt \n")
-    ofile.write(spaces+"begg = bounds%begg; endg = bounds%endg \n")
+    #
+    ofile.write(spaces+"begp = bounds%begp; endp = bounds%endp/nsets \n")
+    ofile.write(spaces+"begc = bounds%begc; endc = bounds%endc/nsets \n")
+    ofile.write(spaces+"begl = bounds%begl; endl = bounds%endl/nsets \n")
+    ofile.write(spaces+"begt = bounds%begt; endt = bounds%endt/nsets \n")
+    ofile.write(spaces+"begg = bounds%begg; endg = bounds%endg/nsets \n")
+    
+    ofile.write(spaces+'print *,"begp range :",begp, endp\n')
+    ofile.write(spaces+'print *,"begc range :",begc, endc\n')
+    ofile.write(spaces+'print *,"begl range :",begl, endl\n')
+    ofile.write(spaces+'print *,"begt range :",begt, endt\n')
+    ofile.write(spaces+'print *,"begg range :",begg, endg\n')
 
     ofile.write(spaces +"call fio_open(18,in_file, 1) \n")
     ofile.write(spaces+"if(mode == 1) then\n")

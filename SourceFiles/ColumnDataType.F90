@@ -6,10 +6,10 @@ module ColumnDataType
   ! --------------------------------------------------------
   !
   use shr_kind_mod    , only : r8 => shr_kind_r8
+  #define nan spval
   use shr_const_mod   , only : SHR_CONST_TKFRZ
   use shr_const_mod   , only : SHR_CONST_PDB
-  use abortutils      , only : endrun
-  use shr_log_mod     , only : errMsg => shr_log_errMsg 
+  !#py use abortutils      , only : endrun
   !use MathfuncMod     , only : dot_sum
   use elm_varpar      , only : nlevsoi, nlevsno, nlevgrnd, nlevlak, nlevurb
   use elm_varpar      , only : ndecomp_cascade_transitions, ndecomp_pools, nlevcan
@@ -27,18 +27,18 @@ module ColumnDataType
   use elm_varctl      , only : get_carbontag, override_bgc_restart_mismatch_dump
   use elm_varctl      , only : pf_hmode, nu_com
   use ch4varcon       , only : allowlakeprod
-  use pftvarcon       , only : VMAX_MINSURF_P_vr, KM_MINSURF_P_vr, pinit_beta1, pinit_beta2
+  use pftvarcon       , only : VMAX_MINSURF_P_vr, KM_MINSURF_P_vr
   use soilorder_varcon, only : smax, ks_sorption
-  use clm_time_manager, only : is_restart, get_nstep
-  use clm_time_manager, only : is_first_step, get_step_size
+  !#py use clm_time_manager, only : is_restart, get_nstep
+  !#py use clm_time_manager, only : is_first_step, get_step_size
   use landunit_varcon , only : istice, istwet, istsoil, istdlak, istcrop, istice_mec
   use column_varcon   , only : icol_road_perv, icol_road_imperv, icol_roof, icol_sunwall, icol_shadewall
-  use histFileMod     , only : hist_addfld1d, hist_addfld2d, no_snow_normal
-  use histFileMod     , only : hist_addfld_decomp
-  use ncdio_pio       , only : file_desc_t, ncd_io, ncd_double, ncd_int, ncd_inqvdlen
+  !#py use histFileMod     , only : hist_addfld1d, hist_addfld2d, no_snow_normal
+  !#py use histFileMod     , only : hist_addfld_decomp
+  !#py use ncdio_pio       , only : file_desc_t, ncd_io, ncd_double, ncd_int, ncd_inqvdlen
   use decompMod       , only : bounds_type
-  use spmdMod         , only : masterproc
-  use restUtilMod
+  !#py use spmdMod         , only : masterproc
+  !#py use restUtilMod
   use CNStateType     , only: cnstate_type
   use tracer_varcon   , only : is_active_betr_bgc
   use CNDecompCascadeConType , only : decomp_cascade_con
@@ -98,7 +98,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init    => col_es_init
-    procedure, public :: Restart => col_es_restart
+    !#py procedure, public :: Restart => col_es_restart
     procedure, public :: Clean   => col_es_clean
   end type column_energy_state
 
@@ -114,7 +114,6 @@ module ColumnDataType
     real(r8), pointer :: h2osfc             (:)   => null() ! surface water (kg/m2)
     real(r8), pointer :: h2ocan             (:)   => null() ! canopy water integrated to column (kg/m2)
     real(r8), pointer :: total_plant_stored_h2o(:)=> null() ! total water in plants (used??)
-    real(r8), pointer :: wslake_col         (:)   => null() ! col lake water storage (mm H2O)
     ! Derived water and ice state variables for soil/snow column, depth varying
     real(r8), pointer :: h2osoi_liqvol      (:,:) => null() ! volumetric liquid water content (-nlevsno+1:nlevgrnd) (m3/m3)
     real(r8), pointer :: h2osoi_icevol      (:,:) => null() ! volumetric ice content (-nlevsno+1:nlevgrnd) (m3/m3)
@@ -169,7 +168,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init    => col_ws_init
-    procedure, public :: Restart => col_ws_restart
+    !#py procedure, public :: Restart => col_ws_restart
     procedure, public :: Clean   => col_ws_clean
   end type column_water_state
 
@@ -223,7 +222,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init    => col_cs_init
-    procedure, public :: Restart => col_cs_restart
+    !#py procedure, public :: Restart => col_cs_restart
     !procedure, public :: Summary => col_cs_summary
     procedure, public :: Clean   => col_cs_clean
     procedure, public :: ZeroForFates => col_cs_zero_forfates_veg
@@ -291,7 +290,7 @@ module ColumnDataType
     real(r8), pointer :: errnb                    (:)     => null() ! colnitrogen balance error for the timestep (gN/m**2)
   contains
     procedure, public :: Init       => col_ns_init
-    procedure, public :: Restart    => col_ns_restart
+    !#py procedure, public :: Restart    => col_ns_restart
     !procedure, public :: SetValues  => col_ns_setvalues
     !procedure, public :: Summary    => col_ns_summary
     procedure, public :: Clean      => col_ns_clean
@@ -364,7 +363,7 @@ module ColumnDataType
     real(r8), pointer :: cropseedp_deficit        (:)      => null() ! (gP/m2) negative pool tracking seed P for DWT
   contains
     procedure, public :: Init      => col_ps_init
-    procedure, public :: Restart   => col_ps_restart
+    !#py procedure, public :: Restart   => col_ps_restart
     !procedure, public :: SetValues => col_ps_setvalues
     !procedure, public :: Summary   => col_ps_summary
     procedure, public :: Clean     => col_ps_clean
@@ -410,7 +409,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init    => col_ef_init
-    procedure, public :: Restart => col_ef_restart
+    !#py procedure, public :: Restart => col_ef_restart
     procedure, public :: Clean   => col_ef_clean
   end type column_energy_flux
 
@@ -500,7 +499,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init    => col_wf_init
-    procedure, public :: Restart => col_wf_restart
+    !#py procedure, public :: Restart => col_wf_restart
     procedure, public :: Reset   => col_wf_reset
     procedure, public :: Clean   => col_wf_clean
   end type column_water_flux
@@ -627,7 +626,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init       => col_cf_init
-    procedure, public :: Restart    => col_cf_restart
+    !#py procedure, public :: Restart    => col_cf_restart
     !procedure, public :: Summary    => col_cf_summary
     !procedure, public :: SummaryCH4 => col_cf_summary_for_ch4
     !procedure, public :: SetValues  => col_cf_setvalues
@@ -823,7 +822,7 @@ module ColumnDataType
 
   contains
     procedure, public :: Init       => col_nf_init
-     procedure, public :: Restart    => col_nf_restart
+     !#py procedure, public :: Restart    => col_nf_restart
     !procedure, public :: SetValues  => col_nf_setvalues
     procedure, public :: ZeroForFates => col_nf_zero_forfates_veg
     procedure, public :: ZeroDWT    => col_nf_zerodwt
@@ -959,7 +958,7 @@ module ColumnDataType
     real(r8), pointer :: plant_to_cwd_pflux                    (:)   => null()  ! for the purpose of mass balance check
   contains
     procedure, public :: Init       => col_pf_init
-    procedure, public :: Restart    => col_pf_restart
+    !#py procedure, public :: Restart    => col_pf_restart
     !procedure, public :: SetValues  => col_pf_setvalues
     procedure, public :: ZeroForFates => col_pf_zero_forfates_veg
     procedure, public :: ZeroDWT    => col_pf_zerodwt
@@ -1013,7 +1012,7 @@ contains
   subroutine col_es_init(this, begc, endc)
     !
     ! !USES:
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     use landunit_varcon, only : istice, istwet, istsoil, istdlak, istice_mec
     use elm_varctl     , only : iulog, use_cn, use_vancouver, use_mexicocity
     use column_varcon  , only : icol_road_perv, icol_road_imperv, icol_roof, icol_sunwall, icol_shadewall
@@ -1059,164 +1058,82 @@ contains
     !-----------------------------------------------------------------------
     this%t_soisno(begc:endc,-nlevsno+1:0) = spval
     data2dptr => this%t_soisno(:,-nlevsno+1:0)
-     call hist_addfld2d (fname='SNO_T', units='K', type2d='levsno',  &
-          avgflag='A', long_name='Snow temperatures', &
-           ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
+     !#py call hist_addfld2d (fname='SNO_T', units='K', type2d='levsno',  &
+          !#py avgflag='A', long_name='Snow temperatures', &
+           !#py !#py ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
 
     this%t_soisno(begc:endc,:) = spval
     data2dptr => this%t_soisno(:,1:nlevgrnd)
-     call hist_addfld2d (fname='TSOI',  units='K', type2d='levgrnd', &
-          avgflag='A', long_name='soil temperature (vegetated landunits only)', &
-           standard_name='soil_temperature',ptr_col=data2dptr, l2g_scale_type='veg')
+     !#py call hist_addfld2d (fname='TSOI',  units='K', type2d='levgrnd', &
+          !#py avgflag='A', long_name='soil temperature (vegetated landunits only)', &
+           !#py !#py standard_name='soil_temperature',ptr_col=data2dptr, l2g_scale_type='veg')
 
     this%t_soisno(begc:endc,:) = spval
      data2dptr => this%t_soisno(:,1:nlevgrnd)
-     call hist_addfld2d (fname='TSOI_ICE',  units='K', type2d='levgrnd', &
-          avgflag='A', long_name='soil temperature (ice landunits only)', &
-           ptr_col=data2dptr, l2g_scale_type='ice')
+     !#py call hist_addfld2d (fname='TSOI_ICE',  units='K', type2d='levgrnd', &
+          !#py avgflag='A', long_name='soil temperature (ice landunits only)', &
+           !#py !#py ptr_col=data2dptr, l2g_scale_type='ice')
 
     this%t_h2osfc(begc:endc) = spval
-     call hist_addfld1d (fname='TH2OSFC',  units='K',  &
-          avgflag='A', long_name='surface water temperature', &
-           ptr_col=this%t_h2osfc)
+     !#py call hist_addfld1d (fname='TH2OSFC',  units='K',  &
+          !#py avgflag='A', long_name='surface water temperature', &
+           !#py !#py ptr_col=this%t_h2osfc)
 
     this%t_soi10cm(begc:endc) = spval
-     call hist_addfld1d (fname='TSOI_10CM',  units='K', &
-          avgflag='A', long_name='soil temperature in top 10cm of soil', &
-           ptr_col=this%t_soi10cm, set_urb=spval)
+     !#py call hist_addfld1d (fname='TSOI_10CM',  units='K', &
+          !#py avgflag='A', long_name='soil temperature in top 10cm of soil', &
+           !#py !#py ptr_col=this%t_soi10cm, set_urb=spval)
 
     this%t_grnd(begc:endc) = spval
-     call hist_addfld1d (fname='TG',  units='K',  &
-          avgflag='A', long_name='ground temperature', &
-           ptr_col=this%t_grnd, c2l_scale_type='urbans')
+     !#py call hist_addfld1d (fname='TG',  units='K',  &
+          !#py avgflag='A', long_name='ground temperature', &
+           !#py !#py ptr_col=this%t_grnd, c2l_scale_type='urbans')
 
     this%t_lake(begc:endc,:) = spval
-     call hist_addfld2d (fname='TLAKE',  units='K', type2d='levlak', &
-          avgflag='A', long_name='lake temperature', &
-           ptr_col=this%t_lake)
+     !#py call hist_addfld2d (fname='TLAKE',  units='K', type2d='levlak', &
+          !#py avgflag='A', long_name='lake temperature', &
+           !#py !#py ptr_col=this%t_lake)
 
     this%t_grnd_r(begc:endc) = spval
-     call hist_addfld1d (fname='TG_R', units='K',  &
-          avgflag='A', long_name='Rural ground temperature', &
-           ptr_col=this%t_grnd_r, set_spec=spval)
+     !#py call hist_addfld1d (fname='TG_R', units='K',  &
+          !#py avgflag='A', long_name='Rural ground temperature', &
+           !#py !#py ptr_col=this%t_grnd_r, set_spec=spval)
 
     this%t_grnd_u(begc:endc) = spval
-     call hist_addfld1d (fname='TG_U', units='K',  &
-          avgflag='A', long_name='Urban ground temperature', &
-           ptr_col=this%t_grnd_u, set_nourb=spval, c2l_scale_type='urbans')
+     !#py call hist_addfld1d (fname='TG_U', units='K',  &
+          !#py avgflag='A', long_name='Urban ground temperature', &
+           !#py !#py ptr_col=this%t_grnd_u, set_nourb=spval, c2l_scale_type='urbans')
 
     this%snot_top(begc:endc) = spval
-     call hist_addfld1d (fname='SNOTTOPL', units='K', &
-          avgflag='A', long_name='snow temperature (top layer)', &
-           ptr_col=this%snot_top, set_urb=spval, default='inactive')
+     !#py call hist_addfld1d (fname='SNOTTOPL', units='K', &
+          !#py avgflag='A', long_name='snow temperature (top layer)', &
+           !#py !#py ptr_col=this%snot_top, set_urb=spval, default='inactive')
 
     this%dTdz_top(begc:endc) = spval
-     call hist_addfld1d (fname='SNOdTdzL', units='K/m', &
-          avgflag='A', long_name='top snow layer temperature gradient (land)', &
-           ptr_col=this%dTdz_top, set_urb=spval, default='inactive')
+     !#py call hist_addfld1d (fname='SNOdTdzL', units='K/m', &
+          !#py avgflag='A', long_name='top snow layer temperature gradient (land)', &
+           !#py !#py ptr_col=this%dTdz_top, set_urb=spval, default='inactive')
 
     this%hc_soi(begc:endc) = spval
-     call hist_addfld1d (fname='HCSOI',  units='MJ/m2',  &
-          avgflag='A', long_name='soil heat content', &
-           ptr_col=this%hc_soi, set_lake=spval, set_urb=spval, l2g_scale_type='veg')
+     !#py call hist_addfld1d (fname='HCSOI',  units='MJ/m2',  &
+          !#py avgflag='A', long_name='soil heat content', &
+           !#py !#py ptr_col=this%hc_soi, set_lake=spval, set_urb=spval, l2g_scale_type='veg')
 
     this%hc_soisno(begc:endc) = spval
-     call hist_addfld1d (fname='HC',  units='MJ/m2',  &
-          avgflag='A', long_name='heat content of soil/snow/lake', &
-           ptr_col=this%hc_soisno, set_urb=spval)
+     !#py call hist_addfld1d (fname='HC',  units='MJ/m2',  &
+          !#py avgflag='A', long_name='heat content of soil/snow/lake', &
+           !#py !#py ptr_col=this%hc_soisno, set_urb=spval)
 
     if (use_cn) then
        this%emg(begc:endc) = spval
-        call hist_addfld1d (fname='EMG', units='proportion', &
-             avgflag='A', long_name='ground emissivity', &
-              ptr_col=this%emg, default='inactive')
+        !#py call hist_addfld1d (fname='EMG', units='proportion', &
+             !#py avgflag='A', long_name='ground emissivity', &
+              !#py !#py ptr_col=this%emg, default='inactive')
     end if
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_es
     !-----------------------------------------------------------------------
-
-    ! Initialize soil+snow temperatures
-    do c = begc,endc
-       l = col_pp%landunit(c)
-
-       ! Snow level temperatures - all land points
-       if (snl(c) < 0) then
-          do j = snl(c)+1, 0
-             this%t_soisno(c,j) = 250._r8
-          end do
-       end if
-
-       ! Below snow temperatures - nonlake points (lake points are set below)
-       if (.not. lun_pp%lakpoi(l)) then
-
-          if (lun_pp%itype(l)==istice .or. lun_pp%itype(l)==istice_mec) then
-             this%t_soisno(c,1:nlevgrnd) = 250._r8
-
-          else if (lun_pp%itype(l) == istwet) then
-             this%t_soisno(c,1:nlevgrnd) = 277._r8
-
-          else if (lun_pp%urbpoi(l)) then
-             if (use_vancouver) then
-                if (col_pp%itype(c) == icol_road_perv .or. col_pp%itype(c) == icol_road_imperv) then
-                   ! Set road top layer to initial air temperature and interpolate other
-                   ! layers down to 20C in bottom layer
-                   do j = 1, nlevgrnd
-                      this%t_soisno(c,j) = 297.56 - (j-1) * ((297.56-293.16)/(nlevgrnd-1))
-                   end do
-                   ! Set wall and roof layers to initial air temperature
-                else if (col_pp%itype(c) == icol_sunwall .or. col_pp%itype(c) == icol_shadewall &
-                     .or. col_pp%itype(c) == icol_roof) then
-                   this%t_soisno(c,1:nlevurb) = 297.56
-                else
-                   this%t_soisno(c,1:nlevgrnd) = 283._r8
-                end if
-             else if (use_mexicocity) then
-                if (col_pp%itype(c) == icol_road_perv .or. col_pp%itype(c) == icol_road_imperv) then
-                   ! Set road top layer to initial air temperature and interpolate other
-                   ! layers down to 22C in bottom layer
-                   do j = 1, nlevgrnd
-                      this%t_soisno(c,j) = 289.46 - (j-1) * ((289.46-295.16)/(nlevgrnd-1))
-                   end do
-                else if (col_pp%itype(c) == icol_sunwall .or. col_pp%itype(c) == icol_shadewall &
-                     .or. col_pp%itype(c) == icol_roof) then
-                   ! Set wall and roof layers to initial air temperature
-                   this%t_soisno(c,1:nlevurb) = 289.46
-                else
-                   this%t_soisno(c,1:nlevgrnd) = 283._r8
-                end if
-             else
-                if (col_pp%itype(c) == icol_road_perv .or. col_pp%itype(c) == icol_road_imperv) then
-                   this%t_soisno(c,1:nlevgrnd) = 274._r8
-                else if (col_pp%itype(c) == icol_sunwall .or. col_pp%itype(c) == icol_shadewall &
-                     .or. col_pp%itype(c) == icol_roof) then
-                   ! Set sunwall, shadewall, roof to fairly high temperature to avoid initialization
-                   ! shock from large heating/air conditioning flux
-                   this%t_soisno(c,1:nlevurb) = 292._r8
-                end if
-             end if
-          else
-             this%t_soisno(c,1:nlevgrnd) = 274._r8
-          endif
-          this%t_grnd(c) = this%t_soisno(c,snl(c)+1)
-       endif
-
-       if (lun_pp%lakpoi(l)) then ! special handling for lake points
-          this%t_soisno(c,1:nlevgrnd) = 277._r8
-          this%t_lake(c,1:nlevlak) = 277._r8
-          this%t_grnd(c) = 277._r8
-       end if
-
-       this%t_soi17cm(c) = this%t_grnd(c)
-
-       ! set emissivity for urban columns
-       if (col_pp%itype(c) == icol_roof       ) this%emg(c) = urbanparams_vars%em_roof(l)
-       if (col_pp%itype(c) == icol_sunwall    ) this%emg(c) = urbanparams_vars%em_wall(l)
-       if (col_pp%itype(c) == icol_shadewall  ) this%emg(c) = urbanparams_vars%em_wall(l)
-       if (col_pp%itype(c) == icol_road_imperv) this%emg(c) = urbanparams_vars%em_improad(l)
-       if (col_pp%itype(c) == icol_road_perv  ) this%emg(c) = urbanparams_vars%em_perroad(l)
-
-    end do ! columns loop
 
     ! Initialize surface water temperatures
     this%t_h2osfc = 274._r8
@@ -1226,58 +1143,58 @@ contains
   end subroutine col_es_init
 
   !------------------------------------------------------------------------
-  subroutine col_es_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write column energy state information to/from restart file.
-    !
-    ! !USES:
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    !
-    ! !ARGUMENTS:
-    class(column_energy_state) :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar   ! determine if variable is on initial file
-    !-----------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_SOISNO', xtype=ncd_double,   &
-         dim1name='column', dim2name='levtot', switchdim=.true., &
-         long_name='soil-snow temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_soisno)
-
-    call restartvar(ncid=ncid, flag=flag, varname='TH2OSFC', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='surface water temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_h2osfc)
-    if (flag=='read' .and. .not. readvar) then
-       this%t_h2osfc(bounds%begc:bounds%endc) = 274.0_r8
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_GRND', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='ground temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_grnd)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_LAKE', xtype=ncd_double,  &
-         dim1name='column', dim2name='levlak', switchdim=.true., &
-         long_name='lake temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_lake)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_GRND_R', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='rural ground temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_grnd_r)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_GRND_U', xtype=ncd_double, &
-         dim1name='column',                    &
-         long_name='urban ground temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_grnd_u)
-
-  end subroutine col_es_restart
+!#py   subroutine col_es_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write column energy state information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(column_energy_state) :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar   ! determine if variable is on initial file
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_SOISNO', xtype=ncd_double,   &
+!#py          dim1name='column', dim2name='levtot', switchdim=.true., &
+!#py          long_name='soil-snow temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_soisno)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='TH2OSFC', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='surface water temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_h2osfc)
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        this%t_h2osfc(bounds%begc:bounds%endc) = 274.0_r8
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_GRND', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='ground temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_grnd)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_LAKE', xtype=ncd_double,  &
+!#py          dim1name='column', dim2name='levlak', switchdim=.true., &
+!#py          long_name='lake temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_lake)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_GRND_R', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='rural ground temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_grnd_r)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_GRND_U', xtype=ncd_double, &
+!#py          dim1name='column',                    &
+!#py          long_name='urban ground temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_grnd_u)
+!#py
+!#py !#py !#py   end subroutine col_es_restart
 
   !------------------------------------------------------------------------
   subroutine col_es_clean(this)
@@ -1291,16 +1208,15 @@ contains
   !------------------------------------------------------------------------
   ! Subroutines to initialize and clean column water state data structure
   !------------------------------------------------------------------------
-  subroutine col_ws_init(this, begc, endc, h2osno_input, snow_depth_input, watsat_input)
+  subroutine col_ws_init(this, begc, endc, h2osno_input, snow_depth_input)!, watsat_input)
     !
-    use elm_varctl  , only : use_lake_wat_storage
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     class(column_water_state) :: this
     integer , intent(in)      :: begc,endc
     real(r8), intent(in)      :: h2osno_input(begc:)
     real(r8), intent(in)      :: snow_depth_input(begc:)
-    real(r8), intent(in)      :: watsat_input(begc:, 1:)          ! volumetric soil water at saturation (porosity)
+    ! real(r8), intent(in)      :: watsat_input(begc:, 1:)          ! volumetric soil water at saturation (porosity)
     !
     ! !LOCAL VARIABLES:
     real(r8), pointer  :: data2dptr(:,:), data1dptr(:) ! temp. pointers for slicing larger arrays
@@ -1315,10 +1231,9 @@ contains
     allocate(this%h2osoi_liq         (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_liq         (:,:) = nan
     allocate(this%h2osoi_ice         (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_ice         (:,:) = nan
     allocate(this%h2osoi_vol         (begc:endc, 1:nlevgrnd))         ; this%h2osoi_vol         (:,:) = nan
-    allocate(this%h2osfc             (begc:endc))                     ; this%h2osfc             (:)   = nan   
-    allocate(this%h2ocan             (begc:endc))                     ; this%h2ocan             (:)   = nan 
-    allocate(this%wslake_col         (begc:endc))                     ; this%wslake_col         (:)   = nan
-    allocate(this%total_plant_stored_h2o(begc:endc))                  ; this%total_plant_stored_h2o(:)= nan  
+    allocate(this%h2osfc             (begc:endc))                     ; this%h2osfc             (:)   = nan
+    allocate(this%h2ocan             (begc:endc))                     ; this%h2ocan             (:)   = nan
+    allocate(this%total_plant_stored_h2o(begc:endc))                  ; this%total_plant_stored_h2o(:)= nan
     allocate(this%h2osoi_liqvol      (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_liqvol      (:,:) = nan
     allocate(this%h2osoi_icevol      (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_icevol      (:,:) = nan
     allocate(this%h2osoi_liq_old     (begc:endc,-nlevsno+1:nlevgrnd)) ; this%h2osoi_liq_old     (:,:) = nan
@@ -1371,169 +1286,159 @@ contains
     ! initialize history fields for select members of col_ws
     !-----------------------------------------------------------------------
     data2dptr => this%h2osoi_liq(:,-nlevsno+1:0)
-     call hist_addfld2d (fname='SNO_LIQH2O', units='kg/m2', type2d='levsno',  &
-          avgflag='A', long_name='Snow liquid water content', &
-           ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
+     !#py call hist_addfld2d (fname='SNO_LIQH2O', units='kg/m2', type2d='levsno',  &
+          !#py avgflag='A', long_name='Snow liquid water content', &
+           !#py !#py ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
 
     data2dptr => this%h2osoi_ice(:,-nlevsno+1:0)
-     call hist_addfld2d (fname='SNO_ICE', units='kg/m2', type2d='levsno',  &
-          avgflag='A', long_name='Snow ice content', &
-           ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
+     !#py call hist_addfld2d (fname='SNO_ICE', units='kg/m2', type2d='levsno',  &
+          !#py avgflag='A', long_name='Snow ice content', &
+           !#py !#py ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
 
     this%h2osoi_liq(begc:endc,:) = spval
 
-    call hist_addfld2d (fname='SOILLIQ',  units='kg/m2', type2d='levgrnd', &
-         avgflag='A', long_name='soil liquid water (vegetated landunits only)', &
-         ptr_col=this%h2osoi_liq, l2g_scale_type='veg')
+    !#py call hist_addfld2d (fname='SOILLIQ',  units='kg/m2', type2d='levgrnd', &
+         !#py avgflag='A', long_name='soil liquid water (vegetated landunits only)', &
+         !#py !#py ptr_col=this%h2osoi_liq, l2g_scale_type='veg')
 
     this%h2osoi_liq(begc:endc,:) = spval
-    call hist_addfld2d (fname='SOILLIQ_ICE',  units='kg/m2', type2d='levgrnd', &
-         avgflag='A', long_name='soil liquid water (ice landunits only)', &
-         ptr_col=this%h2osoi_liq, l2g_scale_type='ice')
+    !#py call hist_addfld2d (fname='SOILLIQ_ICE',  units='kg/m2', type2d='levgrnd', &
+         !#py avgflag='A', long_name='soil liquid water (ice landunits only)', &
+         !#py !#py ptr_col=this%h2osoi_liq, l2g_scale_type='ice')
 
     this%h2osoi_ice(begc:endc,:) = spval
-    call hist_addfld2d (fname='SOILICE',  units='kg/m2', type2d='levgrnd', &
-         avgflag='A', long_name='soil ice (vegetated landunits only)', &
-         ptr_col=this%h2osoi_ice, l2g_scale_type='veg')
+    !#py call hist_addfld2d (fname='SOILICE',  units='kg/m2', type2d='levgrnd', &
+         !#py avgflag='A', long_name='soil ice (vegetated landunits only)', &
+         !#py !#py ptr_col=this%h2osoi_ice, l2g_scale_type='veg')
 
     this%h2osoi_ice(begc:endc,:) = spval
-        call hist_addfld2d (fname='SOILICE_ICE',  units='kg/m2', type2d='levgrnd', &
-        avgflag='A', long_name='soil ice (ice landunits only)', &
-        ptr_col=this%h2osoi_ice, l2g_scale_type='ice')
+        !#py call hist_addfld2d (fname='SOILICE_ICE',  units='kg/m2', type2d='levgrnd', &
+        !#py avgflag='A', long_name='soil ice (ice landunits only)', &
+        !#py !#py ptr_col=this%h2osoi_ice, l2g_scale_type='ice')
 
     this%h2osfc(begc:endc) = spval
-     call hist_addfld1d (fname='H2OSFC',  units='mm',  &
-          avgflag='A', long_name='surface water depth', &
-           ptr_col=this%h2osfc)
+     !#py call hist_addfld1d (fname='H2OSFC',  units='mm',  &
+          !#py avgflag='A', long_name='surface water depth', &
+           !#py !#py ptr_col=this%h2osfc)
 
     this%h2osoi_vol(begc:endc,:) = spval
-     call hist_addfld2d (fname='H2OSOI',  units='mm3/mm3', type2d='levgrnd', &
-          avgflag='A', long_name='volumetric soil water (vegetated landunits only)', &
-           ptr_col=this%h2osoi_vol, l2g_scale_type='veg')
+     !#py call hist_addfld2d (fname='H2OSOI',  units='mm3/mm3', type2d='levgrnd', &
+          !#py avgflag='A', long_name='volumetric soil water (vegetated landunits only)', &
+           !#py !#py ptr_col=this%h2osoi_vol, l2g_scale_type='veg')
 
     this%bw(begc:endc,-nlevsno+1:0) = spval
     data2dptr => this%bw(:,-nlevsno+1:0)
-     call hist_addfld2d (fname='SNO_BW', units='kg/m3', type2d='levsno', &
-          avgflag='A', long_name='Partial density of water in the snow pack (ice + liquid)', &
-           ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
+     !#py call hist_addfld2d (fname='SNO_BW', units='kg/m3', type2d='levsno', &
+          !#py avgflag='A', long_name='Partial density of water in the snow pack (ice + liquid)', &
+           !#py !#py ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
 
     this%snw_rds(begc:endc,-nlevsno+1:0) = spval
     data2dptr => this%snw_rds(:,-nlevsno+1:0)
-     call hist_addfld2d (fname='SNO_GS', units='Microns', type2d='levsno',  &
-          avgflag='A', long_name='Mean snow grain size', &
-           ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
+     !#py call hist_addfld2d (fname='SNO_GS', units='Microns', type2d='levsno',  &
+          !#py avgflag='A', long_name='Mean snow grain size', &
+           !#py !#py ptr_col=data2dptr, no_snow_behavior=no_snow_normal, default='inactive')
 
     this%snw_rds_top(begc:endc) = spval
-     call hist_addfld1d (fname='SNORDSL', units='m^-6', &
-          avgflag='A', long_name='top snow layer effective grain radius', &
-           ptr_col=this%snw_rds_top, set_urb=spval, default='inactive')
+     !#py call hist_addfld1d (fname='SNORDSL', units='m^-6', &
+          !#py avgflag='A', long_name='top snow layer effective grain radius', &
+           !#py !#py ptr_col=this%snw_rds_top, set_urb=spval, default='inactive')
 
     this%sno_liq_top(begc:endc) = spval
-     call hist_addfld1d (fname='SNOLIQFL', units='fraction', &
-          avgflag='A', long_name='top snow layer liquid water fraction (land)', &
-           ptr_col=this%sno_liq_top, set_urb=spval, default='inactive')
+     !#py call hist_addfld1d (fname='SNOLIQFL', units='fraction', &
+          !#py avgflag='A', long_name='top snow layer liquid water fraction (land)', &
+           !#py !#py ptr_col=this%sno_liq_top, set_urb=spval, default='inactive')
 
     this%h2osoi_liqice_10cm(begc:endc) = spval
-    call hist_addfld1d (fname='SOILWATER_10CM',  units='kg/m2', &
-         avgflag='A', long_name='soil liquid water + ice in top 10cm of soil (veg landunits only)', &
-         standard_name='mass_content_of_water_in_soil_layer',ptr_col=this%h2osoi_liqice_10cm,  &
-         set_urb=spval, set_lake=spval, l2g_scale_type='veg')
+    !#py call hist_addfld1d (fname='SOILWATER_10CM',  units='kg/m2', &
+         !#py avgflag='A', long_name='soil liquid water + ice in top 10cm of soil (veg landunits only)', &
+         !#py standard_name='mass_content_of_water_in_soil_layer',ptr_col=this%h2osoi_liqice_10cm,  &
+         !#py !#py set_urb=spval, set_lake=spval, l2g_scale_type='veg')
 
-     call hist_addfld1d (fname='H2OSNO',  units='mm',  &
-          avgflag='A', long_name='snow depth (liquid water)', &
-           ptr_col=this%h2osno, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='H2OSNO',  units='mm',  &
+          !#py avgflag='A', long_name='snow depth (liquid water)', &
+           !#py !#py ptr_col=this%h2osno, c2l_scale_type='urbanf')
 
     this%h2osno_top(begc:endc) = spval
-     call hist_addfld1d (fname='H2OSNO_TOP', units='kg/m2', &
-          avgflag='A', long_name='mass of snow in top snow layer', &
-           ptr_col=this%h2osno_top, set_urb=spval)
+     !#py call hist_addfld1d (fname='H2OSNO_TOP', units='kg/m2', &
+          !#py avgflag='A', long_name='mass of snow in top snow layer', &
+           !#py !#py ptr_col=this%h2osno_top, set_urb=spval)
 
     this%snowice(begc:endc) = spval
-     call hist_addfld1d (fname='SNOWICE',  units='kg/m2', &
-          avgflag='A', long_name='snow ice', &
-           ptr_col=this%snowice)
+     !#py call hist_addfld1d (fname='SNOWICE',  units='kg/m2', &
+          !#py avgflag='A', long_name='snow ice', &
+           !#py !#py ptr_col=this%snowice)
 
     this%snowliq(begc:endc) = spval
-     call hist_addfld1d (fname='SNOWLIQ',  units='kg/m2',  &
-          avgflag='A', long_name='snow liquid water', &
-           ptr_col=this%snowliq)
+     !#py call hist_addfld1d (fname='SNOWLIQ',  units='kg/m2',  &
+          !#py avgflag='A', long_name='snow liquid water', &
+           !#py !#py ptr_col=this%snowliq)
 
     this%int_snow(begc:endc) = spval
-     call hist_addfld1d (fname='INT_SNOW',  units='mm',  &
-          avgflag='A', long_name='accumulated swe (vegetated landunits only)', &
-           ptr_col=this%int_snow, l2g_scale_type='veg')
+     !#py call hist_addfld1d (fname='INT_SNOW',  units='mm',  &
+          !#py avgflag='A', long_name='accumulated swe (vegetated landunits only)', &
+           !#py !#py ptr_col=this%int_snow, l2g_scale_type='veg')
 
     this%snow_depth(begc:endc) = spval
-     call hist_addfld1d (fname='SNOW_DEPTH',  units='m',  &
-          avgflag='A', long_name='snow height of snow covered area', &
-           ptr_col=this%snow_depth, c2l_scale_type='urbanf')!, default='inactive')
+     !#py call hist_addfld1d (fname='SNOW_DEPTH',  units='m',  &
+          !#py avgflag='A', long_name='snow height of snow covered area', &
+           !#py !#py ptr_col=this%snow_depth, c2l_scale_type='urbanf')!, default='inactive')
 
     this%snowdp(begc:endc) = spval
-     call hist_addfld1d (fname='SNOWDP',  units='m',  &
-          avgflag='A', long_name='gridcell mean snow height', &
-           ptr_col=this%snowdp, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='SNOWDP',  units='m',  &
+          !#py avgflag='A', long_name='gridcell mean snow height', &
+           !#py !#py ptr_col=this%snowdp, c2l_scale_type='urbanf')
 
     if (create_glacier_mec_landunit) then
        this%snow_persistence(begc:endc) = spval
-        call hist_addfld1d (fname='SNOW_PERSISTENCE',  units='seconds',  &
-             avgflag='I', long_name='Length of time of continuous snow cover (nat. veg. landunits only)', &
-              ptr_col=this%snow_persistence, l2g_scale_type='natveg')
+        !#py call hist_addfld1d (fname='SNOW_PERSISTENCE',  units='seconds',  &
+             !#py avgflag='I', long_name='Length of time of continuous snow cover (nat. veg. landunits only)', &
+              !#py !#py ptr_col=this%snow_persistence, l2g_scale_type='natveg')
     end if
 
     this%frac_sno(begc:endc) = spval
-    call hist_addfld1d (fname='FSNO',  units='1',  &
-         avgflag='A', long_name='fraction of ground covered by snow', &
-         ptr_col=this%frac_sno, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FSNO',  units='1',  &
+         !#py avgflag='A', long_name='fraction of ground covered by snow', &
+         !#py !#py ptr_col=this%frac_sno, c2l_scale_type='urbanf')
 
     this%frac_sno_eff(begc:endc) = spval
-    call hist_addfld1d (fname='FSNO_EFF',  units='1',  &
-         avgflag='A', long_name='effective fraction of ground covered by snow', &
-         ptr_col=this%frac_sno_eff, c2l_scale_type='urbanf')!, default='inactive')
+    !#py call hist_addfld1d (fname='FSNO_EFF',  units='1',  &
+         !#py avgflag='A', long_name='effective fraction of ground covered by snow', &
+         !#py !#py ptr_col=this%frac_sno_eff, c2l_scale_type='urbanf')!, default='inactive')
 
     if (use_cn)then
        this%frac_iceold(begc:endc,:) = spval
-        call hist_addfld2d (fname='FRAC_ICEOLD', units='proportion', type2d='levgrnd', &
-             avgflag='A', long_name='fraction of ice relative to the tot water', &
-              ptr_col=this%frac_iceold, default='inactive')
+        !#py call hist_addfld2d (fname='FRAC_ICEOLD', units='proportion', type2d='levgrnd', &
+             !#py avgflag='A', long_name='fraction of ice relative to the tot water', &
+              !#py !#py ptr_col=this%frac_iceold, default='inactive')
     end if
 
     this%frac_h2osfc(begc:endc) = spval
-    call hist_addfld1d (fname='FH2OSFC',  units='1',  &
-         avgflag='A', long_name='fraction of ground covered by surface water', &
-         ptr_col=this%frac_h2osfc)
+    !#py call hist_addfld1d (fname='FH2OSFC',  units='1',  &
+         !#py avgflag='A', long_name='fraction of ground covered by surface water', &
+         !#py !#py ptr_col=this%frac_h2osfc)
 
     if (use_cn) then
        this%wf(begc:endc) = spval
-        call hist_addfld1d (fname='WF', units='proportion', &
-             avgflag='A', long_name='soil water as frac. of whc for top 0.05 m', &
-              ptr_col=this%wf)
+        !#py call hist_addfld1d (fname='WF', units='proportion', &
+             !#py avgflag='A', long_name='soil water as frac. of whc for top 0.05 m', &
+              !#py !#py ptr_col=this%wf)
     end if
 
     this%errh2o(begc:endc) = spval
-     call hist_addfld1d (fname='ERRH2O', units='mm',  &
-          avgflag='A', long_name='total water conservation error', &
-           ptr_col=this%errh2o)
+     !#py call hist_addfld1d (fname='ERRH2O', units='mm',  &
+          !#py avgflag='A', long_name='total water conservation error', &
+           !#py !#py ptr_col=this%errh2o)
 
     this%errh2osno(begc:endc) = spval
-     call hist_addfld1d (fname='ERRH2OSNO',  units='mm',  &
-          avgflag='A', long_name='imbalance in snow depth (liquid water)', &
-           ptr_col=this%errh2osno, c2l_scale_type='urbanf')
-
-
-    this%wslake_col(begc:endc) = spval
-    if (use_lake_wat_storage) then
-       call hist_addfld1d(fname='WSLAKE', units='mm', &
-         avgflag='A', long_name='lake water storage', &
-         ptr_col=this%wslake_col)
-    end if
+     !#py call hist_addfld1d (fname='ERRH2OSNO',  units='mm',  &
+          !#py avgflag='A', long_name='imbalance in snow depth (liquid water)', &
+           !#py !#py ptr_col=this%errh2osno, c2l_scale_type='urbanf')
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_ws
     !-----------------------------------------------------------------------
 
     ! Arrays that are initialized from input arguments
-    this%wslake_col(begc:endc) = 0._r8
-
     do c = begc,endc
        l = col_pp%landunit(c)
        this%h2osno(c)                 = h2osno_input(c)
@@ -1599,7 +1504,7 @@ contains
                    this%h2osoi_vol(c,j) = 0.0_r8
                 else
                      if (use_fates_planthydro .or. use_hydrstress) then
-                      this%h2osoi_vol(c,j) = 0.70_r8*watsat_input(c,j) !0.15_r8 to avoid very dry conditions that cause errors in FATES HYDRO
+                      this%h2osoi_vol(c,j) = 0.70_r8!*watsat_input(c,j) !0.15_r8 to avoid very dry conditions that cause errors in FATES HYDRO
                    else
                       this%h2osoi_vol(c,j) = 0.15_r8
                    endif
@@ -1642,7 +1547,7 @@ contains
              end do
           endif
           do j = 1, nlevs
-             this%h2osoi_vol(c,j) = min(this%h2osoi_vol(c,j), watsat_input(c,j))
+             this%h2osoi_vol(c,j) = min(this%h2osoi_vol(c,j), 100.0_r8)!watsat_input(c,j))
 
              if (col_es%t_soisno(c,j) <= SHR_CONST_TKFRZ) then
                 this%h2osoi_ice(c,j) = col_pp%dz(c,j)*denice*this%h2osoi_vol(c,j)
@@ -1671,7 +1576,7 @@ contains
           end do
           do j = 1,nlevgrnd
              if (j <= nlevsoi) then ! soil
-                this%h2osoi_vol(c,j) = watsat_input(c,j)
+                this%h2osoi_vol(c,j) = 0.15_r8!watsat_input(c,j)
                 this%h2osoi_liq(c,j) = spval
                 this%h2osoi_ice(c,j) = spval
              else                  ! bedrock
@@ -1700,208 +1605,201 @@ contains
   end subroutine col_ws_init
 
   !------------------------------------------------------------------------
-  subroutine col_ws_restart(this, bounds, ncid, flag, watsat_input)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write column water state information to/from restart file.
-    !
-    ! !USES:
-    use elm_varctl, only : use_lake_wat_storage
-    !
-    ! !ARGUMENTS:
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    class(column_water_state) :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    real(r8)         , intent(in)    :: watsat_input (bounds%begc:, 1:)  ! volumetric soil water at saturation (porosity)
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar      ! determine if variable is on initial file
-    integer :: c,l,j,nlevs  ! indices
-    real(r8):: maxwatsat    ! maximum porosity
-    real(r8):: excess       ! excess volumetric soil water
-    real(r8):: totwat       ! total soil water (mm)
-    !-----------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='H2OSFC', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='surface water', units='kg/m2', &
-         interpinic_flag='interp', readvar=readvar, data=this%h2osfc)
-    if (flag=='read' .and. .not. readvar) then
-       this%h2osfc(bounds%begc:bounds%endc) = 0.0_r8
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='H2OSOI_LIQ', xtype=ncd_double,  &
-         dim1name='column', dim2name='levtot', switchdim=.true., &
-         long_name='liquid water', units='kg/m2', &
-         interpinic_flag='interp', readvar=readvar, data=this%h2osoi_liq)
-
-    call restartvar(ncid=ncid, flag=flag, varname='H2OSOI_ICE', xtype=ncd_double,   &
-         dim1name='column', dim2name='levtot', switchdim=.true., &
-         long_name='ice lens', units='kg/m2', &
-         interpinic_flag='interp', readvar=readvar, data=this%h2osoi_ice)
-
-    call restartvar(ncid=ncid, flag=flag, varname='SOILP', xtype=ncd_double,  &
-         dim1name='column', dim2name='levgrnd', switchdim=.true., &
-         long_name='soil pressure ', units='Pa', &
-         interpinic_flag='interp', readvar=readvar, data=this%soilp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='H2OSNO', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='snow water', units='kg/m2', &
-         interpinic_flag='interp', readvar=readvar, data=this%h2osno)
-
-    call restartvar(ncid=ncid, flag=flag, varname='snw_rds', xtype=ncd_double,  &
-         dim1name='column', dim2name='levsno', switchdim=.true., lowerb2=-nlevsno+1, upperb2=0, &
-         long_name='snow layer effective radius', units='um', &
-         interpinic_flag='interp', readvar=readvar, data=this%snw_rds)
-    if (flag == 'read' .and. .not. readvar) then
-       ! initial run, not restart: initialize snw_rds
-       if (masterproc) then
-          write(iulog,*) "SNICAR: This is an initial run (not a restart), and grain size/aerosol " // &
-               "mass data are not defined in initial condition file. Initialize snow " // &
-               "effective radius to fresh snow value, and snow/aerosol masses to zero."
-       endif
-
-       do c= bounds%begc, bounds%endc
-          if (col_pp%snl(c) < 0) then
-             this%snw_rds(c,col_pp%snl(c)+1:0) = snw_rds_min
-             this%snw_rds(c,-nlevsno+1:col_pp%snl(c)) = 0._r8
-             this%snw_rds_top(c) = snw_rds_min
-             this%sno_liq_top(c) = this%h2osoi_liq(c,col_pp%snl(c)+1) / &
-                                      (this%h2osoi_liq(c,col_pp%snl(c)+1)+this%h2osoi_ice(c,col_pp%snl(c)+1))
-          elseif (this%h2osno(c) > 0._r8) then
-             this%snw_rds(c,0) = snw_rds_min
-             this%snw_rds(c,-nlevsno+1:-1) = 0._r8
-             this%snw_rds_top(c) = spval
-             this%sno_liq_top(c) = spval
-          else
-             this%snw_rds(c,:) = 0._r8
-             this%snw_rds_top(c) = spval
-             this%sno_liq_top(c) = spval
-          endif
-       enddo
-    endif
-
-    call restartvar(ncid=ncid, flag=flag, varname='INT_SNOW', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='accuumulated snow', units='mm', &
-         interpinic_flag='interp', readvar=readvar, data=this%int_snow)
-    if (flag=='read' .and. .not. readvar) then
-       this%int_snow(:) = 0.0_r8
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='SNOW_DEPTH', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='snow depth', units='m', &
-         interpinic_flag='interp', readvar=readvar, data=this%snow_depth)
-
-    call restartvar(ncid=ncid, flag=flag, varname='SNOW_PERS', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='continuous snow cover time', units='sec', &
-         interpinic_flag='interp', readvar=readvar, data=this%snow_persistence)
-    if (flag=='read' .and. .not. readvar) then
-         this%snow_persistence(:) = 0.0_r8
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='frac_sno', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='fraction of ground covered by snow (0 to 1)',units='1',&
-         interpinic_flag='interp', readvar=readvar, data=this%frac_sno)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frac_sno_eff', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='fraction of ground covered by snow (0 to 1)',units='1', &
-         interpinic_flag='interp', readvar=readvar, data=this%frac_sno_eff)
-    if (flag == 'read' .and. .not. readvar) then
-       this%frac_sno_eff(bounds%begc:bounds%endc) = 0.0_r8
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='FH2OSFC', xtype=ncd_double,  &
-         dim1name='column',&
-         long_name='fraction of ground covered by h2osfc (0 to 1)', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frac_h2osfc)
-    if (flag == 'read' .and. .not. readvar) then
-       this%frac_h2osfc(bounds%begc:bounds%endc) = 0.0_r8
-    end if
-
-    if (use_cn) then
-       call restartvar(ncid=ncid, flag=flag, varname='wf', xtype=ncd_double,  &
-            dim1name='column', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%wf)
-    end if
-
-    if (use_lake_wat_storage) then
-       call restartvar(ncid=ncid, flag=flag, varname='WSLAKE', xtype=ncd_double, &
-         dim1name='column', long_name='lake water storage', units='kg/m2', &
-         interpinic_flag='interp', readvar=readvar, data=this%wslake_col)
-    end if
-
-    ! Determine volumetric soil water (for read only)
-    if (flag == 'read' ) then
-       do c = bounds%begc, bounds%endc
-          l = col_pp%landunit(c)
-          if ( col_pp%itype(c) == icol_sunwall   .or. &
-               col_pp%itype(c) == icol_shadewall .or. &
-               col_pp%itype(c) == icol_roof )then
-             nlevs = nlevurb
-          else
-             nlevs = nlevgrnd
-          end if
-          if ( lun_pp%itype(l) /= istdlak ) then ! This calculation is now done for lakes in initLake.
-             do j = 1,nlevs
-                this%h2osoi_vol(c,j) = this%h2osoi_liq(c,j)/(col_pp%dz(c,j)*denh2o) &
-                                         + this%h2osoi_ice(c,j)/(col_pp%dz(c,j)*denice)
-             end do
-          end if
-       end do
-    end if
-
-    ! If initial run -- ensure that water is properly bounded (read only)
-    if (flag == 'read' ) then
-       if ( is_first_step() .and. bound_h2osoi) then
-          do c = bounds%begc, bounds%endc
-             l = col_pp%landunit(c)
-             if ( col_pp%itype(c) == icol_sunwall .or. col_pp%itype(c) == icol_shadewall .or. &
-                  col_pp%itype(c) == icol_roof )then
-                nlevs = nlevurb
-             else
-                nlevs = nlevgrnd
-             end if
-             do j = 1,nlevs
-                l = col_pp%landunit(c)
-                if (lun_pp%itype(l) == istsoil .or. lun_pp%itype(l) == istcrop) then
-                   this%h2osoi_liq(c,j) = max(0._r8,this%h2osoi_liq(c,j))
-                   this%h2osoi_ice(c,j) = max(0._r8,this%h2osoi_ice(c,j))
-                   this%h2osoi_vol(c,j) = this%h2osoi_liq(c,j)/(col_pp%dz(c,j)*denh2o) &
-                                       + this%h2osoi_ice(c,j)/(col_pp%dz(c,j)*denice)
-                   if (j == 1) then
-                      maxwatsat = (watsat_input(c,j)*col_pp%dz(c,j)*1000.0_r8 + pondmx) / (col_pp%dz(c,j)*1000.0_r8)
-                   else
-                      maxwatsat =  watsat_input(c,j)
-                   end if
-                   if (this%h2osoi_vol(c,j) > maxwatsat) then
-                      excess = (this%h2osoi_vol(c,j) - maxwatsat)*col_pp%dz(c,j)*1000.0_r8
-                      totwat = this%h2osoi_liq(c,j) + this%h2osoi_ice(c,j)
-                      this%h2osoi_liq(c,j) = this%h2osoi_liq(c,j) - &
-                                           (this%h2osoi_liq(c,j)/totwat) * excess
-                      this%h2osoi_ice(c,j) = this%h2osoi_ice(c,j) - &
-                                           (this%h2osoi_ice(c,j)/totwat) * excess
-                   end if
-                   this%h2osoi_liq(c,j) = max(watmin,this%h2osoi_liq(c,j))
-                   this%h2osoi_ice(c,j) = max(watmin,this%h2osoi_ice(c,j))
-                   this%h2osoi_vol(c,j) = this%h2osoi_liq(c,j)/(col_pp%dz(c,j)*denh2o) &
-                                             + this%h2osoi_ice(c,j)/(col_pp%dz(c,j)*denice)
-                end if
-             end do
-          end do
-       end if
-
-    endif   ! end if if-read flag
-
-  end subroutine col_ws_restart
+!#py   subroutine col_ws_restart(this, bounds, ncid, flag, watsat_input)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write column water state information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     class(column_water_state) :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     real(r8)         , intent(in)    :: watsat_input (bounds%begc:, 1:)  ! volumetric soil water at saturation (porosity)
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py     integer :: c,l,j,nlevs  ! indices
+!#py     real(r8):: maxwatsat    ! maximum porosity
+!#py     real(r8):: excess       ! excess volumetric soil water
+!#py     real(r8):: totwat       ! total soil water (mm)
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='H2OSFC', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='surface water', units='kg/m2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%h2osfc)
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        this%h2osfc(bounds%begc:bounds%endc) = 0.0_r8
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='H2OSOI_LIQ', xtype=ncd_double,  &
+!#py          dim1name='column', dim2name='levtot', switchdim=.true., &
+!#py          long_name='liquid water', units='kg/m2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%h2osoi_liq)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='H2OSOI_ICE', xtype=ncd_double,   &
+!#py          dim1name='column', dim2name='levtot', switchdim=.true., &
+!#py          long_name='ice lens', units='kg/m2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%h2osoi_ice)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='SOILP', xtype=ncd_double,  &
+!#py          dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py          long_name='soil pressure ', units='Pa', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%soilp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='H2OSNO', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='snow water', units='kg/m2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%h2osno)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='snw_rds', xtype=ncd_double,  &
+!#py          dim1name='column', dim2name='levsno', switchdim=.true., lowerb2=-nlevsno+1, upperb2=0, &
+!#py          long_name='snow layer effective radius', units='um', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%snw_rds)
+!#py     if (flag == 'read' .and. .not. readvar) then
+!#py        ! initial run, not restart: initialize snw_rds
+!#py        if (masterproc) then
+!#py           write(iulog,*) "SNICAR: This is an initial run (not a restart), and grain size/aerosol " // &
+!#py                "mass data are not defined in initial condition file. Initialize snow " // &
+!#py                "effective radius to fresh snow value, and snow/aerosol masses to zero."
+!#py        endif
+!#py
+!#py        do c= bounds%begc, bounds%endc
+!#py           if (col_pp%snl(c) < 0) then
+!#py              this%snw_rds(c,col_pp%snl(c)+1:0) = snw_rds_min
+!#py              this%snw_rds(c,-nlevsno+1:col_pp%snl(c)) = 0._r8
+!#py              this%snw_rds_top(c) = snw_rds_min
+!#py              this%sno_liq_top(c) = this%h2osoi_liq(c,col_pp%snl(c)+1) / &
+!#py                                       (this%h2osoi_liq(c,col_pp%snl(c)+1)+this%h2osoi_ice(c,col_pp%snl(c)+1))
+!#py           elseif (this%h2osno(c) > 0._r8) then
+!#py              this%snw_rds(c,0) = snw_rds_min
+!#py              this%snw_rds(c,-nlevsno+1:-1) = 0._r8
+!#py              this%snw_rds_top(c) = spval
+!#py              this%sno_liq_top(c) = spval
+!#py           else
+!#py              this%snw_rds(c,:) = 0._r8
+!#py              this%snw_rds_top(c) = spval
+!#py              this%sno_liq_top(c) = spval
+!#py           endif
+!#py        enddo
+!#py     endif
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='INT_SNOW', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='accuumulated snow', units='mm', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%int_snow)
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        this%int_snow(:) = 0.0_r8
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='SNOW_DEPTH', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='snow depth', units='m', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%snow_depth)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='SNOW_PERS', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='continuous snow cover time', units='sec', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%snow_persistence)
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py          this%snow_persistence(:) = 0.0_r8
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frac_sno', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='fraction of ground covered by snow (0 to 1)',units='1',&
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frac_sno)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frac_sno_eff', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='fraction of ground covered by snow (0 to 1)',units='1', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frac_sno_eff)
+!#py     if (flag == 'read' .and. .not. readvar) then
+!#py        this%frac_sno_eff(bounds%begc:bounds%endc) = 0.0_r8
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='FH2OSFC', xtype=ncd_double,  &
+!#py          dim1name='column',&
+!#py          long_name='fraction of ground covered by h2osfc (0 to 1)', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frac_h2osfc)
+!#py     if (flag == 'read' .and. .not. readvar) then
+!#py        this%frac_h2osfc(bounds%begc:bounds%endc) = 0.0_r8
+!#py     end if
+!#py
+!#py     if (use_cn) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='wf', xtype=ncd_double,  &
+!#py             dim1name='column', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%wf)
+!#py     end if
+!#py
+!#py     ! Determine volumetric soil water (for read only)
+!#py     if (flag == 'read' ) then
+!#py        do c = bounds%begc, bounds%endc
+!#py           l = col_pp%landunit(c)
+!#py           if ( col_pp%itype(c) == icol_sunwall   .or. &
+!#py                col_pp%itype(c) == icol_shadewall .or. &
+!#py                col_pp%itype(c) == icol_roof )then
+!#py              nlevs = nlevurb
+!#py           else
+!#py              nlevs = nlevgrnd
+!#py           end if
+!#py           if ( lun_pp%itype(l) /= istdlak ) then ! This calculation is now done for lakes in initLake.
+!#py              do j = 1,nlevs
+!#py                 this%h2osoi_vol(c,j) = this%h2osoi_liq(c,j)/(col_pp%dz(c,j)*denh2o) &
+!#py                                          + this%h2osoi_ice(c,j)/(col_pp%dz(c,j)*denice)
+!#py              end do
+!#py           end if
+!#py        end do
+!#py     end if
+!#py
+!#py     ! If initial run -- ensure that water is properly bounded (read only)
+!#py     if (flag == 'read' ) then
+!#py        if ( is_first_step() .and. bound_h2osoi) then
+!#py           do c = bounds%begc, bounds%endc
+!#py              l = col_pp%landunit(c)
+!#py              if ( col_pp%itype(c) == icol_sunwall .or. col_pp%itype(c) == icol_shadewall .or. &
+!#py                   col_pp%itype(c) == icol_roof )then
+!#py                 nlevs = nlevurb
+!#py              else
+!#py                 nlevs = nlevgrnd
+!#py              end if
+!#py              do j = 1,nlevs
+!#py                 l = col_pp%landunit(c)
+!#py                 if (lun_pp%itype(l) == istsoil .or. lun_pp%itype(l) == istcrop) then
+!#py                    this%h2osoi_liq(c,j) = max(0._r8,this%h2osoi_liq(c,j))
+!#py                    this%h2osoi_ice(c,j) = max(0._r8,this%h2osoi_ice(c,j))
+!#py                    this%h2osoi_vol(c,j) = this%h2osoi_liq(c,j)/(col_pp%dz(c,j)*denh2o) &
+!#py                                        + this%h2osoi_ice(c,j)/(col_pp%dz(c,j)*denice)
+!#py                    if (j == 1) then
+!#py                       maxwatsat = (watsat_input(c,j)*col_pp%dz(c,j)*1000.0_r8 + pondmx) / (col_pp%dz(c,j)*1000.0_r8)
+!#py                    else
+!#py                       maxwatsat =  watsat_input(c,j)
+!#py                    end if
+!#py                    if (this%h2osoi_vol(c,j) > maxwatsat) then
+!#py                       excess = (this%h2osoi_vol(c,j) - maxwatsat)*col_pp%dz(c,j)*1000.0_r8
+!#py                       totwat = this%h2osoi_liq(c,j) + this%h2osoi_ice(c,j)
+!#py                       this%h2osoi_liq(c,j) = this%h2osoi_liq(c,j) - &
+!#py                                            (this%h2osoi_liq(c,j)/totwat) * excess
+!#py                       this%h2osoi_ice(c,j) = this%h2osoi_ice(c,j) - &
+!#py                                            (this%h2osoi_ice(c,j)/totwat) * excess
+!#py                    end if
+!#py                    this%h2osoi_liq(c,j) = max(watmin,this%h2osoi_liq(c,j))
+!#py                    this%h2osoi_ice(c,j) = max(watmin,this%h2osoi_ice(c,j))
+!#py                    this%h2osoi_vol(c,j) = this%h2osoi_liq(c,j)/(col_pp%dz(c,j)*denh2o) &
+!#py                                              + this%h2osoi_ice(c,j)/(col_pp%dz(c,j)*denice)
+!#py                 end if
+!#py              end do
+!#py           end do
+!#py        end if
+!#py
+!#py     endif   ! end if if-read flag
+!#py
+!#py !#py !#py   end subroutine col_ws_restart
 
 
   !------------------------------------------------------------------------
@@ -1919,7 +1817,7 @@ contains
   subroutine col_cs_init(this, begc, endc, carbon_type, ratio, c12_carbonstate_vars)
     !
     ! !ARGUMENTS:
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     class(column_carbon_state)    :: this
     integer          , intent(in) :: begc,endc
     character(len=3) , intent(in) :: carbon_type ! one of ['c12', c13','c14']
@@ -1998,103 +1896,103 @@ contains
              fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'C_vr'
              longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' C (vertically resolved)'
 
-              call hist_addfld2d (fname=fieldname, units='gC/m^3',  type2d='levdcmp', &
-                    avgflag='A', long_name=longname, &
-                     ptr_col=data2dptr)
+              !#py call hist_addfld2d (fname=fieldname, units='gC/m^3',  type2d='levdcmp', &
+                    !#py avgflag='A', long_name=longname, &
+                     !#py !#py ptr_col=data2dptr)
           endif
 
           data1dptr => this%decomp_cpools(:,l)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'C'
           longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' C'
-           call hist_addfld1d (fname=fieldname, units='gC/m^2', &
-                 avgflag='A', long_name=longname, &
-                  ptr_col=data1dptr)
+           !#py call hist_addfld1d (fname=fieldname, units='gC/m^2', &
+                 !#py avgflag='A', long_name=longname, &
+                  !#py !#py ptr_col=data1dptr)
 
           if ( nlevdecomp_full > 1 ) then
              data1dptr => this%decomp_cpools_1m(:,l)
              fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'C_1m'
              longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' C to 1 meter'
-              call hist_addfld1d (fname=fieldname, units='gC/m^2', &
-                    avgflag='A', long_name=longname, &
-                     ptr_col=data1dptr, default = 'inactive')
+              !#py call hist_addfld1d (fname=fieldname, units='gC/m^2', &
+                    !#py avgflag='A', long_name=longname, &
+                     !#py !#py ptr_col=data1dptr, default = 'inactive')
           endif
        end do
        if ( nlevdecomp_full > 1 ) then
 
           this%totlitc_1m(begc:endc) = spval
-           call hist_addfld1d (fname='TOTLITC_1m', units='gC/m^2', &
-                 avgflag='A', long_name='total litter carbon to 1 meter depth', &
-                  ptr_col=this%totlitc_1m)
+           !#py call hist_addfld1d (fname='TOTLITC_1m', units='gC/m^2', &
+                 !#py avgflag='A', long_name='total litter carbon to 1 meter depth', &
+                  !#py !#py ptr_col=this%totlitc_1m)
 
           this%totsomc_1m(begc:endc) = spval
-           call hist_addfld1d (fname='TOTSOMC_1m', units='gC/m^2', &
-                 avgflag='A', long_name='total soil organic matter carbon to 1 meter depth', &
-                  ptr_col=this%totsomc_1m)
+           !#py call hist_addfld1d (fname='TOTSOMC_1m', units='gC/m^2', &
+                 !#py avgflag='A', long_name='total soil organic matter carbon to 1 meter depth', &
+                  !#py !#py ptr_col=this%totsomc_1m)
        end if
 
        this%totlitc(begc:endc) = spval
-        call hist_addfld1d (fname='LITTERC', units='gC/m^2', &
-              avgflag='A', long_name='litter C', &
-               ptr_col=this%totlitc)
-        call hist_addfld1d (fname='TOTLITC', units='gC/m^2', &
-              avgflag='A', long_name='total litter carbon', &
-               ptr_col=this%totlitc)
+        !#py call hist_addfld1d (fname='LITTERC', units='gC/m^2', &
+              !#py avgflag='A', long_name='litter C', &
+               !#py !#py ptr_col=this%totlitc)
+        !#py call hist_addfld1d (fname='TOTLITC', units='gC/m^2', &
+              !#py avgflag='A', long_name='total litter carbon', &
+               !#py !#py ptr_col=this%totlitc)
 
        this%totsomc(begc:endc) = spval
-        call hist_addfld1d (fname='TOTSOMC', units='gC/m^2', &
-              avgflag='A', long_name='total soil organic matter carbon', &
-               ptr_col=this%totsomc)
+        !#py call hist_addfld1d (fname='TOTSOMC', units='gC/m^2', &
+              !#py avgflag='A', long_name='total soil organic matter carbon', &
+               !#py !#py ptr_col=this%totsomc)
 
        this%ctrunc(begc:endc) = spval
-        call hist_addfld1d (fname='COL_CTRUNC', units='gC/m^2',  &
-              avgflag='A', long_name='column-level sink for C truncation', &
-               ptr_col=this%ctrunc, default='inactive')
+        !#py call hist_addfld1d (fname='COL_CTRUNC', units='gC/m^2',  &
+              !#py avgflag='A', long_name='column-level sink for C truncation', &
+               !#py !#py ptr_col=this%ctrunc, default='inactive')
 
-       call hist_addfld1d (fname='SOILC', units='gC/m^2', &
-             avgflag='A', long_name='soil C', &
-             ptr_col=this%totsomc)
+       !#py call hist_addfld1d (fname='SOILC', units='gC/m^2', &
+             !#py avgflag='A', long_name='soil C', &
+             !#py !#py ptr_col=this%totsomc)
 
        this%totecosysc(begc:endc) = spval
-       call hist_addfld1d (fname='TOTECOSYSC', units='gC/m^2', &
-            avgflag='A', long_name='total ecosystem carbon, incl veg but excl cpool but excl product pools', &
-            ptr_col=this%totecosysc)
+       !#py call hist_addfld1d (fname='TOTECOSYSC', units='gC/m^2', &
+            !#py avgflag='A', long_name='total ecosystem carbon, incl veg but excl cpool but excl product pools', &
+            !#py !#py ptr_col=this%totecosysc)
 
        this%totcolc(begc:endc) = spval
-       call hist_addfld1d (fname='TOTCOLC', units='gC/m^2', &
-            avgflag='A', long_name='total column carbon, incl veg and cpool but excl product pools', &
-            ptr_col=this%totcolc)
+       !#py call hist_addfld1d (fname='TOTCOLC', units='gC/m^2', &
+            !#py avgflag='A', long_name='total column carbon, incl veg and cpool but excl product pools', &
+            !#py !#py ptr_col=this%totcolc)
 
        if(.not.use_fates)then
 
           this%seedc(begc:endc) = spval
-          call hist_addfld1d (fname='SEEDC', units='gC/m^2', &
-               avgflag='A', long_name='pool for seeding new Patches', &
-               ptr_col=this%seedc, default='inactive')
+          !#py call hist_addfld1d (fname='SEEDC', units='gC/m^2', &
+               !#py avgflag='A', long_name='pool for seeding new Patches', &
+               !#py !#py ptr_col=this%seedc, default='inactive')
 
           this%prod10c(begc:endc) = spval
-          call hist_addfld1d (fname='PROD10C', units='gC/m^2', &
-               avgflag='A', long_name='10-yr wood product C', &
-               ptr_col=this%prod10c, default='inactive')
+          !#py call hist_addfld1d (fname='PROD10C', units='gC/m^2', &
+               !#py avgflag='A', long_name='10-yr wood product C', &
+               !#py !#py ptr_col=this%prod10c, default='inactive')
 
           this%prod100c(begc:endc) = spval
-          call hist_addfld1d (fname='PROD100C', units='gC/m^2', &
-               avgflag='A', long_name='100-yr wood product C', &
-               ptr_col=this%prod100c, default='inactive')
+          !#py call hist_addfld1d (fname='PROD100C', units='gC/m^2', &
+               !#py avgflag='A', long_name='100-yr wood product C', &
+               !#py !#py ptr_col=this%prod100c, default='inactive')
 
           this%prod1c(begc:endc) = spval
-          call hist_addfld1d (fname='PROD1C', units='gC/m^2', &
-               avgflag='A', long_name='1-yr crop product C', &
-               ptr_col=this%prod1c, default='inactive')
+          !#py call hist_addfld1d (fname='PROD1C', units='gC/m^2', &
+               !#py avgflag='A', long_name='1-yr crop product C', &
+               !#py !#py ptr_col=this%prod1c, default='inactive')
 
           this%totprodc(begc:endc) = spval
-          call hist_addfld1d (fname='TOTPRODC', units='gC/m^2', &
-               avgflag='A', long_name='total wood product C', &
-               ptr_col=this%totprodc, default='inactive')
+          !#py call hist_addfld1d (fname='TOTPRODC', units='gC/m^2', &
+               !#py avgflag='A', long_name='total wood product C', &
+               !#py !#py ptr_col=this%totprodc, default='inactive')
 
           this%fuelc(begc:endc) = spval
-          call hist_addfld1d (fname='FUELC', units='gC/m^2', &
-               avgflag='A', long_name='fuel load', &
-               ptr_col=this%fuelc, default='inactive')
+          !#py call hist_addfld1d (fname='FUELC', units='gC/m^2', &
+               !#py avgflag='A', long_name='fuel load', &
+               !#py !#py ptr_col=this%fuelc, default='inactive')
 
 
        end if
@@ -2106,80 +2004,80 @@ contains
              data2dptr => this%decomp_cpools_vr(:,:,l)
              fieldname = 'C13_'//trim(decomp_cascade_con%decomp_pool_name_history(l))//'C_vr'
              longname =  'C13 '//trim(decomp_cascade_con%decomp_pool_name_history(l))//' C (vertically resolved)'
-              call hist_addfld2d (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
-                    avgflag='A', long_name=longname, &
-                     ptr_col=data2dptr)
+              !#py call hist_addfld2d (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
+                    !#py avgflag='A', long_name=longname, &
+                     !#py !#py ptr_col=data2dptr)
           endif
 
           data1dptr => this%decomp_cpools(:,l)
           fieldname = 'C13_'//trim(decomp_cascade_con%decomp_pool_name_history(l))//'C'
           longname =  'C13 '//trim(decomp_cascade_con%decomp_pool_name_history(l))//' C'
-           call hist_addfld1d (fname=fieldname, units='gC13/m^2', &
-                 avgflag='A', long_name=longname, &
-                  ptr_col=data1dptr)
+           !#py call hist_addfld1d (fname=fieldname, units='gC13/m^2', &
+                 !#py avgflag='A', long_name=longname, &
+                  !#py !#py ptr_col=data1dptr)
        end do
        this%totlitc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_TOTLITC', units='gC13/m^2', &
-              avgflag='A', long_name='C13 total litter carbon', &
-               ptr_col=this%totlitc)
+        !#py call hist_addfld1d (fname='C13_TOTLITC', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 total litter carbon', &
+               !#py !#py ptr_col=this%totlitc)
 
        this%totsomc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_TOTSOMC', units='gC13/m^2', &
-              avgflag='A', long_name='C13 total soil organic matter carbon', &
-               ptr_col=this%totsomc)
+        !#py call hist_addfld1d (fname='C13_TOTSOMC', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 total soil organic matter carbon', &
+               !#py !#py ptr_col=this%totsomc)
 
        if ( nlevdecomp_full > 1 ) then
           this%totlitc_1m(begc:endc) = spval
-           call hist_addfld1d (fname='C13_TOTLITC_1m', units='gC13/m^2', &
-                 avgflag='A', long_name='C13 total litter carbon to 1 meter', &
-                  ptr_col=this%totlitc_1m)
+           !#py call hist_addfld1d (fname='C13_TOTLITC_1m', units='gC13/m^2', &
+                 !#py avgflag='A', long_name='C13 total litter carbon to 1 meter', &
+                  !#py !#py ptr_col=this%totlitc_1m)
 
           this%totsomc_1m(begc:endc) = spval
-           call hist_addfld1d (fname='C13_TOTSOMC_1m', units='gC13/m^2', &
-                 avgflag='A', long_name='C13 total soil organic matter carbon to 1 meter', &
-                  ptr_col=this%totsomc_1m)
+           !#py call hist_addfld1d (fname='C13_TOTSOMC_1m', units='gC13/m^2', &
+                 !#py avgflag='A', long_name='C13 total soil organic matter carbon to 1 meter', &
+                  !#py !#py ptr_col=this%totsomc_1m)
        endif
 
        this%seedc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_SEEDC', units='gC13/m^2', &
-              avgflag='A', long_name='C13 pool for seeding new Patches', &
-               ptr_col=this%seedc)
+        !#py call hist_addfld1d (fname='C13_SEEDC', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 pool for seeding new Patches', &
+               !#py !#py ptr_col=this%seedc)
 
        this%ctrunc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_COL_CTRUNC', units='gC13/m^2',  &
-              avgflag='A', long_name='C13 column-level sink for C truncation', &
-               ptr_col=this%ctrunc)
+        !#py call hist_addfld1d (fname='C13_COL_CTRUNC', units='gC13/m^2',  &
+              !#py avgflag='A', long_name='C13 column-level sink for C truncation', &
+               !#py !#py ptr_col=this%ctrunc)
 
 
        this%totecosysc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_TOTECOSYSC', units='gC13/m^2', &
-              avgflag='A', long_name='C13 total ecosystem carbon, incl veg but excl cpool but excl product pools', &
-               ptr_col=this%totecosysc)
+        !#py call hist_addfld1d (fname='C13_TOTECOSYSC', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 total ecosystem carbon, incl veg but excl cpool but excl product pools', &
+               !#py !#py ptr_col=this%totecosysc)
 
        this%totcolc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_TOTCOLC', units='gC13/m^2', &
-              avgflag='A', long_name='C13 total column carbon, incl veg and cpool but excl product pools', &
-               ptr_col=this%totcolc)
+        !#py call hist_addfld1d (fname='C13_TOTCOLC', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 total column carbon, incl veg and cpool but excl product pools', &
+               !#py !#py ptr_col=this%totcolc)
 
        this%prod10c(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PROD10C', units='gC13/m^2', &
-              avgflag='A', long_name='C13 10-yr wood product C', &
-               ptr_col=this%prod10c)
+        !#py call hist_addfld1d (fname='C13_PROD10C', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 10-yr wood product C', &
+               !#py !#py ptr_col=this%prod10c)
 
        this%prod100c(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PROD100C', units='gC13/m^2', &
-              avgflag='A', long_name='C13 100-yr wood product C', &
-               ptr_col=this%prod100c)
+        !#py call hist_addfld1d (fname='C13_PROD100C', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 100-yr wood product C', &
+               !#py !#py ptr_col=this%prod100c)
 
        this%prod1c(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PROD1C', units='gC13/m^2', &
-              avgflag='A', long_name='C13 1-yr crop product C', &
-               ptr_col=this%prod1c)
+        !#py call hist_addfld1d (fname='C13_PROD1C', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 1-yr crop product C', &
+               !#py !#py ptr_col=this%prod1c)
 
        this%totprodc(begc:endc) = spval
-        call hist_addfld1d (fname='C13_TOTPRODC', units='gC13/m^2', &
-              avgflag='A', long_name='C13 total wood product C', &
-               ptr_col=this%totprodc)
+        !#py call hist_addfld1d (fname='C13_TOTPRODC', units='gC13/m^2', &
+              !#py avgflag='A', long_name='C13 total wood product C', &
+               !#py !#py ptr_col=this%totprodc)
 
 
     else if ( carbon_type == 'c14' ) then
@@ -2189,85 +2087,85 @@ contains
              data2dptr => this%decomp_cpools_vr(:,:,l)
              fieldname = 'C14_'//trim(decomp_cascade_con%decomp_pool_name_history(l))//'C_vr'
              longname =  'C14 '//trim(decomp_cascade_con%decomp_pool_name_history(l))//' C (vertically resolved)'
-              call hist_addfld2d (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
-                     avgflag='A', long_name=longname, ptr_col=data2dptr)
+              !#py call hist_addfld2d (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
+                     !#py !#py avgflag='A', long_name=longname, ptr_col=data2dptr)
           endif
 
           data1dptr => this%decomp_cpools(:,l)
           fieldname = 'C14_'//trim(decomp_cascade_con%decomp_pool_name_history(l))//'C'
           longname =  'C14 '//trim(decomp_cascade_con%decomp_pool_name_history(l))//' C'
-           call hist_addfld1d (fname=fieldname, units='gC14/m^2', &
-                  avgflag='A', long_name=longname, ptr_col=data1dptr)
+           !#py call hist_addfld1d (fname=fieldname, units='gC14/m^2', &
+                  !#py !#py avgflag='A', long_name=longname, ptr_col=data1dptr)
 
           if ( nlevdecomp_full > 1 ) then
              data1dptr => this%decomp_cpools_1m(:,l)
              fieldname = 'C14_'//trim(decomp_cascade_con%decomp_pool_name_history(l))//'C_1m'
              longname =  'C14_'//trim(decomp_cascade_con%decomp_pool_name_history(l))//' C to 1 meter'
-              call hist_addfld1d (fname=fieldname, units='gC/m^2', &
-                     avgflag='A', long_name=longname, ptr_col=data1dptr, default='inactive')
+              !#py call hist_addfld1d (fname=fieldname, units='gC/m^2', &
+                     !#py !#py avgflag='A', long_name=longname, ptr_col=data1dptr, default='inactive')
           endif
        end do
        this%totlitc(begc:endc) = spval
-        call hist_addfld1d (fname='C14_TOTLITC', units='gC14/m^2', &
-              avgflag='A', long_name='C14 total litter carbon', &
-               ptr_col=this%totlitc)
+        !#py call hist_addfld1d (fname='C14_TOTLITC', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 total litter carbon', &
+               !#py !#py ptr_col=this%totlitc)
 
        this%totsomc(begc:endc) = spval
-        call hist_addfld1d (fname='C14_TOTSOMC', units='gC14/m^2', &
-              avgflag='A', long_name='C14 total soil organic matter carbon', &
-               ptr_col=this%totsomc)
+        !#py call hist_addfld1d (fname='C14_TOTSOMC', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 total soil organic matter carbon', &
+               !#py !#py ptr_col=this%totsomc)
 
        if ( nlevdecomp_full > 1 ) then
           this%totlitc_1m(begc:endc) = spval
-           call hist_addfld1d (fname='C14_TOTLITC_1m', units='gC14/m^2', &
-                 avgflag='A', long_name='C14 total litter carbon to 1 meter', &
-                  ptr_col=this%totlitc_1m)
+           !#py call hist_addfld1d (fname='C14_TOTLITC_1m', units='gC14/m^2', &
+                 !#py avgflag='A', long_name='C14 total litter carbon to 1 meter', &
+                  !#py !#py ptr_col=this%totlitc_1m)
 
           this%totsomc_1m(begc:endc) = spval
-           call hist_addfld1d (fname='C14_TOTSOMC_1m', units='gC14/m^2', &
-                 avgflag='A', long_name='C14 total soil organic matter carbon to 1 meter', &
-                  ptr_col=this%totsomc_1m)
+           !#py call hist_addfld1d (fname='C14_TOTSOMC_1m', units='gC14/m^2', &
+                 !#py avgflag='A', long_name='C14 total soil organic matter carbon to 1 meter', &
+                  !#py !#py ptr_col=this%totsomc_1m)
        endif
 
        this%seedc(begc:endc) = spval
-        call hist_addfld1d (fname='C14_SEEDC', units='gC14/m^2', &
-              avgflag='A', long_name='C14 pool for seeding new Patches', &
-               ptr_col=this%seedc)
+        !#py call hist_addfld1d (fname='C14_SEEDC', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 pool for seeding new Patches', &
+               !#py !#py ptr_col=this%seedc)
 
        this%ctrunc(begc:endc) = spval
-        call hist_addfld1d (fname='C14_COL_CTRUNC', units='gC14/m^2', &
-              avgflag='A', long_name='C14 column-level sink for C truncation', &
-               ptr_col=this%ctrunc)
+        !#py call hist_addfld1d (fname='C14_COL_CTRUNC', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 column-level sink for C truncation', &
+               !#py !#py ptr_col=this%ctrunc)
 
        this%totecosysc(begc:endc) = spval
-        call hist_addfld1d (fname='C14_TOTECOSYSC', units='gC14/m^2', &
-              avgflag='A', long_name='C14 total ecosystem carbon, incl veg but excl cpool but excl product pools', &
-               ptr_col=this%totecosysc)
+        !#py call hist_addfld1d (fname='C14_TOTECOSYSC', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 total ecosystem carbon, incl veg but excl cpool but excl product pools', &
+               !#py !#py ptr_col=this%totecosysc)
 
        this%totcolc(begc:endc) = spval
-        call hist_addfld1d (fname='C14_TOTCOLC', units='gC14/m^2', &
-              avgflag='A', long_name='C14 total column carbon, incl veg and cpool but excl product pools', &
-               ptr_col=this%totcolc)
+        !#py call hist_addfld1d (fname='C14_TOTCOLC', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 total column carbon, incl veg and cpool but excl product pools', &
+               !#py !#py ptr_col=this%totcolc)
 
        this%prod10c(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PROD10C', units='gC14/m^2', &
-              avgflag='A', long_name='C14 10-yr wood product C', &
-               ptr_col=this%prod10c)
+        !#py call hist_addfld1d (fname='C14_PROD10C', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 10-yr wood product C', &
+               !#py !#py ptr_col=this%prod10c)
 
        this%prod100c(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PROD100C', units='gC14/m^2', &
-              avgflag='A', long_name='C14 100-yr wood product C', &
-               ptr_col=this%prod100c)
+        !#py call hist_addfld1d (fname='C14_PROD100C', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 100-yr wood product C', &
+               !#py !#py ptr_col=this%prod100c)
 
        this%prod1c(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PROD1C', units='gC14/m^2', &
-              avgflag='A', long_name='C14 1-yr crop product C', &
-               ptr_col=this%prod1c)
+        !#py call hist_addfld1d (fname='C14_PROD1C', units='gC14/m^2', &
+              !#py avgflag='A', long_name='C14 1-yr crop product C', &
+               !#py !#py ptr_col=this%prod1c)
 
        this%totprodc(begc:endc) = spval
-       call hist_addfld1d (fname='C14_TOTPRODC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 total wood product C', &
-             ptr_col=this%totprodc)
+       !#py call hist_addfld1d (fname='C14_TOTPRODC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 total wood product C', &
+             !#py !#py ptr_col=this%totprodc)
 
     endif ! if c12/c13/c14
 
@@ -2408,446 +2306,446 @@ contains
   end subroutine col_cs_init
 
   !------------------------------------------------------------------------
-  subroutine col_cs_restart ( this,  bounds, ncid, flag, carbon_type, c12_carbonstate_vars, cnstate_vars)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write column carbon state information to/from restart file.
-    !
-    ! !ARGUMENTS:
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    class(column_carbon_state)       :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    character(len=3) , intent(in)    :: carbon_type ! 'c12' or 'c13' or 'c14'
-    type (column_carbon_state) , intent(in), optional :: c12_carbonstate_vars
-    type (cnstate_type)        , intent(in)           :: cnstate_vars
-    !
-    ! !LOCAL VARIABLES:
-    logical            :: readvar    ! determine if variable is on initial file
-    real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
-    real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
-    character(len=128) :: varname    ! temporary
-    integer            :: i,j,k,l,c  ! indices
-    real(r8)           :: c3_del13c  ! typical del13C for C3 photosynthesis (permil, relative to PDB)
-    real(r8)           :: c4_del13c  ! typical del13C for C4 photosynthesis (permil, relative to PDB)
-    real(r8)           :: c3_r1      ! isotope ratio (13c/12c) for C3 photosynthesis
-    real(r8)           :: c4_r1      ! isotope ratio (13c/12c) for C4 photosynthesis
-    real(r8)           :: c3_r2      ! isotope ratio (13c/[12c+13c]) for C3 photosynthesis
-    real(r8)           :: c4_r2      ! isotope ratio (13c/[12c+13c]) for C4 photosynthesis
-    real(r8)           :: m          ! multiplier for the exit_spinup code
-    integer            :: idata
-    logical            :: exit_spinup  = .false.
-    logical            :: enter_spinup = .false.
-    ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
-    integer            :: restart_file_spinup_state
-    ! flags for comparing the model and restart decomposition cascades
-    integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
-    !-----------------------------------------------------------------------
-
-    if (carbon_type == 'c13' .or. carbon_type == 'c14') then
-       if (.not. present(c12_carbonstate_vars)) then
-          call endrun(msg=' ERROR: for C14 must pass in c12_carbonstate_vars as argument' //&
-               errMsg(__FILE__, __LINE__))
-       end if
-    end if
-
-    if (carbon_type == 'c12') then
-       do k = 1, ndecomp_pools
-          varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'c'
-          if (use_vertsoilc) then
-             ptr2d => this%decomp_cpools_vr(:,:,k)
-             call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
-                  dim1name='column', dim2name='levgrnd', switchdim=.true., &
-                  long_name='',  units='', fill_value=spval, &
-                  interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%decomp_cpools_vr(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
-             call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-                  dim1name='column', long_name='',  units='', fill_value=spval, &
-                  interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-             call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
-                  errMsg(__FILE__, __LINE__))
-          end if
-       end do
-
-       if (use_vertsoilc) then
-          ptr2d => this%ctrunc_vr
-          call restartvar(ncid=ncid, flag=flag, varname='col_ctrunc_vr', xtype=ncd_double,  &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       else
-          ptr1d => this%ctrunc_vr(:,1) ! nlevdecomp = 1; so treat as 1D variable
-          call restartvar(ncid=ncid, flag=flag, varname='col_ctrunc', xtype=ncd_double,  &
-               dim1name='column', long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-       end if
-       if (flag=='read' .and. .not. readvar) then
-          call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
-               errMsg(__FILE__, __LINE__))
-       end if
-
-       if(is_active_betr_bgc)then
-          call restartvar(ncid=ncid, flag=flag, varname='totblgc', xtype=ncd_double,  &
-               dim1name='column', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%totblgc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='cwdc', xtype=ncd_double,  &
-               dim1name='column', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%cwdc)
-       endif
-
-       call restartvar(ncid=ncid, flag=flag, varname='totlitc', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totlitc)
-
-       call restartvar(ncid=ncid, flag=flag, varname='totsomc', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totsomc)
-
-       call restartvar(ncid=ncid, flag=flag, varname='seedc', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%seedc)
-
-       call restartvar(ncid=ncid, flag=flag, varname='totcolc', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totcolc)
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod10c', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod10c)
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod100c', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod100c)
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod1c', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod1c)
-
-    end if ! C12
-
-    if ( carbon_type == 'c13' ) then
-       ! set some constants for C13 ratios
-       c3_del13c = -28._r8
-       c4_del13c = -13._r8
-       c3_r1 = SHR_CONST_PDB + ((c3_del13c*SHR_CONST_PDB)/1000._r8)
-       c3_r2 = c3_r1/(1._r8 + c3_r1)
-       c4_r1 = SHR_CONST_PDB + ((c4_del13c*SHR_CONST_PDB)/1000._r8)
-       c4_r2 = c4_r1/(1._r8 + c4_r1)
-       do k = 1, ndecomp_pools
-          varname = trim(decomp_cascade_con%decomp_pool_name_restart(k))//'c_13'
-          if (use_vertsoilc) then
-             ptr2d => this%decomp_cpools_vr(:,:,k)
-             call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
-                  dim1name='column', dim2name='levgrnd', switchdim=.true., &
-                  long_name='',  units='', fill_value=spval, &
-                  interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%decomp_cpools_vr(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
-             call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-                  dim1name='column', long_name='',  units='', fill_value=spval, &
-                  interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%decomp_cpools_vr with atmospheric c13 value for: '//varname
-             do i = bounds%begc,bounds%endc
-                do j = 1, nlevdecomp
-                   if (c12_carbonstate_vars%decomp_cpools_vr(i,j,k) /= spval .and. &
-                        .not. isnan(this%decomp_cpools_vr(i,j,k)) ) then
-                         this%decomp_cpools_vr(i,j,k) = c12_carbonstate_vars%decomp_cpools_vr(i,j,k) * c14ratio
-                   endif
-                end do
-             end do
-          end if
-       end do ! ndecomp_pools
-
-       if (use_vertsoilc) then
-          ptr2d => this%ctrunc_vr
-          call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c13_vr", xtype=ncd_double,  &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       else
-          ptr1d => this%ctrunc_vr(:,1)
-          call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c13", xtype=ncd_double,  &
-               dim1name='column', long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='totlitc_13', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totlitc)
-       if (flag=='read' .and. .not. readvar) then
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%totlitc(i) /= spval .and. &
-                  .not. isnan( c12_carbonstate_vars%totlitc(i) ) ) then
-                this%totlitc(i) = c12_carbonstate_vars%totlitc(i) * c3_r2
-             end if
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='seedc_13', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%seedc)
-       if (flag=='read' .and. .not. readvar) then
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%seedc(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%seedc(i)) ) then
-                this%seedc(i) = c12_carbonstate_vars%seedc(i) * c3_r2
-             end if
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='totcolc_13', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totcolc)
-       if (flag=='read' .and. .not. readvar) then
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%totcolc(i) /= spval .and. &
-                  .not. isnan (c12_carbonstate_vars%totcolc(i) ) ) then
-                this%totcolc(i) = c12_carbonstate_vars%totcolc(i) * c3_r2
-             end if
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod10c_13', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod10c)
-       if (flag=='read' .and. .not. readvar) then
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%prod10c(i) /= spval .and. &
-                  .not. isnan( c12_carbonstate_vars%prod10c(i) ) ) then
-                this%prod10c(i) = c12_carbonstate_vars%prod10c(i) * c3_r2
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod100c_13', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod100c)
-       if (flag=='read' .and. .not. readvar) then
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%prod100c(i) /= spval .and. &
-                  .not. isnan( c12_carbonstate_vars%prod100c(i) ) ) then
-                this%prod100c(i) = c12_carbonstate_vars%prod100c(i) * c3_r2
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod1c_13', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod1c)
-       if (flag=='read' .and. .not. readvar) then
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%prod1c(i) /= spval .and. &
-                  .not. isnan( c12_carbonstate_vars%prod1c(i) ) ) then
-                this%prod1c(i) = c12_carbonstate_vars%prod1c(i) * c3_r2
-             endif
-          end do
-       end if
-
-
-    end if ! C13
-
-    if ( carbon_type == 'c14' ) then
-       do k = 1, ndecomp_pools
-          varname = trim(decomp_cascade_con%decomp_pool_name_restart(k))//'c_14'
-          if (use_vertsoilc) then
-             ptr2d => this%decomp_cpools_vr(:,:,k)
-             call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
-                  dim1name='column', dim2name='levgrnd', switchdim=.true., &
-                  long_name='',  units='', fill_value=spval, &
-                  interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%decomp_cpools_vr(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
-             call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-                  dim1name='column', &
-                  long_name='',  units='', fill_value=spval, &
-                  interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%decomp_cpools_vr with atmospheric c14 value for: '//trim(varname)
-             do i = bounds%begc,bounds%endc
-                do j = 1, nlevdecomp
-                   if (c12_carbonstate_vars%decomp_cpools_vr(i,j,k) /= spval .and. &
-                        .not. isnan(c12_carbonstate_vars%decomp_cpools_vr(i,j,k)) ) then
-                         this%decomp_cpools_vr(i,j,k) = c12_carbonstate_vars%decomp_cpools_vr(i,j,k) * c3_r2
-                   endif
-                end do
-             end do
-          end if
-       end do
-
-       if (use_vertsoilc) then
-          ptr2d => this%ctrunc_vr
-          call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c14_vr", xtype=ncd_double,  &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       else
-          ptr1d => this%ctrunc_vr(:,1)
-          call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c14", xtype=ncd_double,  &
-               dim1name='column', long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='totlitc_14', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totlitc)
-       if (flag=='read' .and. .not. readvar) then
-          write(iulog,*) 'initializing this%totlitc with atmospheric c14 value'
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%totlitc(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%totlitc(i)) ) then
-                this%totlitc(i) = c12_carbonstate_vars%totlitc(i) * c14ratio
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='seedc_14', xtype=ncd_double,  &
-            dim1name='column', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%seedc)
-       if (flag=='read' .and. .not. readvar) then
-          write(iulog,*) 'initializing this%seedc with atmospheric c14 value'
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%seedc(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%seedc(i)) ) then
-                this%seedc(i) = c12_carbonstate_vars%seedc(i) * c14ratio
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='totcolc_14', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%totcolc)
-       if (flag=='read' .and. .not. readvar) then
-          write(iulog,*) 'initializing this%totcolc with atmospheric c14 value'
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%totcolc(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%totcolc(i)) ) then
-                this%totcolc(i) = c12_carbonstate_vars%totcolc(i) * c14ratio
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod10c_14', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod10c)
-       if (flag=='read' .and. .not. readvar) then
-          write(iulog,*) 'initializing this%prod10c with atmospheric c14 value'
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%prod10c(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%prod10c(i)) ) then
-                this%prod10c(i) = c12_carbonstate_vars%prod10c(i) * c14ratio
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod100c_14', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod100c)
-       if (flag=='read' .and. .not. readvar) then
-          write(iulog,*) 'initializing this%prod100c with atmospheric c14 value'
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%prod100c(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%prod100c(i)) ) then
-                this%prod100c(i) = c12_carbonstate_vars%prod100c(i) * c14ratio
-             endif
-          end do
-       end if
-
-       call restartvar(ncid=ncid, flag=flag, varname='prod1c_14', xtype=ncd_double,  &
-            dim1name='column', long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%prod1c)
-       if (flag=='read' .and. .not. readvar) then
-          write(iulog,*) 'initializing this%prod1c with atmospheric c14 value'
-          do i = bounds%begc,bounds%endc
-             if (c12_carbonstate_vars%prod1c(i) /= spval .and. &
-                  .not. isnan(c12_carbonstate_vars%prod1c(i)) ) then
-                this%prod1c(i) = c12_carbonstate_vars%prod1c(i) * c14ratio
-             endif
-          end do
-       end if
-
-    end if ! C14
-
-    !--------------------------------
-    ! Spinup state
-    !--------------------------------
-
-    if (carbon_type == 'c12' .or. carbon_type == 'c13' .or. carbon_type == 'c14') then
-        if (flag == 'write') then
-           idata = spinup_state
-        end if
-        if (carbon_type == 'c12' .or. (carbon_type == 'c13' .and. flag == 'read') .or. (carbon_type == 'c14' .and. flag == 'read')) then
-           call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
-                long_name='Spinup state of the model that wrote this restart file: ' &
-                // ' 0 = normal model mode, 1 = AD spinup', units='', &
-                interpinic_flag='copy', readvar=readvar,  data=idata)
-        end if
-
-        if (flag == 'read') then
-           if (readvar) then
-              restart_file_spinup_state = idata
-           else
-              ! assume, for sake of backwards compatibility, that if spinup_state is not in
-              ! the restart file then current model state is the same as prior model state
-              restart_file_spinup_state = spinup_state
-              if ( masterproc ) then
-                 write(iulog,*) ' col_cs_restart: WARNING!  Restart file does not contain info ' &
-                      // ' on spinup state used to generate the restart file. '
-                 write(iulog,*) '   Assuming the same as current setting: ', spinup_state
-              end if
-           end if
-        end if
-
-        ! now compare the model and restart file spinup states, and either take the
-        ! model into spinup mode or out of it if they are not identical
-        ! taking model out of spinup mode requires multiplying each decomposing pool
-        ! by the associated AD factor.
-        ! putting model into spinup mode requires dividing each decomposing pool
-        ! by the associated AD factor.
-        ! only allow this to occur on first timestep of model run.
-
-        if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
-           if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
-              if ( masterproc ) write(iulog,*) ' col_cs_restart: taking SOM pools out of AD spinup mode'
-              exit_spinup = .true.
-           else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
-              if ( masterproc ) write(iulog,*) ' col_cs_restart: taking SOM pools into AD spinup mode'
-              enter_spinup = .true.
-           else
-              call endrun(msg=' col_cs_restart: error in entering/exiting spinup.  spinup_state ' &
-                   // ' != restart_file_spinup_state, but do not know what to do'//&
-                   errMsg(__FILE__, __LINE__))
-           end if
-           if (get_nstep() >= 2) then
-              call endrun(msg=' col_cs_restart: error in entering/exiting spinup - should occur only when nstep = 1'//&
-                   errMsg(__FILE__, __LINE__))
-           endif
-           do k = 1, ndecomp_pools
-              do c = bounds%begc, bounds%endc
-                 do j = 1, nlevdecomp
-                    if ( exit_spinup ) then
-                       m = decomp_cascade_con%spinup_factor(k)
-                       if (decomp_cascade_con%spinup_factor(k) > 1) m = m / cnstate_vars%scalaravg_col(c,j)
-                    else if ( enter_spinup ) then
-                       m = 1. / decomp_cascade_con%spinup_factor(k)
-                       if (decomp_cascade_con%spinup_factor(k) > 1) m = m * cnstate_vars%scalaravg_col(c,j)
-                    end if
-                    this%decomp_cpools_vr(c,j,k) = this%decomp_cpools_vr(c,j,k) * m
-                 end do ! nlevdecomp
-              end do ! columns
-           end do ! ndecomp_pools
-        end if ! read
-     end if ! c12 or c14 (PET: why not c13?)
-
-end subroutine col_cs_restart
+!#py   subroutine col_cs_restart ( this,  bounds, ncid, flag, carbon_type, c12_carbonstate_vars, cnstate_vars)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write column carbon state information to/from restart file.
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     class(column_carbon_state)       :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     character(len=3) , intent(in)    :: carbon_type ! 'c12' or 'c13' or 'c14'
+!#py     type (column_carbon_state) , intent(in), optional :: c12_carbonstate_vars
+!#py     type (cnstate_type)        , intent(in)           :: cnstate_vars
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical            :: readvar    ! determine if variable is on initial file
+!#py     real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
+!#py     character(len=128) :: varname    ! temporary
+!#py     integer            :: i,j,k,l,c  ! indices
+!#py     real(r8)           :: c3_del13c  ! typical del13C for C3 photosynthesis (permil, relative to PDB)
+!#py     real(r8)           :: c4_del13c  ! typical del13C for C4 photosynthesis (permil, relative to PDB)
+!#py     real(r8)           :: c3_r1      ! isotope ratio (13c/12c) for C3 photosynthesis
+!#py     real(r8)           :: c4_r1      ! isotope ratio (13c/12c) for C4 photosynthesis
+!#py     real(r8)           :: c3_r2      ! isotope ratio (13c/[12c+13c]) for C3 photosynthesis
+!#py     real(r8)           :: c4_r2      ! isotope ratio (13c/[12c+13c]) for C4 photosynthesis
+!#py     real(r8)           :: m          ! multiplier for the exit_spinup code
+!#py     integer            :: idata
+!#py     logical            :: exit_spinup  = .false.
+!#py     logical            :: enter_spinup = .false.
+!#py     ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
+!#py     integer            :: restart_file_spinup_state
+!#py     ! flags for comparing the model and restart decomposition cascades
+!#py     integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     if (carbon_type == 'c13' .or. carbon_type == 'c14') then
+!#py        if (.not. present(c12_carbonstate_vars)) then
+!#py           !#py call endrun(msg=' ERROR: for C14 must pass in c12_carbonstate_vars as argument' //&
+!#py                !#py !#py errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py     end if
+!#py
+!#py     if (carbon_type == 'c12') then
+!#py        do k = 1, ndecomp_pools
+!#py           varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'c'
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%decomp_cpools_vr(:,:,k)
+!#py              call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
+!#py                   dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                   long_name='',  units='', fill_value=spval, &
+!#py                   interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%decomp_cpools_vr(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
+!#py              call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                   dim1name='column', long_name='',  units='', fill_value=spval, &
+!#py                   interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
+!#py                   errMsg(__FILE__, __LINE__))
+!#py           end if
+!#py        end do
+!#py
+!#py        if (use_vertsoilc) then
+!#py           ptr2d => this%ctrunc_vr
+!#py           call restartvar(ncid=ncid, flag=flag, varname='col_ctrunc_vr', xtype=ncd_double,  &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        else
+!#py           ptr1d => this%ctrunc_vr(:,1) ! nlevdecomp = 1; so treat as 1D variable
+!#py           call restartvar(ncid=ncid, flag=flag, varname='col_ctrunc', xtype=ncd_double,  &
+!#py                dim1name='column', long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py        end if
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py
+!#py        if(is_active_betr_bgc)then
+!#py           call restartvar(ncid=ncid, flag=flag, varname='totblgc', xtype=ncd_double,  &
+!#py                dim1name='column', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%totblgc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='cwdc', xtype=ncd_double,  &
+!#py                dim1name='column', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%cwdc)
+!#py        endif
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totlitc', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totlitc)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totsomc', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totsomc)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='seedc', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%seedc)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totcolc', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totcolc)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod10c', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod10c)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod100c', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod100c)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod1c', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod1c)
+!#py
+!#py     end if ! C12
+!#py
+!#py     if ( carbon_type == 'c13' ) then
+!#py        ! set some constants for C13 ratios
+!#py        c3_del13c = -28._r8
+!#py        c4_del13c = -13._r8
+!#py        c3_r1 = SHR_CONST_PDB + ((c3_del13c*SHR_CONST_PDB)/1000._r8)
+!#py        c3_r2 = c3_r1/(1._r8 + c3_r1)
+!#py        c4_r1 = SHR_CONST_PDB + ((c4_del13c*SHR_CONST_PDB)/1000._r8)
+!#py        c4_r2 = c4_r1/(1._r8 + c4_r1)
+!#py        do k = 1, ndecomp_pools
+!#py           varname = trim(decomp_cascade_con%decomp_pool_name_restart(k))//'c_13'
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%decomp_cpools_vr(:,:,k)
+!#py              call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
+!#py                   dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                   long_name='',  units='', fill_value=spval, &
+!#py                   interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%decomp_cpools_vr(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
+!#py              call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                   dim1name='column', long_name='',  units='', fill_value=spval, &
+!#py                   interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%decomp_cpools_vr with atmospheric c13 value for: '//varname
+!#py              do i = bounds%begc,bounds%endc
+!#py                 do j = 1, nlevdecomp
+!#py                    if (c12_carbonstate_vars%decomp_cpools_vr(i,j,k) /= spval .and. &
+!#py                         .not. isnan(this%decomp_cpools_vr(i,j,k)) ) then
+!#py                          this%decomp_cpools_vr(i,j,k) = c12_carbonstate_vars%decomp_cpools_vr(i,j,k) * c3_r2
+!#py                    endif
+!#py                 end do
+!#py              end do
+!#py           end if
+!#py        end do ! ndecomp_pools
+!#py
+!#py        if (use_vertsoilc) then
+!#py           ptr2d => this%ctrunc_vr
+!#py           call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c13_vr", xtype=ncd_double,  &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        else
+!#py           ptr1d => this%ctrunc_vr(:,1)
+!#py           call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c13", xtype=ncd_double,  &
+!#py                dim1name='column', long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totlitc_13', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totlitc)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%totlitc(i) /= spval .and. &
+!#py                   .not. isnan( c12_carbonstate_vars%totlitc(i) ) ) then
+!#py                 this%totlitc(i) = c12_carbonstate_vars%totlitc(i) * c3_r2
+!#py              end if
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='seedc_13', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%seedc)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%seedc(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%seedc(i)) ) then
+!#py                 this%seedc(i) = c12_carbonstate_vars%seedc(i) * c3_r2
+!#py              end if
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totcolc_13', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totcolc)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%totcolc(i) /= spval .and. &
+!#py                   .not. isnan (c12_carbonstate_vars%totcolc(i) ) ) then
+!#py                 this%totcolc(i) = c12_carbonstate_vars%totcolc(i) * c3_r2
+!#py              end if
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod10c_13', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod10c)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%prod10c(i) /= spval .and. &
+!#py                   .not. isnan( c12_carbonstate_vars%prod10c(i) ) ) then
+!#py                 this%prod10c(i) = c12_carbonstate_vars%prod10c(i) * c3_r2
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod100c_13', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod100c)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%prod100c(i) /= spval .and. &
+!#py                   .not. isnan( c12_carbonstate_vars%prod100c(i) ) ) then
+!#py                 this%prod100c(i) = c12_carbonstate_vars%prod100c(i) * c3_r2
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod1c_13', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod1c)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%prod1c(i) /= spval .and. &
+!#py                   .not. isnan( c12_carbonstate_vars%prod1c(i) ) ) then
+!#py                 this%prod1c(i) = c12_carbonstate_vars%prod1c(i) * c3_r2
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py
+!#py     end if ! C13
+!#py
+!#py     if ( carbon_type == 'c14' ) then
+!#py        do k = 1, ndecomp_pools
+!#py           varname = trim(decomp_cascade_con%decomp_pool_name_restart(k))//'c_14'
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%decomp_cpools_vr(:,:,k)
+!#py              call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
+!#py                   dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                   long_name='',  units='', fill_value=spval, &
+!#py                   interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%decomp_cpools_vr(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
+!#py              call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                   dim1name='column', &
+!#py                   long_name='',  units='', fill_value=spval, &
+!#py                   interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%decomp_cpools_vr with atmospheric c14 value for: '//trim(varname)
+!#py              do i = bounds%begc,bounds%endc
+!#py                 do j = 1, nlevdecomp
+!#py                    if (c12_carbonstate_vars%decomp_cpools_vr(i,j,k) /= spval .and. &
+!#py                         .not. isnan(c12_carbonstate_vars%decomp_cpools_vr(i,j,k)) ) then
+!#py                          this%decomp_cpools_vr(i,j,k) = c12_carbonstate_vars%decomp_cpools_vr(i,j,k) * c3_r2
+!#py                    endif
+!#py                 end do
+!#py              end do
+!#py           end if
+!#py        end do
+!#py
+!#py        if (use_vertsoilc) then
+!#py           ptr2d => this%ctrunc_vr
+!#py           call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c14_vr", xtype=ncd_double,  &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        else
+!#py           ptr1d => this%ctrunc_vr(:,1)
+!#py           call restartvar(ncid=ncid, flag=flag, varname="col_ctrunc_c14", xtype=ncd_double,  &
+!#py                dim1name='column', long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totlitc_14', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totlitc)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           write(iulog,*) 'initializing this%totlitc with atmospheric c14 value'
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%totlitc(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%totlitc(i)) ) then
+!#py                 this%totlitc(i) = c12_carbonstate_vars%totlitc(i) * c14ratio
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='seedc_14', xtype=ncd_double,  &
+!#py             dim1name='column', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%seedc)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           write(iulog,*) 'initializing this%seedc with atmospheric c14 value'
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%seedc(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%seedc(i)) ) then
+!#py                 this%seedc(i) = c12_carbonstate_vars%seedc(i) * c14ratio
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='totcolc_14', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%totcolc)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           write(iulog,*) 'initializing this%totcolc with atmospheric c14 value'
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%totcolc(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%totcolc(i)) ) then
+!#py                 this%totcolc(i) = c12_carbonstate_vars%totcolc(i) * c14ratio
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod10c_14', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod10c)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           write(iulog,*) 'initializing this%prod10c with atmospheric c14 value'
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%prod10c(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%prod10c(i)) ) then
+!#py                 this%prod10c(i) = c12_carbonstate_vars%prod10c(i) * c14ratio
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod100c_14', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod100c)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           write(iulog,*) 'initializing this%prod100c with atmospheric c14 value'
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%prod100c(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%prod100c(i)) ) then
+!#py                 this%prod100c(i) = c12_carbonstate_vars%prod100c(i) * c14ratio
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='prod1c_14', xtype=ncd_double,  &
+!#py             dim1name='column', long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%prod1c)
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           write(iulog,*) 'initializing this%prod1c with atmospheric c14 value'
+!#py           do i = bounds%begc,bounds%endc
+!#py              if (c12_carbonstate_vars%prod1c(i) /= spval .and. &
+!#py                   .not. isnan(c12_carbonstate_vars%prod1c(i)) ) then
+!#py                 this%prod1c(i) = c12_carbonstate_vars%prod1c(i) * c14ratio
+!#py              endif
+!#py           end do
+!#py        end if
+!#py
+!#py     end if ! C14
+!#py
+!#py     !--------------------------------
+!#py     ! Spinup state
+!#py     !--------------------------------
+!#py
+!#py     if (carbon_type == 'c12'  .or. carbon_type == 'c14') then
+!#py         if (flag == 'write') then
+!#py            idata = spinup_state
+!#py         end if
+!#py         if (carbon_type == 'c12' .or. (carbon_type == 'c14' .and. flag == 'read')) then
+!#py            call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
+!#py                 long_name='Spinup state of the model that wrote this restart file: ' &
+!#py                 // ' 0 = normal model mode, 1 = AD spinup', units='', &
+!#py                 interpinic_flag='copy', readvar=readvar,  data=idata)
+!#py         end if
+!#py
+!#py         if (flag == 'read') then
+!#py            if (readvar) then
+!#py               restart_file_spinup_state = idata
+!#py            else
+!#py               ! assume, for sake of backwards compatibility, that if spinup_state is not in
+!#py               ! the restart file then current model state is the same as prior model state
+!#py               restart_file_spinup_state = spinup_state
+!#py               if ( masterproc ) then
+!#py                  write(iulog,*) ' col_cs_restart: WARNING!  Restart file does not contain info ' &
+!#py                       // ' on spinup state used to generate the restart file. '
+!#py                  write(iulog,*) '   Assuming the same as current setting: ', spinup_state
+!#py               end if
+!#py            end if
+!#py         end if
+!#py
+!#py         ! now compare the model and restart file spinup states, and either take the
+!#py         ! model into spinup mode or out of it if they are not identical
+!#py         ! taking model out of spinup mode requires multiplying each decomposing pool
+!#py         ! by the associated AD factor.
+!#py         ! putting model into spinup mode requires dividing each decomposing pool
+!#py         ! by the associated AD factor.
+!#py         ! only allow this to occur on first timestep of model run.
+!#py
+!#py         if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
+!#py            if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
+!#py               if ( masterproc ) write(iulog,*) ' col_cs_restart: taking SOM pools out of AD spinup mode'
+!#py               exit_spinup = .true.
+!#py            else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
+!#py               if ( masterproc ) write(iulog,*) ' col_cs_restart: taking SOM pools into AD spinup mode'
+!#py               enter_spinup = .true.
+!#py            else
+!#py               call endrun(msg=' col_cs_restart: error in entering/exiting spinup.  spinup_state ' &
+!#py                    // ' != restart_file_spinup_state, but do not know what to do'//&
+!#py                    errMsg(__FILE__, __LINE__))
+!#py            end if
+!#py            if (get_nstep() >= 2) then
+!#py               call endrun(msg=' col_cs_restart: error in entering/exiting spinup - should occur only when nstep = 1'//&
+!#py                    errMsg(__FILE__, __LINE__))
+!#py            endif
+!#py            do k = 1, ndecomp_pools
+!#py               do c = bounds%begc, bounds%endc
+!#py                  do j = 1, nlevdecomp
+!#py                     if ( exit_spinup ) then
+!#py                        m = decomp_cascade_con%spinup_factor(k)
+!#py                        if (decomp_cascade_con%spinup_factor(k) > 1) m = m / cnstate_vars%scalaravg_col(c,j)
+!#py                     else if ( enter_spinup ) then
+!#py                        m = 1. / decomp_cascade_con%spinup_factor(k)
+!#py                        if (decomp_cascade_con%spinup_factor(k) > 1) m = m * cnstate_vars%scalaravg_col(c,j)
+!#py                     end if
+!#py                     this%decomp_cpools_vr(c,j,k) = this%decomp_cpools_vr(c,j,k) * m
+!#py                  end do ! nlevdecomp
+!#py               end do ! columns
+!#py            end do ! ndecomp_pools
+!#py         end if ! read
+!#py      end if ! c12 or c14 (PET: why not c13?)
+!#py
+!#py !#py !#py   end subroutine col_cs_restart
 
   !-----------------------------------------------------------------------
   subroutine col_cs_summary(this, bounds, num_soilc, filter_soilc)
@@ -3101,7 +2999,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_ns_init(this, begc, endc, col_cs)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_nitrogen_state)          :: this
     integer, intent(in)                   :: begc,endc
@@ -3192,50 +3090,50 @@ end subroutine col_cs_restart
           data2dptr => this%decomp_npools_vr(:,:,l)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'N_vr'
           longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' N (vertically resolved)'
-           call hist_addfld2d (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data2dptr)
+           !#py call hist_addfld2d (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data2dptr)
        endif
 
        data1dptr => this%decomp_npools(:,l)
        fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'N'
        longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' N'
-        call hist_addfld1d (fname=fieldname, units='gN/m^2', &
-             avgflag='A', long_name=longname, &
-              ptr_col=data1dptr)
+        !#py call hist_addfld1d (fname=fieldname, units='gN/m^2', &
+             !#py avgflag='A', long_name=longname, &
+              !#py !#py ptr_col=data1dptr)
 
        if ( nlevdecomp_full > 1 ) then
           data1dptr => this%decomp_npools_1m(:,l)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'N_1m'
           longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' N to 1 meter'
-           call hist_addfld1d (fname=fieldname, units='gN/m^2', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr, default = 'inactive')
+           !#py call hist_addfld1d (fname=fieldname, units='gN/m^2', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr, default = 'inactive')
        endif
     end do
 
     if ( nlevdecomp_full > 1 ) then
 
        this%sminn(begc:endc) = spval
-        call hist_addfld1d (fname='SMINN', units='gN/m^2', &
-             avgflag='A', long_name='soil mineral N', &
-              ptr_col=this%sminn)
+        !#py call hist_addfld1d (fname='SMINN', units='gN/m^2', &
+             !#py avgflag='A', long_name='soil mineral N', &
+              !#py !#py ptr_col=this%sminn)
 
        this%totlitn_1m(begc:endc) = spval
-        call hist_addfld1d (fname='TOTLITN_1m', units='gN/m^2', &
-             avgflag='A', long_name='total litter N to 1 meter', &
-              ptr_col=this%totlitn_1m, default='inactive')
+        !#py call hist_addfld1d (fname='TOTLITN_1m', units='gN/m^2', &
+             !#py avgflag='A', long_name='total litter N to 1 meter', &
+              !#py !#py ptr_col=this%totlitn_1m, default='inactive')
 
        this%totsomn_1m(begc:endc) = spval
-        call hist_addfld1d (fname='TOTSOMN_1m', units='gN/m^2', &
-             avgflag='A', long_name='total soil organic matter N to 1 meter', &
-              ptr_col=this%totsomn_1m, default='inactive')
+        !#py call hist_addfld1d (fname='TOTSOMN_1m', units='gN/m^2', &
+             !#py avgflag='A', long_name='total soil organic matter N to 1 meter', &
+              !#py !#py ptr_col=this%totsomn_1m, default='inactive')
     endif
 
     this%ntrunc(begc:endc) = spval
-     call hist_addfld1d (fname='COL_NTRUNC', units='gN/m^2',  &
-          avgflag='A', long_name='column-level sink for N truncation', &
-           ptr_col=this%ntrunc, default='inactive')
+     !#py call hist_addfld1d (fname='COL_NTRUNC', units='gN/m^2',  &
+          !#py avgflag='A', long_name='column-level sink for N truncation', &
+           !#py !#py ptr_col=this%ntrunc, default='inactive')
 
     ! add suffix if number of soil decomposition depths is greater than 1
     if (nlevdecomp > 1) then
@@ -3245,94 +3143,94 @@ end subroutine col_cs_restart
     endif
 
     this%smin_no3_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='SMIN_NO3'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
-         avgflag='A', long_name='soil mineral NO3 (vert. res.)', &
-         ptr_col=this%smin_no3_vr)
+    !#py call hist_addfld_decomp (fname='SMIN_NO3'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
+         !#py avgflag='A', long_name='soil mineral NO3 (vert. res.)', &
+         !#py !#py ptr_col=this%smin_no3_vr)
 
     this%smin_nh4_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='SMIN_NH4'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
-         avgflag='A', long_name='soil mineral NH4 (vert. res.)', &
-         ptr_col=this%smin_nh4_vr)
+    !#py call hist_addfld_decomp (fname='SMIN_NH4'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
+         !#py avgflag='A', long_name='soil mineral NH4 (vert. res.)', &
+         !#py !#py ptr_col=this%smin_nh4_vr)
 
     ! pflotran
     if(use_pflotran .and. pf_cmode) then
        this%smin_nh4sorb_vr(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='SMIN_NH4SORB'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
-            avgflag='A', long_name='soil mineral NH4 absorbed (vert. res.)', &
-            ptr_col=this%smin_nh4sorb_vr)
+       !#py call hist_addfld_decomp (fname='SMIN_NH4SORB'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='soil mineral NH4 absorbed (vert. res.)', &
+            !#py !#py ptr_col=this%smin_nh4sorb_vr)
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%smin_no3(begc:endc) = spval
-       call hist_addfld1d (fname='SMIN_NO3', units='gN/m^2', &
-            avgflag='A', long_name='soil mineral NO3', &
-            ptr_col=this%smin_no3)
+       !#py call hist_addfld1d (fname='SMIN_NO3', units='gN/m^2', &
+            !#py avgflag='A', long_name='soil mineral NO3', &
+            !#py !#py ptr_col=this%smin_no3)
 
        this%smin_nh4(begc:endc) = spval
-       call hist_addfld1d (fname='SMIN_NH4', units='gN/m^2', &
-            avgflag='A', long_name='soil mineral NH4', &
-            ptr_col=this%smin_nh4)
+       !#py call hist_addfld1d (fname='SMIN_NH4', units='gN/m^2', &
+            !#py avgflag='A', long_name='soil mineral NH4', &
+            !#py !#py ptr_col=this%smin_nh4)
 
        ! pflotran
        if(use_pflotran .and. pf_cmode) then
           this%smin_nh4sorb(begc:endc) = spval
-          call hist_addfld1d (fname='SMIN_NH4SORB', units='gN/m^2', &
-               avgflag='A', long_name='soil mineral NH4 absorbed', &
-               ptr_col=this%smin_nh4sorb)
+          !#py call hist_addfld1d (fname='SMIN_NH4SORB', units='gN/m^2', &
+               !#py avgflag='A', long_name='soil mineral NH4 absorbed', &
+               !#py !#py ptr_col=this%smin_nh4sorb)
        end if
     end if
 
     this%sminn_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='SMINN'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
-         avgflag='A', long_name='soil mineral N', &
-         ptr_col=this%sminn_vr, default = 'inactive')
+    !#py call hist_addfld_decomp (fname='SMINN'//trim(vr_suffix), units='gN/m^3',  type2d='levdcmp', &
+         !#py avgflag='A', long_name='soil mineral N', &
+         !#py !#py ptr_col=this%sminn_vr, default = 'inactive')
 
 
 
     this%totlitn(begc:endc) = spval
-     call hist_addfld1d (fname='TOTLITN', units='gN/m^2', &
-          avgflag='A', long_name='total litter N', &
-           ptr_col=this%totlitn)
+     !#py call hist_addfld1d (fname='TOTLITN', units='gN/m^2', &
+          !#py avgflag='A', long_name='total litter N', &
+           !#py !#py ptr_col=this%totlitn)
 
     this%totsomn(begc:endc) = spval
-     call hist_addfld1d (fname='TOTSOMN', units='gN/m^2', &
-          avgflag='A', long_name='total soil organic matter N', &
-           ptr_col=this%totsomn)
+     !#py call hist_addfld1d (fname='TOTSOMN', units='gN/m^2', &
+          !#py avgflag='A', long_name='total soil organic matter N', &
+           !#py !#py ptr_col=this%totsomn)
 
     this%totecosysn(begc:endc) = spval
-     call hist_addfld1d (fname='TOTECOSYSN', units='gN/m^2', &
-          avgflag='A', long_name='total ecosystem N but excl product pools', &
-           ptr_col=this%totecosysn)
+     !#py call hist_addfld1d (fname='TOTECOSYSN', units='gN/m^2', &
+          !#py avgflag='A', long_name='total ecosystem N but excl product pools', &
+           !#py !#py ptr_col=this%totecosysn)
 
     this%totcoln(begc:endc) = spval
-     call hist_addfld1d (fname='TOTCOLN', units='gN/m^2', &
-          avgflag='A', long_name='total column-level N but excl product pools', &
-           ptr_col=this%totcoln)
+     !#py call hist_addfld1d (fname='TOTCOLN', units='gN/m^2', &
+          !#py avgflag='A', long_name='total column-level N but excl product pools', &
+           !#py !#py ptr_col=this%totcoln)
 
     this%seedn(begc:endc) = spval
-     call hist_addfld1d (fname='SEEDN', units='gN/m^2', &
-          avgflag='A', long_name='pool for seeding new PFTs ', &
-           ptr_col=this%seedn, default='inactive')
+     !#py call hist_addfld1d (fname='SEEDN', units='gN/m^2', &
+          !#py avgflag='A', long_name='pool for seeding new PFTs ', &
+           !#py !#py ptr_col=this%seedn, default='inactive')
 
     this%prod10n(begc:endc) = spval
-     call hist_addfld1d (fname='PROD10N', units='gN/m^2', &
-          avgflag='A', long_name='10-yr wood product N', &
-           ptr_col=this%prod10n, default='inactive')
+     !#py call hist_addfld1d (fname='PROD10N', units='gN/m^2', &
+          !#py avgflag='A', long_name='10-yr wood product N', &
+           !#py !#py ptr_col=this%prod10n, default='inactive')
 
     this%prod100n(begc:endc) = spval
-     call hist_addfld1d (fname='PROD100N', units='gN/m^2', &
-          avgflag='A', long_name='100-yr wood product N', &
-           ptr_col=this%prod100n, default='inactive')
+     !#py call hist_addfld1d (fname='PROD100N', units='gN/m^2', &
+          !#py avgflag='A', long_name='100-yr wood product N', &
+           !#py !#py ptr_col=this%prod100n, default='inactive')
 
     this%prod1n(begc:endc) = spval
-     call hist_addfld1d (fname='PROD1N', units='gN/m^2', &
-          avgflag='A', long_name='1-yr crop product N', &
-           ptr_col=this%prod1n, default='inactive')
+     !#py call hist_addfld1d (fname='PROD1N', units='gN/m^2', &
+          !#py avgflag='A', long_name='1-yr crop product N', &
+           !#py !#py ptr_col=this%prod1n, default='inactive')
 
     this%totprodn(begc:endc) = spval
-     call hist_addfld1d (fname='TOTPRODN', units='gN/m^2', &
-          avgflag='A', long_name='total wood product N', &
-           ptr_col=this%totprodn, default='inactive')
+     !#py call hist_addfld1d (fname='TOTPRODN', units='gN/m^2', &
+          !#py avgflag='A', long_name='total wood product N', &
+           !#py !#py ptr_col=this%totprodn, default='inactive')
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_ns
@@ -3425,284 +3323,284 @@ end subroutine col_cs_restart
   end subroutine col_ns_init
 
   !------------------------------------------------------------------------
-  subroutine col_ns_restart ( this,  bounds, ncid, flag, cnstate_vars )
-    !
-    ! !DESCRIPTION:
-    ! Read/write CN restart data for nitrogen state
-    !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    ! !ARGUMENTS:
-    class (column_nitrogen_state)              :: this
-    type(bounds_type)          , intent(in)    :: bounds
-    type(file_desc_t)          , intent(inout) :: ncid
-    character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
-    type(cnstate_type)         , intent(in)    :: cnstate_vars
-    !
-    ! !LOCAL VARIABLES:
-    integer            :: i,j,k,l,c
-    logical            :: readvar
-    integer            :: idata
-    logical            :: exit_spinup = .false.
-    logical            :: enter_spinup = .false.
-    real(r8)           :: m, m_veg          ! multiplier for the exit_spinup code
-    real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
-    real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
-    character(len=128) :: varname    ! temporary
-    integer            :: itemp      ! temporary
-    integer , pointer  :: iptemp(:)  ! pointer to memory to be allocated
-    ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
-    integer            :: restart_file_spinup_state
-    ! flags for comparing the model and restart decomposition cascades
-    integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
-    !------------------------------------------------------------------------
-
-    ! sminn
-    if (use_vertsoilc) then
-       ptr2d => this%sminn_vr
-       call restartvar(ncid=ncid, flag=flag, varname="sminn_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%sminn_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="sminn", xtype=ncd_double,  &
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-    end if
-    if (flag=='read' .and. .not. readvar) then
-       call endrun(msg='ERROR::'//trim(varname)//' is required on an initialization dataset'//&
-            errMsg(__FILE__, __LINE__))
-    end if
-
-    ! decomposing N pools
-    do k = 1, ndecomp_pools
-       varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'n'
-       if (use_vertsoilc) then
-          ptr2d => this%decomp_npools_vr(:,:,k)
-          call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double, &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       else
-          ptr1d => this%decomp_npools_vr(:,1,k)
-          call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-               dim1name='column', &
-               long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-       end if
-       if (flag=='read' .and. .not. readvar) then
-          call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
-               errMsg(__FILE__, __LINE__))
-       end if
-    end do
-
-    if (use_vertsoilc) then
-       ptr2d => this%ntrunc_vr
-       call restartvar(ncid=ncid, flag=flag, varname="col_ntrunc_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%ntrunc_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="col_ntrunc", xtype=ncd_double,  &
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-    end if
-
-    ! smin_no3_vr
-    if (use_vertsoilc) then
-       ptr2d => this%smin_no3_vr(:,:)
-       call restartvar(ncid=ncid, flag=flag, varname='smin_no3_vr', xtype=ncd_double, &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%smin_no3_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname='smin_no3', xtype=ncd_double, &
-            dim1name='column', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=ptr1d)
-    end if
-    if (flag=='read' .and. .not. readvar) then
-       call endrun(msg= 'ERROR:: smin_no3_vr'//' is required on an initialization dataset' )
-    end if
-
-    ! smin_nh4
-    if (use_vertsoilc) then
-       ptr2d => this%smin_nh4_vr(:,:)
-       call restartvar(ncid=ncid, flag=flag, varname='smin_nh4_vr', xtype=ncd_double, &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%smin_nh4_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname='smin_nh4', xtype=ncd_double, &
-            dim1name='column', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=ptr1d)
-    end if
-    if (flag=='read' .and. .not. readvar) then
-       call endrun(msg= 'ERROR:: smin_nh4_vr'//' is required on an initialization dataset' )
-    end if
-
-    ! pflotran: smin_nh4sorb
-    if (use_pflotran .and. pf_cmode) then
-       if (use_vertsoilc) then
-          ptr2d => this%smin_nh4sorb_vr(:,:)
-          call restartvar(ncid=ncid, flag=flag, varname='smin_nh4sorb_vr', xtype=ncd_double, &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-        else
-          ptr1d => this%smin_nh4sorb_vr(:,1)
-          call restartvar(ncid=ncid, flag=flag, varname='smin_nh4sorb', xtype=ncd_double, &
-               dim1name='column', &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=ptr1d)
-       end if
-       if (flag=='read' .and. .not. readvar) then
-          call endrun(msg= 'ERROR:: smin_nh4sorb_vr'//' is required on an initialization dataset' )
-       end if
-    end if
-
-    ! Set the integrated sminn based on sminn_vr, as is done in CNSummaryMod (this may
-    ! not be the most appropriate method or place to do this)
-
-    this%sminn(bounds%begc:bounds%endc) = 0._r8
-    do j = 1, nlevdecomp
-       do c = bounds%begc, bounds%endc
-          this%sminn(c) = &
-               this%sminn(c) + &
-               this%sminn_vr(c,j) * dzsoi_decomp(j)
-       end do
-    end do
-
-    call restartvar(ncid=ncid, flag=flag, varname='totcoln', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%totcoln)
-
-    call restartvar(ncid=ncid, flag=flag, varname='seedn', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%seedn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prod10n', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prod10n)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prod100n', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prod100n)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prod1n', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prod1n)
-
-    ! decomp_cascade_state - the purpose of this is to check to make sure the bgc used
-    ! matches what the restart file was generated with.
-    ! add info about the SOM decomposition cascade
-
-    if (use_century_decomp) then
-       decomp_cascade_state = 1
-    else
-       decomp_cascade_state = 0
-    end if
-
-    ! add info about the nitrification / denitrification state
-    decomp_cascade_state = decomp_cascade_state + 10
-
-    if (flag == 'write') itemp = decomp_cascade_state
-    call restartvar(ncid=ncid, flag=flag, varname='decomp_cascade_state', xtype=ncd_int,  &
-         long_name='BGC of the model that wrote this restart file:' &
-         // '  1s column: 0 = CLM-CN cascade, 1 = Century cascade;' &
-         // ' 10s column: 0 = CLM-CN denitrification, 10 = Century denitrification', units='', &
-         interpinic_flag='skip', readvar=readvar, data=itemp)
-    if (flag=='read') then
-       if (.not. readvar) then
-          ! assume, for sake of backwards compatibility, that if decomp_cascade_state
-          ! is not in the restart file, then the current model state is the same as
-          ! the prior model state
-          restart_file_decomp_cascade_state = decomp_cascade_state
-          if ( masterproc ) write(iulog,*) ' CNRest: WARNING!  Restart file does not ' &
-               // ' contain info on decomp_cascade_state used to generate the restart file.  '
-          if ( masterproc ) write(iulog,*) '   Assuming the same as current setting: ', decomp_cascade_state
-       else
-          restart_file_decomp_cascade_state = itemp
-          if (decomp_cascade_state /= restart_file_decomp_cascade_state ) then
-             if ( masterproc ) then
-                write(iulog,*) 'CNRest: ERROR--the decomposition cascade differs between the current ' &
-                     // ' model state and the model that wrote the restart file. '
-                write(iulog,*) 'The model will be horribly out of equilibrium until after a lengthy spinup. '
-                write(iulog,*) 'Stopping here since this is probably an error in configuring the run. '
-                write(iulog,*) 'If you really wish to proceed, then override by setting '
-                write(iulog,*) 'override_bgc_restart_mismatch_dump to .true. in the namelist'
-                if ( .not. override_bgc_restart_mismatch_dump ) then
-                   call endrun(msg= ' CNRest: Stopping. Decomposition cascade mismatch error.'//&
-                        errMsg(__FILE__, __LINE__))
-                endif
-             endif
-          endif
-       end if
-    end if
-
-    !--------------------------------
-    ! Spinup state
-    !--------------------------------
-    ! note that write is handled by column_carbon_state
-    !
-    if (flag == 'read') then
-       call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
-            long_name='Spinup state of the model that wrote this restart file: ' &
-            // ' 0 = normal model mode, 1 = AD spinup', units='', &
-            interpinic_flag='copy', readvar=readvar,  data=idata)
-       if (readvar) then
-          restart_file_spinup_state = idata
-       else
-          ! assume, for sake of backwards compatibility, that if spinup_state is not in
-          ! the restart file then current model state is the same as prior model state
-          restart_file_spinup_state = spinup_state
-          if ( masterproc ) then
-             write(iulog,*) ' WARNING!  Restart file does not contain info ' &
-                  // ' on spinup state used to generate the restart file. '
-             write(iulog,*) '   Assuming the same as current setting: ', spinup_state
-          end if
-       end if
-    end if
-
-    if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
-       if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
-          if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools out of AD spinup mode'
-          exit_spinup = .true.
-       else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
-          if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools into AD spinup mode'
-          enter_spinup = .true.
-       else
-          call endrun(msg=' Error in entering/exiting spinup.  spinup_state ' &
-               // ' != restart_file_spinup_state, but do not know what to do'//&
-               errMsg(__FILE__, __LINE__))
-       end if
-       if (get_nstep() >= 2) then
-          call endrun(msg=' Error in entering/exiting spinup - should occur only when nstep = 1'//&
-               errMsg(__FILE__, __LINE__))
-       endif
-       do k = 1, ndecomp_pools
-          do c = bounds%begc, bounds%endc
-             do j = 1, nlevdecomp
-                if ( exit_spinup ) then
-                   m = decomp_cascade_con%spinup_factor(k)
-                   if (decomp_cascade_con%spinup_factor(k) > 1) m = m / cnstate_vars%scalaravg_col(c,j)
-                else if ( enter_spinup ) then
-                   m = 1. / decomp_cascade_con%spinup_factor(k)
-                   if (decomp_cascade_con%spinup_factor(k) > 1) m = m * cnstate_vars%scalaravg_col(c,j)
-                end if
-                this%decomp_npools_vr(c,j,k) = this%decomp_npools_vr(c,j,k) * m
-             end do
-          end do
-       end do
-    end if
-
-  end subroutine col_ns_restart
+!#py   subroutine col_ns_restart ( this,  bounds, ncid, flag, cnstate_vars )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write CN restart data for nitrogen state
+!#py     !
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     ! !ARGUMENTS:
+!#py     class (column_nitrogen_state)              :: this
+!#py     type(bounds_type)          , intent(in)    :: bounds
+!#py     type(file_desc_t)          , intent(inout) :: ncid
+!#py     character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
+!#py     type(cnstate_type)         , intent(in)    :: cnstate_vars
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer            :: i,j,k,l,c
+!#py     logical            :: readvar
+!#py     integer            :: idata
+!#py     logical            :: exit_spinup = .false.
+!#py     logical            :: enter_spinup = .false.
+!#py     real(r8)           :: m, m_veg          ! multiplier for the exit_spinup code
+!#py     real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
+!#py     character(len=128) :: varname    ! temporary
+!#py     integer            :: itemp      ! temporary
+!#py     integer , pointer  :: iptemp(:)  ! pointer to memory to be allocated
+!#py     ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
+!#py     integer            :: restart_file_spinup_state
+!#py     ! flags for comparing the model and restart decomposition cascades
+!#py     integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     ! sminn
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%sminn_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="sminn_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%sminn_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="sminn", xtype=ncd_double,  &
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py     end if
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        call endrun(msg='ERROR::'//trim(varname)//' is required on an initialization dataset'//&
+!#py             errMsg(__FILE__, __LINE__))
+!#py     end if
+!#py
+!#py     ! decomposing N pools
+!#py     do k = 1, ndecomp_pools
+!#py        varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'n'
+!#py        if (use_vertsoilc) then
+!#py           ptr2d => this%decomp_npools_vr(:,:,k)
+!#py           call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double, &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        else
+!#py           ptr1d => this%decomp_npools_vr(:,1,k)
+!#py           call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                dim1name='column', &
+!#py                long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py        end if
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py     end do
+!#py
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%ntrunc_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="col_ntrunc_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%ntrunc_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="col_ntrunc", xtype=ncd_double,  &
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py     end if
+!#py
+!#py     ! smin_no3_vr
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%smin_no3_vr(:,:)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='smin_no3_vr', xtype=ncd_double, &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%smin_no3_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='smin_no3', xtype=ncd_double, &
+!#py             dim1name='column', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py     end if
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        call endrun(msg= 'ERROR:: smin_no3_vr'//' is required on an initialization dataset' )
+!#py     end if
+!#py
+!#py     ! smin_nh4
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%smin_nh4_vr(:,:)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='smin_nh4_vr', xtype=ncd_double, &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%smin_nh4_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='smin_nh4', xtype=ncd_double, &
+!#py             dim1name='column', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py     end if
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        call endrun(msg= 'ERROR:: smin_nh4_vr'//' is required on an initialization dataset' )
+!#py     end if
+!#py
+!#py     ! pflotran: smin_nh4sorb
+!#py     if (use_pflotran .and. pf_cmode) then
+!#py        if (use_vertsoilc) then
+!#py           ptr2d => this%smin_nh4sorb_vr(:,:)
+!#py           call restartvar(ncid=ncid, flag=flag, varname='smin_nh4sorb_vr', xtype=ncd_double, &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py         else
+!#py           ptr1d => this%smin_nh4sorb_vr(:,1)
+!#py           call restartvar(ncid=ncid, flag=flag, varname='smin_nh4sorb', xtype=ncd_double, &
+!#py                dim1name='column', &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py        end if
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           call endrun(msg= 'ERROR:: smin_nh4sorb_vr'//' is required on an initialization dataset' )
+!#py        end if
+!#py     end if
+!#py
+!#py     ! Set the integrated sminn based on sminn_vr, as is done in CNSummaryMod (this may
+!#py     ! not be the most appropriate method or place to do this)
+!#py
+!#py     this%sminn(bounds%begc:bounds%endc) = 0._r8
+!#py     do j = 1, nlevdecomp
+!#py        do c = bounds%begc, bounds%endc
+!#py           this%sminn(c) = &
+!#py                this%sminn(c) + &
+!#py                this%sminn_vr(c,j) * dzsoi_decomp(j)
+!#py        end do
+!#py     end do
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='totcoln', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%totcoln)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='seedn', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%seedn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prod10n', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prod10n)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prod100n', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prod100n)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prod1n', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prod1n)
+!#py
+!#py     ! decomp_cascade_state - the purpose of this is to check to make sure the bgc used
+!#py     ! matches what the restart file was generated with.
+!#py     ! add info about the SOM decomposition cascade
+!#py
+!#py     if (use_century_decomp) then
+!#py        decomp_cascade_state = 1
+!#py     else
+!#py        decomp_cascade_state = 0
+!#py     end if
+!#py
+!#py     ! add info about the nitrification / denitrification state
+!#py     decomp_cascade_state = decomp_cascade_state + 10
+!#py
+!#py     if (flag == 'write') itemp = decomp_cascade_state
+!#py     call restartvar(ncid=ncid, flag=flag, varname='decomp_cascade_state', xtype=ncd_int,  &
+!#py          long_name='BGC of the model that wrote this restart file:' &
+!#py          // '  1s column: 0 = CLM-CN cascade, 1 = Century cascade;' &
+!#py          // ' 10s column: 0 = CLM-CN denitrification, 10 = Century denitrification', units='', &
+!#py          interpinic_flag='skip', readvar=readvar, data=itemp)
+!#py     if (flag=='read') then
+!#py        if (.not. readvar) then
+!#py           ! assume, for sake of backwards compatibility, that if decomp_cascade_state
+!#py           ! is not in the restart file, then the current model state is the same as
+!#py           ! the prior model state
+!#py           restart_file_decomp_cascade_state = decomp_cascade_state
+!#py           if ( masterproc ) write(iulog,*) ' CNRest: WARNING!  Restart file does not ' &
+!#py                // ' contain info on decomp_cascade_state used to generate the restart file.  '
+!#py           if ( masterproc ) write(iulog,*) '   Assuming the same as current setting: ', decomp_cascade_state
+!#py        else
+!#py           restart_file_decomp_cascade_state = itemp
+!#py           if (decomp_cascade_state /= restart_file_decomp_cascade_state ) then
+!#py              if ( masterproc ) then
+!#py                 write(iulog,*) 'CNRest: ERROR--the decomposition cascade differs between the current ' &
+!#py                      // ' model state and the model that wrote the restart file. '
+!#py                 write(iulog,*) 'The model will be horribly out of equilibrium until after a lengthy spinup. '
+!#py                 write(iulog,*) 'Stopping here since this is probably an error in configuring the run. '
+!#py                 write(iulog,*) 'If you really wish to proceed, then override by setting '
+!#py                 write(iulog,*) 'override_bgc_restart_mismatch_dump to .true. in the namelist'
+!#py                 if ( .not. override_bgc_restart_mismatch_dump ) then
+!#py                    call endrun(msg= ' CNRest: Stopping. Decomposition cascade mismatch error.'//&
+!#py                         errMsg(__FILE__, __LINE__))
+!#py                 endif
+!#py              endif
+!#py           endif
+!#py        end if
+!#py     end if
+!#py
+!#py     !--------------------------------
+!#py     ! Spinup state
+!#py     !--------------------------------
+!#py     ! note that write is handled by column_carbon_state
+!#py     !
+!#py     if (flag == 'read') then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
+!#py             long_name='Spinup state of the model that wrote this restart file: ' &
+!#py             // ' 0 = normal model mode, 1 = AD spinup', units='', &
+!#py             interpinic_flag='copy', readvar=readvar,  data=idata)
+!#py        if (readvar) then
+!#py           restart_file_spinup_state = idata
+!#py        else
+!#py           ! assume, for sake of backwards compatibility, that if spinup_state is not in
+!#py           ! the restart file then current model state is the same as prior model state
+!#py           restart_file_spinup_state = spinup_state
+!#py           if ( masterproc ) then
+!#py              write(iulog,*) ' WARNING!  Restart file does not contain info ' &
+!#py                   // ' on spinup state used to generate the restart file. '
+!#py              write(iulog,*) '   Assuming the same as current setting: ', spinup_state
+!#py           end if
+!#py        end if
+!#py     end if
+!#py
+!#py     if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
+!#py        if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
+!#py           if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools out of AD spinup mode'
+!#py           exit_spinup = .true.
+!#py        else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
+!#py           if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools into AD spinup mode'
+!#py           enter_spinup = .true.
+!#py        else
+!#py           call endrun(msg=' Error in entering/exiting spinup.  spinup_state ' &
+!#py                // ' != restart_file_spinup_state, but do not know what to do'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py        if (get_nstep() >= 2) then
+!#py           call endrun(msg=' Error in entering/exiting spinup - should occur only when nstep = 1'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        endif
+!#py        do k = 1, ndecomp_pools
+!#py           do c = bounds%begc, bounds%endc
+!#py              do j = 1, nlevdecomp
+!#py                 if ( exit_spinup ) then
+!#py                    m = decomp_cascade_con%spinup_factor(k)
+!#py                    if (decomp_cascade_con%spinup_factor(k) > 1) m = m / cnstate_vars%scalaravg_col(c,j)
+!#py                 else if ( enter_spinup ) then
+!#py                    m = 1. / decomp_cascade_con%spinup_factor(k)
+!#py                    if (decomp_cascade_con%spinup_factor(k) > 1) m = m * cnstate_vars%scalaravg_col(c,j)
+!#py                 end if
+!#py                 this%decomp_npools_vr(c,j,k) = this%decomp_npools_vr(c,j,k) * m
+!#py              end do
+!#py           end do
+!#py        end do
+!#py     end if
+!#py
+!#py !#py !#py   end subroutine col_ns_restart
 
   !-----------------------------------------------------------------------
   subroutine col_ns_setvalues ( this, num_column, filter_column, value_column)
@@ -4071,7 +3969,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_ps_init(this, begc, endc, col_cs)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_phosphorus_state)        :: this
     integer, intent(in)                   :: begc,endc
@@ -4165,25 +4063,25 @@ end subroutine col_cs_restart
           data2dptr => this%decomp_ppools_vr(:,:,l)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'P_vr'
           longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' P (vertically resolved)'
-           call hist_addfld2d (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data2dptr)
+           !#py call hist_addfld2d (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data2dptr)
        endif
 
        data1dptr => this%decomp_ppools(:,l)
        fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'P'
        longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' P'
-        call hist_addfld1d (fname=fieldname, units='gP/m^2', &
-             avgflag='A', long_name=longname, &
-              ptr_col=data1dptr)
+        !#py call hist_addfld1d (fname=fieldname, units='gP/m^2', &
+             !#py avgflag='A', long_name=longname, &
+              !#py !#py ptr_col=data1dptr)
 
        if ( nlevdecomp_full > 1 ) then
           data1dptr => this%decomp_ppools_1m(:,l)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(l))//'P_1m'
           longname =  trim(decomp_cascade_con%decomp_pool_name_history(l))//' P to 1 meter'
-           call hist_addfld1d (fname=fieldname, units='gP/m^2', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr, default = 'inactive')
+           !#py call hist_addfld1d (fname=fieldname, units='gP/m^2', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr, default = 'inactive')
        endif
     end do
 
@@ -4191,25 +4089,25 @@ end subroutine col_cs_restart
     if ( nlevdecomp_full > 1 ) then
 
        this%sminp(begc:endc) = spval
-        call hist_addfld1d (fname='SMINP', units='gP/m^2', &
-             avgflag='A', long_name='soil mineral P', &
-              ptr_col=this%sminp)
+        !#py call hist_addfld1d (fname='SMINP', units='gP/m^2', &
+             !#py avgflag='A', long_name='soil mineral P', &
+              !#py !#py ptr_col=this%sminp)
 
        this%totlitp_1m(begc:endc) = spval
-        call hist_addfld1d (fname='TOTLITP_1m', units='gP/m^2', &
-             avgflag='A', long_name='total litter P to 1 meter', &
-              ptr_col=this%totlitp_1m)
+        !#py call hist_addfld1d (fname='TOTLITP_1m', units='gP/m^2', &
+             !#py avgflag='A', long_name='total litter P to 1 meter', &
+              !#py !#py ptr_col=this%totlitp_1m)
 
        this%totsomp_1m(begc:endc) = spval
-        call hist_addfld1d (fname='TOTSOMP_1m', units='gP/m^2', &
-             avgflag='A', long_name='total soil organic matter P to 1 meter', &
-              ptr_col=this%totsomp_1m)
+        !#py call hist_addfld1d (fname='TOTSOMP_1m', units='gP/m^2', &
+             !#py avgflag='A', long_name='total soil organic matter P to 1 meter', &
+              !#py !#py ptr_col=this%totsomp_1m)
     endif
 
     this%ptrunc(begc:endc) = spval
-     call hist_addfld1d (fname='COL_PTRUNC', units='gP/m^2',  &
-          avgflag='A', long_name='column-level sink for P truncation', &
-           ptr_col=this%ptrunc)
+     !#py call hist_addfld1d (fname='COL_PTRUNC', units='gP/m^2',  &
+          !#py avgflag='A', long_name='column-level sink for P truncation', &
+           !#py !#py ptr_col=this%ptrunc)
 
     ! add suffix if number of soil decomposition depths is greater than 1
     if (nlevdecomp > 1) then
@@ -4219,107 +4117,107 @@ end subroutine col_cs_restart
     endif
 
     this%solutionp_vr(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='SOLUTIONP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
-          avgflag='A', long_name='soil solution P (vert. res.)', &
-           ptr_col=this%solutionp_vr)
+     !#py call hist_addfld_decomp (fname='SOLUTIONP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='soil solution P (vert. res.)', &
+           !#py !#py ptr_col=this%solutionp_vr)
 
     this%labilep_vr(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='LABILEP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
-          avgflag='A', long_name='soil labile P (vert. res.)', &
-           ptr_col=this%labilep_vr)
+     !#py call hist_addfld_decomp (fname='LABILEP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='soil labile P (vert. res.)', &
+           !#py !#py ptr_col=this%labilep_vr)
 
     this%secondp_vr(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='SECONDP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
-          avgflag='A', long_name='soil secondary P (vert. res.)', &
-           ptr_col=this%secondp_vr)
+     !#py call hist_addfld_decomp (fname='SECONDP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='soil secondary P (vert. res.)', &
+           !#py !#py ptr_col=this%secondp_vr)
 
     this%occlp_vr(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='OCCLP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
-          avgflag='A', long_name='soil occluded P (vert. res.)', &
-           ptr_col=this%occlp_vr)
+     !#py call hist_addfld_decomp (fname='OCCLP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='soil occluded P (vert. res.)', &
+           !#py !#py ptr_col=this%occlp_vr)
 
     this%primp_vr(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='PRIMP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
-          avgflag='A', long_name='soil primary P (vert. res.)', &
-           ptr_col=this%primp_vr)
+     !#py call hist_addfld_decomp (fname='PRIMP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='soil primary P (vert. res.)', &
+           !#py !#py ptr_col=this%primp_vr)
 
     this%sminp_vr(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='SMINP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
-          avgflag='A', long_name='soil mineral P (vert. res.)', &
-           ptr_col=this%sminp_vr)
+     !#py call hist_addfld_decomp (fname='SMINP'//trim(vr_suffix), units='gp/m^3',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='soil mineral P (vert. res.)', &
+           !#py !#py ptr_col=this%sminp_vr)
 
     if ( nlevdecomp_full > 1 ) then
 
        this%solutionp(begc:endc) = spval
-        call hist_addfld1d (fname='SOLUTIONP', units='gP/m^2', &
-             avgflag='A', long_name='soil solution P', &
-              ptr_col=this%solutionp)
+        !#py call hist_addfld1d (fname='SOLUTIONP', units='gP/m^2', &
+             !#py avgflag='A', long_name='soil solution P', &
+              !#py !#py ptr_col=this%solutionp)
 
        this%labilep(begc:endc) = spval
-        call hist_addfld1d (fname='LABILEP', units='gP/m^2', &
-             avgflag='A', long_name='soil Labile P', &
-              ptr_col=this%labilep)
+        !#py call hist_addfld1d (fname='LABILEP', units='gP/m^2', &
+             !#py avgflag='A', long_name='soil Labile P', &
+              !#py !#py ptr_col=this%labilep)
 
        this%secondp(begc:endc) = spval
-        call hist_addfld1d (fname='SECONDP', units='gP/m^2', &
-             avgflag='A', long_name='soil secondary P', &
-              ptr_col=this%secondp)
+        !#py call hist_addfld1d (fname='SECONDP', units='gP/m^2', &
+             !#py avgflag='A', long_name='soil secondary P', &
+              !#py !#py ptr_col=this%secondp)
 
        this%occlp(begc:endc) = spval
-        call hist_addfld1d (fname='OCCLP', units='gP/m^2', &
-             avgflag='A', long_name='soil occluded P', &
-              ptr_col=this%occlp)
+        !#py call hist_addfld1d (fname='OCCLP', units='gP/m^2', &
+             !#py avgflag='A', long_name='soil occluded P', &
+              !#py !#py ptr_col=this%occlp)
 
        this%primp(begc:endc) = spval
-        call hist_addfld1d (fname='PRIMP', units='gP/m^2', &
-             avgflag='A', long_name='soil primary P', &
-              ptr_col=this%primp)
+        !#py call hist_addfld1d (fname='PRIMP', units='gP/m^2', &
+             !#py avgflag='A', long_name='soil primary P', &
+              !#py !#py ptr_col=this%primp)
     endif
 
     this%totlitp(begc:endc) = spval
-     call hist_addfld1d (fname='TOTLITP', units='gP/m^2', &
-          avgflag='A', long_name='total litter P', &
-           ptr_col=this%totlitp)
+     !#py call hist_addfld1d (fname='TOTLITP', units='gP/m^2', &
+          !#py avgflag='A', long_name='total litter P', &
+           !#py !#py ptr_col=this%totlitp)
 
     this%totsomp(begc:endc) = spval
-     call hist_addfld1d (fname='TOTSOMP', units='gP/m^2', &
-          avgflag='A', long_name='total soil organic matter P', &
-           ptr_col=this%totsomp)
+     !#py call hist_addfld1d (fname='TOTSOMP', units='gP/m^2', &
+          !#py avgflag='A', long_name='total soil organic matter P', &
+           !#py !#py ptr_col=this%totsomp)
 
     this%totecosysp(begc:endc) = spval
-     call hist_addfld1d (fname='TOTECOSYSP', units='gP/m^2', &
-          avgflag='A', long_name='total ecosystem P but excl product pools', &
-           ptr_col=this%totecosysp)
+     !#py call hist_addfld1d (fname='TOTECOSYSP', units='gP/m^2', &
+          !#py avgflag='A', long_name='total ecosystem P but excl product pools', &
+           !#py !#py ptr_col=this%totecosysp)
 
     this%totcolp(begc:endc) = spval
-     call hist_addfld1d (fname='TOTCOLP', units='gP/m^2', &
-          avgflag='A', long_name='total column-level P but excl product pools', &
-           ptr_col=this%totcolp)
+     !#py call hist_addfld1d (fname='TOTCOLP', units='gP/m^2', &
+          !#py avgflag='A', long_name='total column-level P but excl product pools', &
+           !#py !#py ptr_col=this%totcolp)
 
     this%seedp(begc:endc) = spval
-     call hist_addfld1d (fname='SEEDP', units='gP/m^2', &
-          avgflag='A', long_name='P pool for seeding new PFTs ', &
-           ptr_col=this%seedp, default='inactive')
+     !#py call hist_addfld1d (fname='SEEDP', units='gP/m^2', &
+          !#py avgflag='A', long_name='P pool for seeding new PFTs ', &
+           !#py !#py ptr_col=this%seedp, default='inactive')
 
     this%prod10p(begc:endc) = spval
-     call hist_addfld1d (fname='PROD10P', units='gP/m^2', &
-          avgflag='A', long_name='10-yr wood product P', &
-           ptr_col=this%prod10p, default='inactive')
+     !#py call hist_addfld1d (fname='PROD10P', units='gP/m^2', &
+          !#py avgflag='A', long_name='10-yr wood product P', &
+           !#py !#py ptr_col=this%prod10p, default='inactive')
 
     this%prod100p(begc:endc) = spval
-     call hist_addfld1d (fname='PROD100P', units='gP/m^2', &
-          avgflag='A', long_name='100-yr wood product P', &
-           ptr_col=this%prod100p, default='inactive')
+     !#py call hist_addfld1d (fname='PROD100P', units='gP/m^2', &
+          !#py avgflag='A', long_name='100-yr wood product P', &
+           !#py !#py ptr_col=this%prod100p, default='inactive')
 
     this%prod1p(begc:endc) = spval
-     call hist_addfld1d (fname='PROD1P', units='gP/m^2', &
-          avgflag='A', long_name='1-yr crop product P', &
-           ptr_col=this%prod1p, default='inactive')
+     !#py call hist_addfld1d (fname='PROD1P', units='gP/m^2', &
+          !#py avgflag='A', long_name='1-yr crop product P', &
+           !#py !#py ptr_col=this%prod1p, default='inactive')
 
     this%totprodp(begc:endc) = spval
-     call hist_addfld1d (fname='TOTPRODP', units='gP/m^2', &
-          avgflag='A', long_name='total wood product P', &
-           ptr_col=this%totprodp, default='inactive')
+     !#py call hist_addfld1d (fname='TOTPRODP', units='gP/m^2', &
+          !#py avgflag='A', long_name='total wood product P', &
+           !#py !#py ptr_col=this%totprodp, default='inactive')
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_ps
@@ -4410,334 +4308,324 @@ end subroutine col_cs_restart
   end subroutine col_ps_init
 
   !-----------------------------------------------------------------------
-  subroutine col_ps_restart ( this,  bounds, ncid, flag, cnstate_vars)
-    !
-    ! !DESCRIPTION:
-    ! Read/write vegetation-level phosphorus state restart data
-    !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    ! !ARGUMENTS:
-    class (column_phosphorus_state)            :: this
-    type(bounds_type)          , intent(in)    :: bounds
-    type(file_desc_t)          , intent(inout) :: ncid
-    character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
-    type(cnstate_type)         , intent(in)    :: cnstate_vars
-    !
-    ! !LOCAL VARIABLES:
-    integer            :: i,j,k,l,c
-    real(r8)           :: a,b,d
-    logical            :: readvar
-    integer            :: idata
-    logical            :: exit_spinup = .false.
-    logical            :: enter_spinup = .false.
-    real(r8)           :: m, m_veg         ! multiplier for the exit_spinup code
-    real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
-    real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
-    character(len=128) :: varname    ! temporary
-    integer            :: itemp      ! temporary
-    integer , pointer  :: iptemp(:)  ! pointer to memory to be allocated
-    ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
-    integer            :: restart_file_spinup_state
-    ! flags for comparing the model and restart decomposition cascades
-    integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
-    real(r8)           :: smax_c, ks_sorption_c
-    real(r8)           :: pinit_prof(1:nlevdecomp)
-    real(r8)           :: depth,pinit_prof_tot,tmp_scalar ! depth threshold for different p initialization profiles
-    integer            :: j_depth    ! jth depth index for different p initializaiton profiles
-    !------------------------------------------------------------------------
-
-    associate(&
-         isoilorder     => cnstate_vars%isoilorder  &
-         )
-
-    if (use_vertsoilc) then
-       ptr2d => this%solutionp_vr
-       call restartvar(ncid=ncid, flag=flag, varname="solutionp_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       ptr2d => this%labilep_vr
-       call restartvar(ncid=ncid, flag=flag, varname="labilep_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       ptr2d => this%secondp_vr
-       call restartvar(ncid=ncid, flag=flag, varname="secondp_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       ptr2d => this%occlp_vr
-       call restartvar(ncid=ncid, flag=flag, varname="occlp_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       ptr2d => this%primp_vr
-       call restartvar(ncid=ncid, flag=flag, varname="primp_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-
-    else
-
-       ptr1d => this%solutionp_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="solutionp", xtype=ncd_double,&
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-
-       ptr1d => this%labilep_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="labilep", xtype=ncd_double,&
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-
-       ptr1d => this%secondp_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="secondp", xtype=ncd_double,&
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-
-       ptr1d => this%occlp_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="occlp", xtype=ncd_double,&
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-
-       ptr1d => this%primp_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="primp", xtype=ncd_double,&
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-
-    end if
-
-    ! decomposing P pools
-    do k = 1, ndecomp_pools
-       varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'p'
-       if (use_vertsoilc) then
-          ptr2d => this%decomp_ppools_vr(:,:,k)
-          call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double, &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-       else
-          ptr1d => this%decomp_ppools_vr(:,1,k)
-          call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-               dim1name='column', &
-               long_name='',  units='', fill_value=spval, &
-               interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-       end if
-       if (flag=='read' .and. .not. readvar) then
-          call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
-               errMsg(__FILE__, __LINE__))
-       end if
-    end do
-
-    if (use_vertsoilc) then
-       ptr2d => this%ptrunc_vr
-       call restartvar(ncid=ncid, flag=flag, varname="col_ptrunc_vr", xtype=ncd_double,  &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%ptrunc_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname="col_ptrunc", xtype=ncd_double,  &
-            dim1name='column', &
-            long_name='',  units='', fill_value=spval, &
-            interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-    end if
-
-    !!! Debug balance
-    call restartvar(ncid=ncid, flag=flag, varname='totsomp', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%totsomp)
-    call restartvar(ncid=ncid, flag=flag, varname='cwdp', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%cwdp)
-    call restartvar(ncid=ncid, flag=flag, varname='totlitp', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%totlitp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='totcolp', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%totcolp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='seedp', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%seedp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prod10p', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prod10p)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prod100p', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prod100p)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prod1p', xtype=ncd_double,  &
-         dim1name='column', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prod1p)
-
-    !--------------------------------
-    ! Spinup state
-    !--------------------------------
-    ! Do nothing for write
-    ! Note that the call to write spinup_state out was done in CNCarbonStateType and
-    ! cannot be called again because it will try to define the variable twice
-    ! when the flag below is set to define
-    if (flag == 'read') then
-       call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
-            long_name='Spinup state of the model that wrote this restart file: ' &
-            // ' 0 = normal model mode, 1 = AD spinup', units='', &
-            interpinic_flag='copy', readvar=readvar,  data=idata)
-       if (readvar) then
-          restart_file_spinup_state = idata
-       else
-          ! assume, for sake of backwards compatibility, that if spinup_state is not in
-          ! the restart file then current model state is the same as prior model state
-          restart_file_spinup_state = spinup_state
-          if ( masterproc ) then
-             write(iulog,*) ' WARNING!  Restart file does not contain info ' &
-                  // ' on spinup state used to generate the restart file. '
-             write(iulog,*) '   Assuming the same as current setting: ', spinup_state
-          end if
-       end if
-    end if
-    if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
-       if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
-          if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools out of AD spinup mode'
-          exit_spinup = .true.
-       else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
-          if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools into AD spinup mode'
-          enter_spinup = .true.
-       else
-          call endrun(msg=' Error in entering/exiting spinup.  spinup_state ' &
-               // ' != restart_file_spinup_state, but do not know what to do'//&
-               errMsg(__FILE__, __LINE__))
-       end if
-       if (get_nstep() >= 2) then
-          call endrun(msg=' Error in entering/exiting spinup - should occur only when nstep = 1'//&
-               errMsg(__FILE__, __LINE__))
-       endif
-       do k = 1, ndecomp_pools
-          do c = bounds%begc, bounds%endc
-             do j = 1, nlevdecomp
-                if ( exit_spinup ) then
-                   m = decomp_cascade_con%spinup_factor(k)
-                   if (decomp_cascade_con%spinup_factor(k) > 1) m = m  / cnstate_vars%scalaravg_col(c,j)
-                else if ( enter_spinup ) then
-                   m = 1. / decomp_cascade_con%spinup_factor(k)
-                   if (decomp_cascade_con%spinup_factor(k) > 1) m = m  * cnstate_vars%scalaravg_col(c,j)
-                end if
-                this%decomp_ppools_vr(c,j,k) = this%decomp_ppools_vr(c,j,k) * m
-             end do
-          end do
-       end do
-       ! soil phosphorus initialization when exit AD spinup Qing Z. 2017
-       if ( exit_spinup) then ! AD spinup -> RG spinup
-          if (.not. cnstate_vars%pdatasets_present) then
-              call endrun(msg='ERROR:: P pools are required on surface dataset'//&
-              errMsg(__FILE__, __LINE__))
-          end if
-
-          ! calculate P initializtation profile
-          depth = 0.5_r8 ! set 50cm as depth threshold for p initializaiton profiles
-          do j = 1, nlevdecomp
-             if (zisoi(j) <= depth) then
-                j_depth = j
-             end if
-          end do
-          do c = bounds%begc, bounds%endc
-             if (use_vertsoilc) then
-                do j = 1, j_depth
-                   pinit_prof(j) = exp(-1._r8 * pinit_beta1(cnstate_vars%isoilorder(c)) * zisoi(j))
-                end do
-                do j = j_depth+1, nlevdecomp
-                   pinit_prof(j) = exp(-1._r8 * pinit_beta2(cnstate_vars%isoilorder(c)) * zisoi(j))
-                end do
-                ! rescale P profile so that distribution conserves and total P mass (g/m2) match obs for top 50 cm
-                pinit_prof_tot = 0._r8
-                do j = 1, j_depth
-                   pinit_prof_tot = pinit_prof_tot + pinit_prof(j) * dzsoi_decomp(j)
-                end do
-                do j = 1, j_depth ! for top 50 cm (6 layers), rescale
-                   pinit_prof(j) = pinit_prof(j) / pinit_prof_tot
-                end do
-                ! for below 50 cm, make sure 7 layer and 6 layer are consistent and also downward
-                tmp_scalar = pinit_prof(j_depth) / pinit_prof(j_depth+1)
-                do j = j_depth+1, nlevdecomp
-                   pinit_prof(j) = pinit_prof(j) * tmp_scalar
-                end do
-             end if
-          end do
-
-          do c = bounds%begc, bounds%endc
-             if (use_vertsoilc) then
-                do j = 1, nlevdecomp
-                   ! solve equilibrium between loosely adsorbed and solution
-                   ! phosphorus
-                   ! the P maps used in the initialization are generated for the top 50cm soils
-                   ! Prescribe P initial profile based on exponential rooting profile [need to improve]
-                   if ((nu_com .eq. 'ECA') .or. (nu_com .eq. 'MIC')) then
-                      a = 1.0_r8
-                      b = VMAX_MINSURF_P_vr(j,cnstate_vars%isoilorder(c)) + &
-                          KM_MINSURF_P_vr(j,cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)*pinit_prof(j)
-                      d = -1.0_r8* cnstate_vars%labp_col(c)*pinit_prof(j) * KM_MINSURF_P_vr(j,cnstate_vars%isoilorder(c))
-
-                      this%solutionp_vr(c,j) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a)
-                      this%labilep_vr(c,j) = cnstate_vars%labp_col(c)*pinit_prof(j) - this%solutionp_vr(c,j)
-                      this%secondp_vr(c,j) = cnstate_vars%secp_col(c)*pinit_prof(j)
-                      this%occlp_vr(c,j) = cnstate_vars%occp_col(c)*pinit_prof(j)
-                      this%primp_vr(c,j) = cnstate_vars%prip_col(c)*pinit_prof(j)
-                   end if
-
-                   ! assume soil below 50 cm has the same p pool concentration
-                   ! divide 0.5m when convert p pools from g/m2 to g/m3
-                   ! assume p pools evenly distributed at dif layers
-                   if (nu_com .eq. 'RD') then 
-                       smax_c = smax(isoilorder(c))
-                       ks_sorption_c = ks_sorption(isoilorder(c))
-                       this%solutionp_vr(c,j) = (cnstate_vars%labp_col(c)/0.5_r8*ks_sorption_c)/&
-                                    (smax_c-cnstate_vars%labp_col(c)/0.5_r8)
-                       this%labilep_vr(c,j) = cnstate_vars%labp_col(c)/0.5_r8
-                       this%secondp_vr(c,j) = cnstate_vars%secp_col(c)/0.5_r8
-                       this%occlp_vr(c,j) = cnstate_vars%occp_col(c)/0.5_r8
-                       this%primp_vr(c,j) = cnstate_vars%prip_col(c)/0.5_r8
-                   end if
-
-                end do
-             else
-                if ((nu_com .eq. 'ECA') .or. (nu_com .eq. 'MIC')) then
-                   a = 1.0_r8
-                   b = VMAX_MINSURF_P_vr(1,cnstate_vars%isoilorder(c)) + &
-                       KM_MINSURF_P_vr(1,cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)/zisoi(nlevdecomp)
-                   d = -1.0_r8* cnstate_vars%labp_col(c)/zisoi(nlevdecomp) * KM_MINSURF_P_vr(j,cnstate_vars%isoilorder(c))
-
-                   this%solutionp_vr(c,1) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a) * zisoi(nlevdecomp) ! convert to g/m2
-                   this%labilep_vr(c,1) = cnstate_vars%labp_col(c) - this%solutionp_vr(c,1)
-                   this%secondp_vr(c,1) = cnstate_vars%secp_col(c)
-                   this%occlp_vr(c,1) = cnstate_vars%occp_col(c)
-                   this%primp_vr(c,1) = cnstate_vars%prip_col(c)
-                else if (nu_com .eq. 'RD') then
-                   a = 1.0_r8
-                   b = smax(cnstate_vars%isoilorder(c)) + &
-                       ks_sorption(cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)/0.5_r8
-                   d = -1.0_r8* cnstate_vars%labp_col(c)/0.5_r8 * ks_sorption(cnstate_vars%isoilorder(c))
-
-                   this%solutionp_vr(c,1) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a) * 0.5_r8 ! convert to g/m2
-                   this%labilep_vr(c,1) = cnstate_vars%labp_col(c) - this%solutionp_vr(c,1)
-                   this%secondp_vr(c,1) = cnstate_vars%secp_col(c)
-                   this%occlp_vr(c,1) = cnstate_vars%occp_col(c)
-                   this%primp_vr(c,1) = cnstate_vars%prip_col(c)
-                end if
-             end if ! use vertsoilc
-          end do ! column loop
-       end if ! exit spinup
-    end if ! read and switch state
-
-    end associate
-
-  end subroutine col_ps_restart
+!#py   subroutine col_ps_restart ( this,  bounds, ncid, flag, cnstate_vars)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write vegetation-level phosphorus state restart data
+!#py     !
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     ! !ARGUMENTS:
+!#py     class (column_phosphorus_state)            :: this
+!#py     type(bounds_type)          , intent(in)    :: bounds
+!#py     type(file_desc_t)          , intent(inout) :: ncid
+!#py     character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
+!#py     type(cnstate_type)         , intent(in)    :: cnstate_vars
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer            :: i,j,k,l,c,a,b,d
+!#py     logical            :: readvar
+!#py     integer            :: idata
+!#py     logical            :: exit_spinup = .false.
+!#py     logical            :: enter_spinup = .false.
+!#py     real(r8)           :: m, m_veg         ! multiplier for the exit_spinup code
+!#py     real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
+!#py     character(len=128) :: varname    ! temporary
+!#py     integer            :: itemp      ! temporary
+!#py     integer , pointer  :: iptemp(:)  ! pointer to memory to be allocated
+!#py     ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
+!#py     integer            :: restart_file_spinup_state
+!#py     ! flags for comparing the model and restart decomposition cascades
+!#py     integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
+!#py     real(r8)           :: smax_c, ks_sorption_c
+!#py     real(r8)           :: rootfr(1:nlevdecomp)
+!#py     real(r8)           :: pinit_prof(1:nlevdecomp)
+!#py     real(r8)           :: rootfr_tot
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     associate(&
+!#py          isoilorder     => cnstate_vars%isoilorder  &
+!#py          )
+!#py
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%solutionp_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="solutionp_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        ptr2d => this%labilep_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="labilep_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        ptr2d => this%secondp_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="secondp_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        ptr2d => this%occlp_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="occlp_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        ptr2d => this%primp_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="primp_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py
+!#py     else
+!#py
+!#py        ptr1d => this%solutionp_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="solutionp", xtype=ncd_double,&
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py
+!#py        ptr1d => this%labilep_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="labilep", xtype=ncd_double,&
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py
+!#py        ptr1d => this%secondp_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="secondp", xtype=ncd_double,&
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py
+!#py        ptr1d => this%occlp_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="occlp", xtype=ncd_double,&
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py
+!#py        ptr1d => this%primp_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="primp", xtype=ncd_double,&
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py
+!#py     end if
+!#py
+!#py     ! decomposing P pools
+!#py     do k = 1, ndecomp_pools
+!#py        varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'p'
+!#py        if (use_vertsoilc) then
+!#py           ptr2d => this%decomp_ppools_vr(:,:,k)
+!#py           call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double, &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py        else
+!#py           ptr1d => this%decomp_ppools_vr(:,1,k)
+!#py           call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                dim1name='column', &
+!#py                long_name='',  units='', fill_value=spval, &
+!#py                interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py        end if
+!#py        if (flag=='read' .and. .not. readvar) then
+!#py           call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py     end do
+!#py
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%ptrunc_vr
+!#py        call restartvar(ncid=ncid, flag=flag, varname="col_ptrunc_vr", xtype=ncd_double,  &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%ptrunc_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname="col_ptrunc", xtype=ncd_double,  &
+!#py             dim1name='column', &
+!#py             long_name='',  units='', fill_value=spval, &
+!#py             interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py     end if
+!#py
+!#py     !!! Debug balance
+!#py     call restartvar(ncid=ncid, flag=flag, varname='totsomp', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%totsomp)
+!#py     call restartvar(ncid=ncid, flag=flag, varname='cwdp', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%cwdp)
+!#py     call restartvar(ncid=ncid, flag=flag, varname='totlitp', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%totlitp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='totcolp', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%totcolp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='seedp', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%seedp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prod10p', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prod10p)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prod100p', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prod100p)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prod1p', xtype=ncd_double,  &
+!#py          dim1name='column', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prod1p)
+!#py
+!#py     !--------------------------------
+!#py     ! Spinup state
+!#py     !--------------------------------
+!#py     ! Do nothing for write
+!#py     ! Note that the call to write spinup_state out was done in CNCarbonStateType and
+!#py     ! cannot be called again because it will try to define the variable twice
+!#py     ! when the flag below is set to define
+!#py     if (flag == 'read') then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
+!#py             long_name='Spinup state of the model that wrote this restart file: ' &
+!#py             // ' 0 = normal model mode, 1 = AD spinup', units='', &
+!#py             interpinic_flag='copy', readvar=readvar,  data=idata)
+!#py        if (readvar) then
+!#py           restart_file_spinup_state = idata
+!#py        else
+!#py           ! assume, for sake of backwards compatibility, that if spinup_state is not in
+!#py           ! the restart file then current model state is the same as prior model state
+!#py           restart_file_spinup_state = spinup_state
+!#py           if ( masterproc ) then
+!#py              write(iulog,*) ' WARNING!  Restart file does not contain info ' &
+!#py                   // ' on spinup state used to generate the restart file. '
+!#py              write(iulog,*) '   Assuming the same as current setting: ', spinup_state
+!#py           end if
+!#py        end if
+!#py     end if
+!#py     if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
+!#py        if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
+!#py           if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools out of AD spinup mode'
+!#py           exit_spinup = .true.
+!#py        else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
+!#py           if ( masterproc ) write(iulog,*) ' NitrogenStateType Restart: taking SOM pools into AD spinup mode'
+!#py           enter_spinup = .true.
+!#py        else
+!#py           call endrun(msg=' Error in entering/exiting spinup.  spinup_state ' &
+!#py                // ' != restart_file_spinup_state, but do not know what to do'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py        if (get_nstep() >= 2) then
+!#py           call endrun(msg=' Error in entering/exiting spinup - should occur only when nstep = 1'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        endif
+!#py        do k = 1, ndecomp_pools
+!#py           do c = bounds%begc, bounds%endc
+!#py              do j = 1, nlevdecomp
+!#py                 if ( exit_spinup ) then
+!#py                    m = decomp_cascade_con%spinup_factor(k)
+!#py                    if (decomp_cascade_con%spinup_factor(k) > 1) m = m  / cnstate_vars%scalaravg_col(c,j)
+!#py                 else if ( enter_spinup ) then
+!#py                    m = 1. / decomp_cascade_con%spinup_factor(k)
+!#py                    if (decomp_cascade_con%spinup_factor(k) > 1) m = m  * cnstate_vars%scalaravg_col(c,j)
+!#py                 end if
+!#py                 this%decomp_ppools_vr(c,j,k) = this%decomp_ppools_vr(c,j,k) * m
+!#py              end do
+!#py           end do
+!#py        end do
+!#py        ! soil phosphorus initialization when exit AD spinup Qing Z. 2017
+!#py        if ( exit_spinup) then ! AD spinup -> RG spinup
+!#py           if (.not. cnstate_vars%pdatasets_present) then
+!#py               call endrun(msg='ERROR:: P pools are required on surface dataset'//&
+!#py               errMsg(__FILE__, __LINE__))
+!#py           end if
+!#py
+!#py           do j = 1, nlevdecomp
+!#py              rootfr(j) = exp(-3.0* zsoi(j))
+!#py           end do
+!#py           rootfr_tot = 0._r8
+!#py           do j = 1, nlevdecomp
+!#py              rootfr_tot = rootfr_tot + rootfr(j)
+!#py           end do
+!#py           do j = 1, nlevdecomp
+!#py              pinit_prof(j) = rootfr(j) / rootfr_tot / dzsoi_decomp(j) ! 1/m
+!#py           end do
+!#py
+!#py           do c = bounds%begc, bounds%endc
+!#py              if (use_vertsoilc) then
+!#py                 do j = 1, nlevdecomp
+!#py                    ! solve equilibrium between loosely adsorbed and solution
+!#py                    ! phosphorus
+!#py                    ! the P maps used in the initialization are generated for the top 50cm soils
+!#py                    ! assume soil below 50 cm has the same p pool concentration
+!#py                    ! divide 0.5m when convert p pools from g/m2 to g/m3
+!#py                    ! assume p pools evenly distributed at dif layers
+!#py                    ! Prescribe P initial profile based on exponential rooting profile [need to improve]
+!#py                    if ((nu_com .eq. 'ECA') .or. (nu_com .eq. 'MIC')) then
+!#py                       a = 1.0_r8
+!#py                       b = VMAX_MINSURF_P_vr(j,cnstate_vars%isoilorder(c)) + &
+!#py                           KM_MINSURF_P_vr(j,cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)*pinit_prof(j)
+!#py                       d = -1.0_r8* cnstate_vars%labp_col(c)*pinit_prof(j) * KM_MINSURF_P_vr(j,cnstate_vars%isoilorder(c))
+!#py
+!#py                       this%solutionp_vr(c,j) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a)
+!#py                       this%labilep_vr(c,j) = cnstate_vars%labp_col(c)*pinit_prof(j) - this%solutionp_vr(c,j)
+!#py                       this%secondp_vr(c,j) = cnstate_vars%secp_col(c)*pinit_prof(j)
+!#py                       this%occlp_vr(c,j) = cnstate_vars%occp_col(c)*pinit_prof(j)
+!#py                       this%primp_vr(c,j) = cnstate_vars%prip_col(c)*pinit_prof(j)
+!#py                    else if (nu_com .eq. 'RD') then
+!#py                       a = 1.0_r8
+!#py                       b = smax(cnstate_vars%isoilorder(c)) + &
+!#py                           ks_sorption(cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)/0.5_r8
+!#py                       d = -1.0_r8* cnstate_vars%labp_col(c)/0.5_r8 * ks_sorption(cnstate_vars%isoilorder(c))
+!#py
+!#py                       this%solutionp_vr(c,j) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a)
+!#py                       this%labilep_vr(c,j) = cnstate_vars%labp_col(c)/0.5_r8 - this%solutionp_vr(c,j)
+!#py                       this%secondp_vr(c,j) = cnstate_vars%secp_col(c)/0.5_r8
+!#py                       this%occlp_vr(c,j) = cnstate_vars%occp_col(c)/0.5_r8
+!#py                       this%primp_vr(c,j) = cnstate_vars%prip_col(c)/0.5_r8
+!#py                    end if
+!#py
+!#py                    if (nu_com .eq. 'RD') then
+!#py                        smax_c = smax(isoilorder(c))
+!#py                        ks_sorption_c = ks_sorption(isoilorder(c))
+!#py                        this%solutionp_vr(c,j) = (cnstate_vars%labp_col(c)/0.5_r8*ks_sorption_c)/&
+!#py                                     (smax_c-cnstate_vars%labp_col(c)/0.5_r8)
+!#py                        this%labilep_vr(c,j) = cnstate_vars%labp_col(c)/0.5_r8
+!#py                        this%secondp_vr(c,j) = cnstate_vars%secp_col(c)/0.5_r8
+!#py                        this%occlp_vr(c,j) = cnstate_vars%occp_col(c)/0.5_r8
+!#py                        this%primp_vr(c,j) = cnstate_vars%prip_col(c)/0.5_r8
+!#py                    end if
+!#py
+!#py                 end do
+!#py              else
+!#py                 if ((nu_com .eq. 'ECA') .or. (nu_com .eq. 'MIC')) then
+!#py                    a = 1.0_r8
+!#py                    b = VMAX_MINSURF_P_vr(1,cnstate_vars%isoilorder(c)) + &
+!#py                        KM_MINSURF_P_vr(1,cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)/zisoi(nlevdecomp)
+!#py                    d = -1.0_r8* cnstate_vars%labp_col(c)/zisoi(nlevdecomp) * KM_MINSURF_P_vr(j,cnstate_vars%isoilorder(c))
+!#py
+!#py                    this%solutionp_vr(c,1) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a) * zisoi(nlevdecomp) ! convert to g/m2
+!#py                    this%labilep_vr(c,1) = cnstate_vars%labp_col(c) - this%solutionp_vr(c,1)
+!#py                    this%secondp_vr(c,1) = cnstate_vars%secp_col(c)
+!#py                    this%occlp_vr(c,1) = cnstate_vars%occp_col(c)
+!#py                    this%primp_vr(c,1) = cnstate_vars%prip_col(c)
+!#py                 else if (nu_com .eq. 'RD') then
+!#py                    a = 1.0_r8
+!#py                    b = smax(cnstate_vars%isoilorder(c)) + &
+!#py                        ks_sorption(cnstate_vars%isoilorder(c)) - cnstate_vars%labp_col(c)/0.5_r8
+!#py                    d = -1.0_r8* cnstate_vars%labp_col(c)/0.5_r8 * ks_sorption(cnstate_vars%isoilorder(c))
+!#py
+!#py                    this%solutionp_vr(c,1) = (-b+(b**2.0_r8-4.0_r8*a*d)**0.5_r8)/(2.0_r8*a) * 0.5_r8 ! convert to g/m2
+!#py                    this%labilep_vr(c,1) = cnstate_vars%labp_col(c) - this%solutionp_vr(c,1)
+!#py                    this%secondp_vr(c,1) = cnstate_vars%secp_col(c)
+!#py                    this%occlp_vr(c,1) = cnstate_vars%occp_col(c)
+!#py                    this%primp_vr(c,1) = cnstate_vars%prip_col(c)
+!#py                 end if
+!#py              end if ! use vertsoilc
+!#py           end do ! column loop
+!#py        end if ! exit spinup
+!#py     end if ! read and switch state
+!#py
+!#py     end associate
+!#py
+!#py !#py !#py   end subroutine col_ps_restart
 
   !-----------------------------------------------------------------------
   subroutine col_ps_setvalues ( this, num_column, filter_column, value_column)
@@ -5097,7 +4985,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_ef_init(this, begc, endc)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_energy_flux) :: this
     integer, intent(in) :: begc,endc
@@ -5141,49 +5029,49 @@ end subroutine col_cs_restart
     ! initialize history fields for select members of col_ef
     !-----------------------------------------------------------------------
     this%eflx_snomelt(begc:endc) = spval
-     call hist_addfld1d (fname='FSM',  units='W/m^2',  &
-          avgflag='A', long_name='snow melt heat flux', &
-           ptr_col=this%eflx_snomelt, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='FSM',  units='W/m^2',  &
+          !#py avgflag='A', long_name='snow melt heat flux', &
+           !#py !#py ptr_col=this%eflx_snomelt, c2l_scale_type='urbanf')
 
     this%eflx_snomelt_r(begc:endc) = spval
-     call hist_addfld1d (fname='FSM_R',  units='W/m^2',  &
-          avgflag='A', long_name='Rural snow melt heat flux', &
-           ptr_col=this%eflx_snomelt_r, set_spec=spval)
+     !#py call hist_addfld1d (fname='FSM_R',  units='W/m^2',  &
+          !#py avgflag='A', long_name='Rural snow melt heat flux', &
+           !#py !#py ptr_col=this%eflx_snomelt_r, set_spec=spval)
 
     this%eflx_snomelt_u(begc:endc) = spval
-     call hist_addfld1d (fname='FSM_U',  units='W/m^2',  &
-          avgflag='A', long_name='Urban snow melt heat flux', &
-           ptr_col=this%eflx_snomelt_u, c2l_scale_type='urbanf', set_nourb=spval)
+     !#py call hist_addfld1d (fname='FSM_U',  units='W/m^2',  &
+          !#py avgflag='A', long_name='Urban snow melt heat flux', &
+           !#py !#py ptr_col=this%eflx_snomelt_u, c2l_scale_type='urbanf', set_nourb=spval)
 
     this%eflx_building_heat(begc:endc) = spval
-     call hist_addfld1d (fname='BUILDHEAT', units='W/m^2',  &
-          avgflag='A', long_name='heat flux from urban building interior to walls and roof', &
-           ptr_col=this%eflx_building_heat, set_nourb=0._r8, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='BUILDHEAT', units='W/m^2',  &
+          !#py avgflag='A', long_name='heat flux from urban building interior to walls and roof', &
+           !#py !#py ptr_col=this%eflx_building_heat, set_nourb=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_urban_ac(begc:endc) = spval
-     call hist_addfld1d (fname='URBAN_AC', units='W/m^2',  &
-          avgflag='A', long_name='urban air conditioning flux', &
-           ptr_col=this%eflx_urban_ac, set_nourb=0._r8, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='URBAN_AC', units='W/m^2',  &
+          !#py avgflag='A', long_name='urban air conditioning flux', &
+           !#py !#py ptr_col=this%eflx_urban_ac, set_nourb=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_urban_heat(begc:endc) = spval
-     call hist_addfld1d (fname='URBAN_HEAT', units='W/m^2',  &
-          avgflag='A', long_name='urban heating flux', &
-           ptr_col=this%eflx_urban_heat, set_nourb=0._r8, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='URBAN_HEAT', units='W/m^2',  &
+          !#py avgflag='A', long_name='urban heating flux', &
+           !#py !#py ptr_col=this%eflx_urban_heat, set_nourb=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_fgr12(begc:endc) = spval
-     call hist_addfld1d (fname='FGR12',  units='W/m^2',  &
-          avgflag='A', long_name='heat flux between soil layers 1 and 2', &
-           ptr_col=this%eflx_fgr12, set_lake=spval)
+     !#py call hist_addfld1d (fname='FGR12',  units='W/m^2',  &
+          !#py avgflag='A', long_name='heat flux between soil layers 1 and 2', &
+           !#py !#py ptr_col=this%eflx_fgr12, set_lake=spval)
 
     this%eflx_fgr(begc:endc,:) = spval
-     call hist_addfld2d (fname='FGR_SOIL_R', units='watt/m^2', type2d='levgrnd', &
-          avgflag='A', long_name='Rural downward heat flux at interface below each soil layer', &
-           ptr_col=this%eflx_fgr, set_spec=spval, default='inactive')
+     !#py call hist_addfld2d (fname='FGR_SOIL_R', units='watt/m^2', type2d='levgrnd', &
+          !#py avgflag='A', long_name='Rural downward heat flux at interface below each soil layer', &
+           !#py !#py ptr_col=this%eflx_fgr, set_spec=spval, default='inactive')
 
     this%errsoi(begc:endc) = spval
-     call hist_addfld1d (fname='ERRSOI',  units='W/m^2',  &
-          avgflag='A', long_name='soil/lake energy conservation error', &
-           ptr_col=this%errsoi)
+     !#py call hist_addfld1d (fname='ERRSOI',  units='W/m^2',  &
+          !#py avgflag='A', long_name='soil/lake energy conservation error', &
+           !#py !#py ptr_col=this%errsoi)
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_ef
@@ -5204,33 +5092,33 @@ end subroutine col_cs_restart
   end subroutine col_ef_init
 
   !------------------------------------------------------------------------
-  subroutine col_ef_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write column energy state information to/from restart file.
-    !
-    ! !USES:
-    !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    ! !ARGUMENTS:
-    class(column_energy_flux) :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar   ! determine if variable is on initial file
-    !-----------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='URBAN_AC', xtype=ncd_double,  dim1name='column', &
-         long_name='urban air conditioning flux', units='watt/m^2', &
-         interpinic_flag='interp', readvar=readvar, data=this%eflx_urban_ac)
-
-    call restartvar(ncid=ncid, flag=flag, varname='URBAN_HEAT', xtype=ncd_double, dim1name='column', &
-         long_name='urban heating flux', units='watt/m^2', &
-         interpinic_flag='interp', readvar=readvar, data=this%eflx_urban_heat)
-
-  end subroutine col_ef_restart
+!#py   subroutine col_ef_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write column energy state information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     ! !ARGUMENTS:
+!#py     class(column_energy_flux) :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar   ! determine if variable is on initial file
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='URBAN_AC', xtype=ncd_double,  dim1name='column', &
+!#py          long_name='urban air conditioning flux', units='watt/m^2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%eflx_urban_ac)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='URBAN_HEAT', xtype=ncd_double, dim1name='column', &
+!#py          long_name='urban heating flux', units='watt/m^2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%eflx_urban_heat)
+!#py
+!#py !#py !#py   end subroutine col_ef_restart
 
   !------------------------------------------------------------------------
   subroutine col_ef_clean(this)
@@ -5246,7 +5134,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_wf_init(this, begc, endc)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_water_flux) :: this
     integer, intent(in) :: begc,endc
@@ -5345,105 +5233,105 @@ end subroutine col_cs_restart
     ! initialize history fields for select members of col_wf
     !-----------------------------------------------------------------------
     this%qflx_snwcp_ice(begc:endc) = spval
-     call hist_addfld1d (fname='QSNWCPICE_NODYNLNDUSE', units='mm H2O/s', &
-          avgflag='A', long_name='excess snowfall due to snow capping not including correction for land use change', &
-           ptr_col=this%qflx_snwcp_ice, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QSNWCPICE_NODYNLNDUSE', units='mm H2O/s', &
+          !#py avgflag='A', long_name='excess snowfall due to snow capping not including correction for land use change', &
+           !#py !#py ptr_col=this%qflx_snwcp_ice, c2l_scale_type='urbanf')
 
     this%dwb(begc:endc) = spval
-     call hist_addfld1d (fname='DWB',  units='mm/s',  &
-          avgflag='A', long_name='net change in total water mass', &
-           ptr_col=this%dwb, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='DWB',  units='mm/s',  &
+          !#py avgflag='A', long_name='net change in total water mass', &
+           !#py !#py ptr_col=this%dwb, c2l_scale_type='urbanf')
 
     this%qflx_infl(begc:endc) = spval
-     call hist_addfld1d (fname='QINFL',  units='mm/s',  &
-          avgflag='A', long_name='infiltration', &
-           ptr_col=this%qflx_infl, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QINFL',  units='mm/s',  &
+          !#py avgflag='A', long_name='infiltration', &
+           !#py !#py ptr_col=this%qflx_infl, c2l_scale_type='urbanf')
 
     this%qflx_surf(begc:endc) = spval
-     call hist_addfld1d (fname='QOVER',  units='mm/s',  &
-          avgflag='A', long_name='surface runoff', &
-           ptr_col=this%qflx_surf, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QOVER',  units='mm/s',  &
+          !#py avgflag='A', long_name='surface runoff', &
+           !#py !#py ptr_col=this%qflx_surf, c2l_scale_type='urbanf')
 
     this%qflx_drain(begc:endc) = spval
-    call hist_addfld1d (fname='QDRAI',  units='mm/s',  &
-         avgflag='A', long_name='sub-surface drainage', &
-         ptr_col=this%qflx_drain, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='QDRAI',  units='mm/s',  &
+         !#py avgflag='A', long_name='sub-surface drainage', &
+         !#py !#py ptr_col=this%qflx_drain, c2l_scale_type='urbanf')
 
     this%qflx_irr_demand(begc:endc) = spval
-    call hist_addfld1d (fname='QIRRIG_WM',  units='mm/s',  &
-         avgflag='A', long_name='Surface water irrigation demand sent to MOSART/WM', &
-         ptr_col=this%qflx_irr_demand, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='QIRRIG_WM',  units='mm/s',  &
+         !#py avgflag='A', long_name='Surface water irrigation demand sent to MOSART/WM', &
+         !#py !#py ptr_col=this%qflx_irr_demand, c2l_scale_type='urbanf')
 
     this%qflx_top_soil(begc:endc) = spval
-     call hist_addfld1d (fname='QTOPSOIL',  units='mm/s',  &
-          avgflag='A', long_name='water input to surface', &
-           ptr_col=this%qflx_top_soil, c2l_scale_type='urbanf', default='inactive')
+     !#py call hist_addfld1d (fname='QTOPSOIL',  units='mm/s',  &
+          !#py avgflag='A', long_name='water input to surface', &
+           !#py !#py ptr_col=this%qflx_top_soil, c2l_scale_type='urbanf', default='inactive')
 
     this%qflx_h2osfc_surf(begc:endc) = spval
-     call hist_addfld1d (fname='QH2OSFC',  units='mm/s',  &
-          avgflag='A', long_name='surface water runoff', &
-           ptr_col=this%qflx_h2osfc_surf)
+     !#py call hist_addfld1d (fname='QH2OSFC',  units='mm/s',  &
+          !#py avgflag='A', long_name='surface water runoff', &
+           !#py !#py ptr_col=this%qflx_h2osfc_surf)
 
     this%qflx_drain_perched(begc:endc) = spval
-     call hist_addfld1d (fname='QDRAI_PERCH',  units='mm/s',  &
-          avgflag='A', long_name='perched wt drainage', &
-           ptr_col=this%qflx_drain_perched, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QDRAI_PERCH',  units='mm/s',  &
+          !#py avgflag='A', long_name='perched wt drainage', &
+           !#py !#py ptr_col=this%qflx_drain_perched, c2l_scale_type='urbanf')
 
     this%qflx_snow_melt(begc:endc) = spval
-     call hist_addfld1d (fname='QSNOMELT',  units='mm/s',  &
-          avgflag='A', long_name='snow melt', &
-           ptr_col=this%qflx_snow_melt, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QSNOMELT',  units='mm/s',  &
+          !#py avgflag='A', long_name='snow melt', &
+           !#py !#py ptr_col=this%qflx_snow_melt, c2l_scale_type='urbanf')
 
     this%qflx_qrgwl(begc:endc) = spval
-     call hist_addfld1d (fname='QRGWL',  units='mm/s',  &
-          avgflag='A', long_name='surface runoff at glaciers (liquid only), wetlands, lakes', &
-           ptr_col=this%qflx_qrgwl, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QRGWL',  units='mm/s',  &
+          !#py avgflag='A', long_name='surface runoff at glaciers (liquid only), wetlands, lakes', &
+           !#py !#py ptr_col=this%qflx_qrgwl, c2l_scale_type='urbanf')
 
     this%qflx_runoff(begc:endc) = spval
-     call hist_addfld1d (fname='QRUNOFF_NODYNLNDUSE',  units='mm/s',  &
-          avgflag='A', &
-          long_name='total liquid runoff (does not include QSNWCPICE) not including correction for land use change', &
-           ptr_col=this%qflx_runoff, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QRUNOFF_NODYNLNDUSE',  units='mm/s',  &
+          !#py avgflag='A', &
+          !#py long_name='total liquid runoff (does not include QSNWCPICE) not including correction for land use change', &
+           !#py !#py ptr_col=this%qflx_runoff, c2l_scale_type='urbanf')
 
     this%qflx_runoff_r(begc:endc) = spval
-     call hist_addfld1d (fname='QRUNOFF_R', units='mm/s',  &
-          avgflag='A', long_name='Rural total runoff', &
-           ptr_col=this%qflx_runoff_r, set_spec=spval)
+     !#py call hist_addfld1d (fname='QRUNOFF_R', units='mm/s',  &
+          !#py avgflag='A', long_name='Rural total runoff', &
+           !#py !#py ptr_col=this%qflx_runoff_r, set_spec=spval)
 
     this%qflx_runoff_u(begc:endc) = spval
-     call hist_addfld1d (fname='QRUNOFF_U', units='mm/s',  &
-          avgflag='A', long_name='Urban total runoff', &
-           ptr_col=this%qflx_runoff_u, set_nourb=spval, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QRUNOFF_U', units='mm/s',  &
+          !#py avgflag='A', long_name='Urban total runoff', &
+           !#py !#py ptr_col=this%qflx_runoff_u, set_nourb=spval, c2l_scale_type='urbanf')
 
     this%qflx_rsub_sat(begc:endc) = spval
-     call hist_addfld1d (fname='QDRAI_XS',  units='mm/s',  &
-          avgflag='A', long_name='saturation excess drainage', &
-           ptr_col=this%qflx_rsub_sat, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='QDRAI_XS',  units='mm/s',  &
+          !#py avgflag='A', long_name='saturation excess drainage', &
+           !#py !#py ptr_col=this%qflx_rsub_sat, c2l_scale_type='urbanf')
 
     this%qflx_snofrz(begc:endc) = spval
-     call hist_addfld1d (fname='QSNOFRZ', units='kg/m2/s', &
-          avgflag='A', long_name='column-integrated snow freezing rate', &
-           ptr_col=this%qflx_snofrz, set_lake=spval, c2l_scale_type='urbanf', default='inactive')
+     !#py call hist_addfld1d (fname='QSNOFRZ', units='kg/m2/s', &
+          !#py avgflag='A', long_name='column-integrated snow freezing rate', &
+           !#py !#py ptr_col=this%qflx_snofrz, set_lake=spval, c2l_scale_type='urbanf', default='inactive')
 
     if (create_glacier_mec_landunit) then
        this%qflx_glcice(begc:endc) = spval
-        call hist_addfld1d (fname='QICE',  units='mm/s',  &
-             avgflag='A', long_name='ice growth/melt', &
-              ptr_col=this%qflx_glcice, l2g_scale_type='ice')
+        !#py call hist_addfld1d (fname='QICE',  units='mm/s',  &
+             !#py avgflag='A', long_name='ice growth/melt', &
+              !#py !#py ptr_col=this%qflx_glcice, l2g_scale_type='ice')
     end if
 
     if (create_glacier_mec_landunit) then
        this%qflx_glcice_frz(begc:endc) = spval
-        call hist_addfld1d (fname='QICE_FRZ',  units='mm/s',  &
-             avgflag='A', long_name='ice growth', &
-              ptr_col=this%qflx_glcice_frz, l2g_scale_type='ice')
+        !#py call hist_addfld1d (fname='QICE_FRZ',  units='mm/s',  &
+             !#py avgflag='A', long_name='ice growth', &
+              !#py !#py ptr_col=this%qflx_glcice_frz, l2g_scale_type='ice')
     end if
 
     if (create_glacier_mec_landunit) then
        this%qflx_glcice_melt(begc:endc) = spval
-        call hist_addfld1d (fname='QICE_MELT',  units='mm/s',  &
-             avgflag='A', long_name='ice melt', &
-              ptr_col=this%qflx_glcice_melt, l2g_scale_type='ice')
+        !#py call hist_addfld1d (fname='QICE_MELT',  units='mm/s',  &
+             !#py avgflag='A', long_name='ice melt', &
+              !#py !#py ptr_col=this%qflx_glcice_melt, l2g_scale_type='ice')
     end if
 
     ! As defined here, snow_sources - snow_sinks will equal the change in h2osno at any
@@ -5452,14 +5340,14 @@ end subroutine col_cs_restart
     ! sinks must be weighted by number of days in the month to diagnose, for example, an
     ! annual value of the change in h2osno.
     this%snow_sources(begc:endc) = spval
-     call hist_addfld1d (fname='SNOW_SOURCES',  units='mm/s',  &
-          avgflag='A', long_name='snow sources (liquid water)', &
-           ptr_col=this%snow_sources, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='SNOW_SOURCES',  units='mm/s',  &
+          !#py avgflag='A', long_name='snow sources (liquid water)', &
+           !#py !#py ptr_col=this%snow_sources, c2l_scale_type='urbanf')
 
     this%snow_sinks(begc:endc) = spval
-     call hist_addfld1d (fname='SNOW_SINKS',  units='mm/s',  &
-          avgflag='A', long_name='snow sinks (liquid water)', &
-           ptr_col=this%snow_sinks, c2l_scale_type='urbanf')
+     !#py call hist_addfld1d (fname='SNOW_SINKS',  units='mm/s',  &
+          !#py avgflag='A', long_name='snow sinks (liquid water)', &
+           !#py !#py ptr_col=this%snow_sinks, c2l_scale_type='urbanf')
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_wf
@@ -5487,48 +5375,48 @@ end subroutine col_cs_restart
   end subroutine col_wf_init
 
   !------------------------------------------------------------------------
-  subroutine col_wf_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write column water state information to/from restart file.
-    !
-    ! !USES:
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    !
-    ! !ARGUMENTS:
-    class(column_water_flux) :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar   ! determine if variable is on initial file
-    !-----------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='qflx_snofrz_lyr', xtype=ncd_double,  &
-         dim1name='column', dim2name='levsno', switchdim=.true., lowerb2=-nlevsno+1, upperb2=0, &
-         long_name='snow layer ice freezing rate', units='kg m-2 s-1', &
-         interpinic_flag='interp', readvar=readvar, data=this%qflx_snofrz_lyr)
-    if (flag == 'read' .and. .not. readvar) then
-       ! initial run, not restart: initialize qflx_snofrz_lyr to zero
-       this%qflx_snofrz_lyr(bounds%begc:bounds%endc,-nlevsno+1:0) = 0._r8
-    endif
-
-    call restartvar(ncid=ncid, flag=flag, varname='qflx_snow_melt', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='net snow melt', units='mm/s', &
-         interpinic_flag='interp', readvar=readvar, data=this%qflx_snow_melt)
-    if (flag == 'read' .and. .not. readvar) then
-       ! initial run, not restart: initialize qflx_snow_melt to zero
-       this%qflx_snow_melt(bounds%begc:bounds%endc) = 0._r8
-    endif
-
-    call restartvar(ncid=ncid, flag=flag, varname='MFLX_SNOW_LYR', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='mass flux due to disapperance of last snow layer', units='kg/s', &
-         interpinic_flag='interp', readvar=readvar, data=this%mflx_snowlyr)
-
-  end subroutine col_wf_restart
+!#py   subroutine col_wf_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write column water state information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(column_water_flux) :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar   ! determine if variable is on initial file
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='qflx_snofrz_lyr', xtype=ncd_double,  &
+!#py          dim1name='column', dim2name='levsno', switchdim=.true., lowerb2=-nlevsno+1, upperb2=0, &
+!#py          long_name='snow layer ice freezing rate', units='kg m-2 s-1', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%qflx_snofrz_lyr)
+!#py     if (flag == 'read' .and. .not. readvar) then
+!#py        ! initial run, not restart: initialize qflx_snofrz_lyr to zero
+!#py        this%qflx_snofrz_lyr(bounds%begc:bounds%endc,-nlevsno+1:0) = 0._r8
+!#py     endif
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='qflx_snow_melt', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='net snow melt', units='mm/s', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%qflx_snow_melt)
+!#py     if (flag == 'read' .and. .not. readvar) then
+!#py        ! initial run, not restart: initialize qflx_snow_melt to zero
+!#py        this%qflx_snow_melt(bounds%begc:bounds%endc) = 0._r8
+!#py     endif
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='MFLX_SNOW_LYR', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='mass flux due to disapperance of last snow layer', units='kg/s', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%mflx_snowlyr)
+!#py
+!#py !#py !#py   end subroutine col_wf_restart
 
   !------------------------------------------------------------------------
   subroutine col_wf_reset(this, bounds, numf, filter)
@@ -5568,7 +5456,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_cf_init(this, begc, endc, carbon_type)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_carbon_flux) :: this
     integer, intent(in) :: begc,endc
@@ -5712,91 +5600,91 @@ end subroutine col_cs_restart
     if (use_fates) then
        if (carbon_type == 'c12') then
           this%som_c_leached(begc:endc) = spval
-           call hist_addfld1d (fname='SOM_C_LEACHED', units='gC/m^2/s', &
-                avgflag='A', long_name='total flux of C from SOM pools due to leaching', &
-                 ptr_col=this%som_c_leached)!, default='inactive')
+           !#py call hist_addfld1d (fname='SOM_C_LEACHED', units='gC/m^2/s', &
+                !#py avgflag='A', long_name='total flux of C from SOM pools due to leaching', &
+                 !#py !#py ptr_col=this%som_c_leached)!, default='inactive')
 
           if ( nlevdecomp_full > 1 ) then
              this%hr_vr(begc:endc,:) = spval
-              call hist_addfld2d (fname='HR_vr', units='gC/m^3/s', type2d='levdcmp', &
-                   avgflag='A', long_name='total vertically resolved heterotrophic respiration', &
-                    ptr_col=this%hr_vr)
+              !#py call hist_addfld2d (fname='HR_vr', units='gC/m^3/s', type2d='levdcmp', &
+                   !#py avgflag='A', long_name='total vertically resolved heterotrophic respiration', &
+                    !#py !#py ptr_col=this%hr_vr)
           end if
 
           this%lithr(begc:endc) = spval
-           call hist_addfld1d (fname='LITHR', units='gC/m^2/s', &
-                avgflag='A', long_name='litter heterotrophic respiration', &
-                 ptr_col=this%lithr)
+           !#py call hist_addfld1d (fname='LITHR', units='gC/m^2/s', &
+                !#py avgflag='A', long_name='litter heterotrophic respiration', &
+                 !#py !#py ptr_col=this%lithr)
 
           this%somhr(begc:endc) = spval
-           call hist_addfld1d (fname='SOMHR', units='gC/m^2/s', &
-                avgflag='A', long_name='soil organic matter heterotrophic respiration', &
-                 ptr_col=this%somhr)
+           !#py call hist_addfld1d (fname='SOMHR', units='gC/m^2/s', &
+                !#py avgflag='A', long_name='soil organic matter heterotrophic respiration', &
+                 !#py !#py ptr_col=this%somhr)
 
           this%hr(begc:endc) = spval
-           call hist_addfld1d (fname='HR', units='gC/m^2/s', &
-                avgflag='A', long_name='total heterotrophic respiration', &
-                 ptr_col=this%hr)
+           !#py call hist_addfld1d (fname='HR', units='gC/m^2/s', &
+                !#py avgflag='A', long_name='total heterotrophic respiration', &
+                 !#py !#py ptr_col=this%hr)
        end if
        ! end of use_fates (C12) block
 
     else if (carbon_type == 'c12') then
        if (hist_wrtch4diag) then
           this%fphr(begc:endc,1:nlevgrnd) = spval
-          call hist_addfld_decomp (fname='FPHR'//trim(vr_suffix), units='1', type2d='levdcmp', &
-               avgflag='A', long_name='fraction of potential HR due to N limitation', &
-               ptr_col=this%fphr)
+          !#py call hist_addfld_decomp (fname='FPHR'//trim(vr_suffix), units='1', type2d='levdcmp', &
+               !#py avgflag='A', long_name='fraction of potential HR due to N limitation', &
+               !#py !#py ptr_col=this%fphr)
        end if
 
        this%cwdc_hr(begc:endc) = spval
-        call hist_addfld1d (fname='CWDC_HR', units='gC/m^2/s', &
-             avgflag='A', long_name='coarse woody debris C heterotrophic respiration', &
-              ptr_col=this%cwdc_hr)
+        !#py call hist_addfld1d (fname='CWDC_HR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='coarse woody debris C heterotrophic respiration', &
+              !#py !#py ptr_col=this%cwdc_hr)
 
        this%cwdc_loss(begc:endc) = spval
-        call hist_addfld1d (fname='CWDC_LOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='coarse woody debris C loss', &
-              ptr_col=this%cwdc_loss)
+        !#py call hist_addfld1d (fname='CWDC_LOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='coarse woody debris C loss', &
+              !#py !#py ptr_col=this%cwdc_loss)
 
        this%lithr(begc:endc) = spval
-        call hist_addfld1d (fname='LITTERC_HR', units='gC/m^2/s', &
-             avgflag='A', long_name='litter C heterotrophic respiration', &
-              ptr_col=this%lithr)
+        !#py call hist_addfld1d (fname='LITTERC_HR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='litter C heterotrophic respiration', &
+              !#py !#py ptr_col=this%lithr)
 
        this%litterc_loss(begc:endc) = spval
-        call hist_addfld1d (fname='LITTERC_LOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='litter C loss', &
-              ptr_col=this%litterc_loss)
+        !#py call hist_addfld1d (fname='LITTERC_LOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='litter C loss', &
+              !#py !#py ptr_col=this%litterc_loss)
 
        this%somhr(begc:endc) = spval
-        call hist_addfld1d (fname='SOILC_HR', units='gC/m^2/s', &
-             avgflag='A', long_name='soil C heterotrophic respiration', &
-              ptr_col=this%somhr)
+        !#py call hist_addfld1d (fname='SOILC_HR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='soil C heterotrophic respiration', &
+              !#py !#py ptr_col=this%somhr)
 
        this%somhr(begc:endc) = spval
-        call hist_addfld1d (fname='SOILC_LOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='soil C loss', &
-              ptr_col=this%somhr)
+        !#py call hist_addfld1d (fname='SOILC_LOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='soil C loss', &
+              !#py !#py ptr_col=this%somhr)
 
        this%somc_fire(begc:endc) = spval
-       call hist_addfld1d (fname='SOMC_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='C loss due to peat burning', &
-            ptr_col=this%somc_fire, default='inactive')
+       !#py call hist_addfld1d (fname='SOMC_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='C loss due to peat burning', &
+            !#py !#py ptr_col=this%somc_fire, default='inactive')
 
        this%somc_erode(begc:endc) = spval
-       call hist_addfld1d (fname='SOMC_ERO', units='gC/m^2/s', &
-            avgflag='A', long_name='SOC detachment', &
-            ptr_col=this%somc_erode, default='inactive')
+       !#py call hist_addfld1d (fname='SOMC_ERO', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='SOC detachment', &
+            !#py !#py ptr_col=this%somc_erode, default='inactive')
 
        this%somc_deposit(begc:endc) = spval
-       call hist_addfld1d (fname='SOMC_DEP', units='gC/m^2/s', &
-            avgflag='A', long_name='SOC hillslope redeposition', &
-            ptr_col=this%somc_deposit, default='inactive')
+       !#py call hist_addfld1d (fname='SOMC_DEP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='SOC hillslope redeposition', &
+            !#py !#py ptr_col=this%somc_deposit, default='inactive')
 
        this%somc_yield(begc:endc) = spval
-       call hist_addfld1d (fname='SOMC_YLD', units='gC/m^2/s', &
-            avgflag='A', long_name='SOC erosional loss to inland waters', &
-            ptr_col=this%somc_yield, default='inactive')
+       !#py call hist_addfld1d (fname='SOMC_YLD', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='SOC erosional loss to inland waters', &
+            !#py !#py ptr_col=this%somc_yield, default='inactive')
 
        this%decomp_cpools_erode(begc:endc,:)   = spval
        this%decomp_cpools_deposit(begc:endc,:) = spval
@@ -5806,23 +5694,23 @@ end subroutine col_cs_restart
              data1dptr => this%decomp_cpools_erode(:,k)
              fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_ERO'
              longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C detachment'
-             call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
-                  avgflag='A', long_name=longname, &
-                  ptr_col=data1dptr, default='inactive')
+             !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
+                  !#py avgflag='A', long_name=longname, &
+                  !#py !#py ptr_col=data1dptr, default='inactive')
 
              data1dptr => this%decomp_cpools_deposit(:,k)
              fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_DEP'
              longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C hillslope redeposition'
-             call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
-                  avgflag='A', long_name=longname, &
-                  ptr_col=data1dptr, default='inactive')
+             !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
+                  !#py avgflag='A', long_name=longname, &
+                  !#py !#py ptr_col=data1dptr, default='inactive')
 
              data1dptr => this%decomp_cpools_yield(:,k)
              fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_YLD'
              longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C erosional loss to inland waters'
-             call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
-                  avgflag='A', long_name=longname, &
-                  ptr_col=data1dptr, default='inactive')
+             !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
+                  !#py avgflag='A', long_name=longname, &
+                  !#py !#py ptr_col=data1dptr, default='inactive')
           endif
        end do
 
@@ -5833,17 +5721,17 @@ end subroutine col_cs_restart
              data1dptr => this%m_decomp_cpools_to_fire(:,k)
              fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_FIRE'
              longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C fire loss'
-              call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data1dptr, default='inactive')
+              !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data1dptr, default='inactive')
 
              if ( nlevdecomp_full > 1 ) then
                 data2dptr => this%m_decomp_cpools_to_fire_vr(:,:,k)
                 fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_FIRE'//trim(vr_suffix)
                 longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C fire loss'
-                 call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s', type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s', type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
           endif
 
@@ -5851,9 +5739,9 @@ end subroutine col_cs_restart
           data2dptr => this%decomp_k(:,:,k)
           fieldname = 'K_'//trim(decomp_cascade_con%decomp_pool_name_history(k))
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' potential loss coefficient'
-           call hist_addfld_decomp (fname=fieldname, units='1/s',  type2d='levdcmp', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data2dptr, default='inactive')
+           !#py call hist_addfld_decomp (fname=fieldname, units='1/s',  type2d='levdcmp', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data2dptr, default='inactive')
        end do
        if(.not. is_active_betr_bgc )then
           this%decomp_cascade_hr(begc:endc,:)             = spval
@@ -5880,9 +5768,9 @@ end subroutine col_cs_restart
                 endif
                 longname =  'Het. Resp. from '//&
                      trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))
-                 call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data1dptr)
+                 !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s',  &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data1dptr)
              endif
 
              !-- transfer fluxes (none from terminal pool, if present)
@@ -5893,9 +5781,9 @@ end subroutine col_cs_restart
                 longname =  &
                      'decomp. of '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                      ' C to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' C'
-                 call hist_addfld1d (fname=fieldname, units='gC/m^2/s', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data1dptr)
+                 !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data1dptr)
              endif
 
              ! output the vertically resolved fluxes
@@ -5920,9 +5808,9 @@ end subroutine col_cs_restart
                    endif
                    longname =  'Het. Resp. from '//&
                         trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))
-                    call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s',  type2d='levdcmp', &
-                         avgflag='A', long_name=longname, &
-                          ptr_col=data2dptr, default='inactive')
+                    !#py call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s',  type2d='levdcmp', &
+                         !#py avgflag='A', long_name=longname, &
+                          !#py !#py ptr_col=data2dptr, default='inactive')
                 endif
 
                 !-- transfer fluxes (none from terminal pool, if present)
@@ -5935,9 +5823,9 @@ end subroutine col_cs_restart
                    longname =  'decomp. of '//&
                         trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                         ' C to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' C'
-                    call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s',  type2d='levdcmp', &
-                         avgflag='A', long_name=longname, &
-                          ptr_col=data2dptr, default='inactive')
+                    !#py call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s',  type2d='levdcmp', &
+                         !#py avgflag='A', long_name=longname, &
+                          !#py !#py ptr_col=data2dptr, default='inactive')
                 endif
              end if  ! nlevdecomp_full > 1
           end do ! ndecomp_cascade_transitions
@@ -5949,228 +5837,228 @@ end subroutine col_cs_restart
                 data1dptr => this%decomp_cpools_leached(:,k)
                 fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_LEACHING'
                 longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C leaching loss'
-                 call hist_addfld1d (fname=fieldname, units='gC/m^2/s', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data1dptr)!, default='inactive')
+                 !#py call hist_addfld1d (fname=fieldname, units='gC/m^2/s', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data1dptr)!, default='inactive')
 
                 data2dptr => this%decomp_cpools_transport_tendency(:,:,k)
                 fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TNDNCY_VERT_TRANSPORT'
                 longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' C tendency due to vertical transport'
-                 call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC/m^3/s',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
           end do
        endif ! .not. is_active_betr_bgc
        ! still in C12 block
 
        this%t_scalar(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='T_SCALAR', units='1',  type2d='levdcmp', &
-            avgflag='A', long_name='temperature inhibition of decomposition', &
-            ptr_col=this%t_scalar)
+       !#py call hist_addfld_decomp (fname='T_SCALAR', units='1',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='temperature inhibition of decomposition', &
+            !#py !#py ptr_col=this%t_scalar)
 
        this%w_scalar(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='W_SCALAR', units='1',  type2d='levdcmp', &
-            avgflag='A', long_name='Moisture (dryness) inhibition of decomposition', &
-            ptr_col=this%w_scalar)
+       !#py call hist_addfld_decomp (fname='W_SCALAR', units='1',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='Moisture (dryness) inhibition of decomposition', &
+            !#py !#py ptr_col=this%w_scalar)
 
        this%o_scalar(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='O_SCALAR', units='1', type2d='levdcmp', &
-            avgflag='A', long_name='fraction by which decomposition is reduced due to anoxia', &
-            ptr_col=this%o_scalar)
+       !#py call hist_addfld_decomp (fname='O_SCALAR', units='1', type2d='levdcmp', &
+            !#py avgflag='A', long_name='fraction by which decomposition is reduced due to anoxia', &
+            !#py !#py ptr_col=this%o_scalar)
 
        this%som_c_leached(begc:endc) = spval
-        call hist_addfld1d (fname='SOM_C_LEACHED', units='gC/m^2/s', &
-             avgflag='A', long_name='total flux of C from SOM pools due to leaching', &
-              ptr_col=this%som_c_leached)!, default='inactive')
+        !#py call hist_addfld1d (fname='SOM_C_LEACHED', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total flux of C from SOM pools due to leaching', &
+              !#py !#py ptr_col=this%som_c_leached)!, default='inactive')
 
        this%lithr(begc:endc) = spval
-        call hist_addfld1d (fname='LITHR', units='gC/m^2/s', &
-             avgflag='A', long_name='litter heterotrophic respiration', &
-              ptr_col=this%lithr)
+        !#py call hist_addfld1d (fname='LITHR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='litter heterotrophic respiration', &
+              !#py !#py ptr_col=this%lithr)
 
        this%somhr(begc:endc) = spval
-        call hist_addfld1d (fname='SOMHR', units='gC/m^2/s', &
-             avgflag='A', long_name='soil organic matter heterotrophic respiration', &
-              ptr_col=this%somhr)
+        !#py call hist_addfld1d (fname='SOMHR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='soil organic matter heterotrophic respiration', &
+              !#py !#py ptr_col=this%somhr)
 
        if ( nlevdecomp_full > 1 ) then
           this%hr_vr(begc:endc,:) = spval
-           call hist_addfld2d (fname='HR_vr', units='gC/m^3/s', type2d='levdcmp', &
-                avgflag='A', long_name='total vertically resolved heterotrophic respiration', &
-                 ptr_col=this%hr_vr)
+           !#py call hist_addfld2d (fname='HR_vr', units='gC/m^3/s', type2d='levdcmp', &
+                !#py avgflag='A', long_name='total vertically resolved heterotrophic respiration', &
+                 !#py !#py ptr_col=this%hr_vr)
 
           ! pflotran
           this%f_co2_soil_vr(begc:endc,:) = spval
-           call hist_addfld2d (fname='F_CO2_SOIL_vr', units='gC/m^3/s', type2d='levdcmp', &
-                avgflag='A', long_name='total vertically resolved soil-atm. CO2 exchange', &
-                 ptr_col=this%f_co2_soil_vr)
+           !#py call hist_addfld2d (fname='F_CO2_SOIL_vr', units='gC/m^3/s', type2d='levdcmp', &
+                !#py avgflag='A', long_name='total vertically resolved soil-atm. CO2 exchange', &
+                 !#py !#py ptr_col=this%f_co2_soil_vr)
        endif
 
        this%hr(begc:endc) = spval
-        call hist_addfld1d (fname='HR', units='gC/m^2/s', &
-             avgflag='A', long_name='total heterotrophic respiration', &
-              ptr_col=this%hr)
+        !#py call hist_addfld1d (fname='HR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total heterotrophic respiration', &
+              !#py !#py ptr_col=this%hr)
 
        !pflotran
        this%f_co2_soil(begc:endc) = spval
-        call hist_addfld1d (fname='F_CO2_SOIL', units='gC/m^2/s', &
-             avgflag='A', long_name='total soil-atm. CO2 exchange', &
-              ptr_col=this%f_co2_soil)
+        !#py call hist_addfld1d (fname='F_CO2_SOIL', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total soil-atm. CO2 exchange', &
+              !#py !#py ptr_col=this%f_co2_soil)
 
        this%sr(begc:endc) = spval
-        call hist_addfld1d (fname='SR', units='gC/m^2/s', &
-             avgflag='A', long_name='total soil respiration (HR + root resp)', &
-              ptr_col=this%sr)
+        !#py call hist_addfld1d (fname='SR', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total soil respiration (HR + root resp)', &
+              !#py !#py ptr_col=this%sr)
 
        this%er(begc:endc) = spval
-        call hist_addfld1d (fname='ER', units='gC/m^2/s', &
-             avgflag='A', long_name='total ecosystem respiration, autotrophic + heterotrophic', &
-              ptr_col=this%er)
+        !#py call hist_addfld1d (fname='ER', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total ecosystem respiration, autotrophic + heterotrophic', &
+              !#py !#py ptr_col=this%er)
 
        this%litfire(begc:endc) = spval
-        call hist_addfld1d (fname='LITFIRE', units='gC/m^2/s', &
-             avgflag='A', long_name='litter fire losses', &
-              ptr_col=this%litfire, default='inactive')
+        !#py call hist_addfld1d (fname='LITFIRE', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='litter fire losses', &
+              !#py !#py ptr_col=this%litfire, default='inactive')
 
        this%somfire(begc:endc) = spval
-        call hist_addfld1d (fname='SOMFIRE', units='gC/m^2/s', &
-             avgflag='A', long_name='soil organic matter fire losses', &
-              ptr_col=this%somfire, default='inactive')
+        !#py call hist_addfld1d (fname='SOMFIRE', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='soil organic matter fire losses', &
+              !#py !#py ptr_col=this%somfire, default='inactive')
 
        this%totfire(begc:endc) = spval
-        call hist_addfld1d (fname='TOTFIRE', units='gC/m^2/s', &
-             avgflag='A', long_name='total ecosystem fire losses', &
-              ptr_col=this%totfire, default='inactive')
+        !#py call hist_addfld1d (fname='TOTFIRE', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total ecosystem fire losses', &
+              !#py !#py ptr_col=this%totfire, default='inactive')
 
        this%nep(begc:endc) = spval
-        call hist_addfld1d (fname='NEP', units='gC/m^2/s', &
-             avgflag='A', long_name='net ecosystem production, excludes fire, landuse, and harvest flux, positive for sink', &
-              ptr_col=this%nep)
+        !#py call hist_addfld1d (fname='NEP', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='net ecosystem production, excludes fire, landuse, and harvest flux, positive for sink', &
+              !#py !#py ptr_col=this%nep)
 
        this%nbp(begc:endc) = spval
-        call hist_addfld1d (fname='NBP', units='gC/m^2/s', &
-             avgflag='A', long_name='net biome production, includes fire, landuse, and harvest flux, positive for sink', &
-              ptr_col=this%nbp)
+        !#py call hist_addfld1d (fname='NBP', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='net biome production, includes fire, landuse, and harvest flux, positive for sink', &
+              !#py !#py ptr_col=this%nbp)
 
        this%nee(begc:endc) = spval
-        call hist_addfld1d (fname='NEE', units='gC/m^2/s', &
-             avgflag='A', long_name='net ecosystem exchange of carbon, includes fire, landuse,'&
-             //' harvest, and hrv_xsmrpool flux, positive for source', &
-              ptr_col=this%nee)
+        !#py call hist_addfld1d (fname='NEE', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='net ecosystem exchange of carbon, includes fire, landuse,'&
+             !#py //' harvest, and hrv_xsmrpool flux, positive for source', &
+              !#py !#py ptr_col=this%nee)
 
        this%fire_closs(begc:endc) = spval
-        call hist_addfld1d (fname='COL_FIRE_CLOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='total column-level fire C loss for non-peat fires outside land-type converted region', &
-              ptr_col=this%fire_closs, default='inactive')
+        !#py call hist_addfld1d (fname='COL_FIRE_CLOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total column-level fire C loss for non-peat fires outside land-type converted region', &
+              !#py !#py ptr_col=this%fire_closs, default='inactive')
 
        this%fire_decomp_closs(begc:endc) = spval
-        call hist_addfld1d (fname='DECOMP_FIRE_CLOSS', units='gC/m^2/s', &
-           avgflag='A', long_name='decomposable fire C loss for non-peat fires outside land-type converted region', &
-            ptr_col=this%fire_decomp_closs, default='inactive')
+        !#py call hist_addfld1d (fname='DECOMP_FIRE_CLOSS', units='gC/m^2/s', &
+           !#py avgflag='A', long_name='decomposable fire C loss for non-peat fires outside land-type converted region', &
+            !#py !#py ptr_col=this%fire_decomp_closs, default='inactive')
 
        this%dwt_slash_cflux(begc:endc) = spval
-        call hist_addfld1d (fname='DWT_SLASH_CFLUX', units='gC/m^2/s', &
-             avgflag='A', long_name='slash C flux to litter and CWD due to land use', &
-               ptr_col=this%dwt_slash_cflux)
+        !#py call hist_addfld1d (fname='DWT_SLASH_CFLUX', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='slash C flux to litter and CWD due to land use', &
+               !#py !#py ptr_col=this%dwt_slash_cflux)
 
        this%dwt_conv_cflux(begc:endc) = spval
-        call hist_addfld1d (fname='DWT_CONV_CFLUX', units='gC/m^2/s', &
-             avgflag='A', long_name='conversion C flux (immediate loss to atm)', &
-              ptr_col=this%dwt_conv_cflux, default='inactive')
+        !#py call hist_addfld1d (fname='DWT_CONV_CFLUX', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='conversion C flux (immediate loss to atm)', &
+              !#py !#py ptr_col=this%dwt_conv_cflux, default='inactive')
 
        this%dwt_prod10c_gain(begc:endc) = spval
-        call hist_addfld1d (fname='DWT_PROD10C_GAIN', units='gC/m^2/s', &
-             avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
-              ptr_col=this%dwt_prod10c_gain, default='inactive')
+        !#py call hist_addfld1d (fname='DWT_PROD10C_GAIN', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
+              !#py !#py ptr_col=this%dwt_prod10c_gain, default='inactive')
 
        this%prod10c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='PROD10C_LOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='loss from 10-yr wood product pool', &
-              ptr_col=this%prod10c_loss, default='inactive')
+        !#py call hist_addfld1d (fname='PROD10C_LOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='loss from 10-yr wood product pool', &
+              !#py !#py ptr_col=this%prod10c_loss, default='inactive')
 
        this%dwt_prod100c_gain(begc:endc) = spval
-        call hist_addfld1d (fname='DWT_PROD100C_GAIN', units='gC/m^2/s', &
-             avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
-              ptr_col=this%dwt_prod100c_gain, default='inactive')
+        !#py call hist_addfld1d (fname='DWT_PROD100C_GAIN', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
+              !#py !#py ptr_col=this%dwt_prod100c_gain, default='inactive')
 
         this%dwt_crop_productc_gain(begc:endc) = spval
-        call hist_addfld1d (fname='DWT_CROP_PRODUCTC_GAIN', units='gC/m^2/s', &
-             avgflag='A', long_name='landcover change-driven addition to crop product pool', &
-             ptr_col=this%dwt_crop_productc_gain, default='inactive')
+        !#py call hist_addfld1d (fname='DWT_CROP_PRODUCTC_GAIN', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='landcover change-driven addition to crop product pool', &
+             !#py !#py ptr_col=this%dwt_crop_productc_gain, default='inactive')
 
        this%prod100c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='PROD100C_LOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='loss from 100-yr wood product pool', &
-              ptr_col=this%prod100c_loss, default='inactive')
+        !#py call hist_addfld1d (fname='PROD100C_LOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='loss from 100-yr wood product pool', &
+              !#py !#py ptr_col=this%prod100c_loss, default='inactive')
 
        this%prod1c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='PROD1C_LOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='loss from 1-yr crop product pool', &
-              ptr_col=this%prod1c_loss, default='inactive')
+        !#py call hist_addfld1d (fname='PROD1C_LOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='loss from 1-yr crop product pool', &
+              !#py !#py ptr_col=this%prod1c_loss, default='inactive')
 
        this%dwt_frootc_to_litr_met_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='DWT_FROOTC_TO_LITR_MET_C', units='gC/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_met_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='DWT_FROOTC_TO_LITR_MET_C', units='gC/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_met_c, default='inactive')
 
        this%dwt_frootc_to_litr_cel_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='DWT_FROOTC_TO_LITR_CEL_C', units='gC/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_cel_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='DWT_FROOTC_TO_LITR_CEL_C', units='gC/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_cel_c, default='inactive')
 
        this%dwt_frootc_to_litr_lig_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='DWT_FROOTC_TO_LITR_LIG_C', units='gC/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_lig_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='DWT_FROOTC_TO_LITR_LIG_C', units='gC/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_lig_c, default='inactive')
 
        this%dwt_livecrootc_to_cwdc(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='DWT_LIVECROOTC_TO_CWDC', units='gC/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='live coarse root to CWD due to landcover change', &
-              ptr_col=this%dwt_livecrootc_to_cwdc, default='inactive')
+        !#py call hist_addfld_decomp (fname='DWT_LIVECROOTC_TO_CWDC', units='gC/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='live coarse root to CWD due to landcover change', &
+              !#py !#py ptr_col=this%dwt_livecrootc_to_cwdc, default='inactive')
 
        this%dwt_deadcrootc_to_cwdc(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='DWT_DEADCROOTC_TO_CWDC', units='gC/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='dead coarse root to CWD due to landcover change', &
-              ptr_col=this%dwt_deadcrootc_to_cwdc, default='inactive')
+        !#py call hist_addfld_decomp (fname='DWT_DEADCROOTC_TO_CWDC', units='gC/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='dead coarse root to CWD due to landcover change', &
+              !#py !#py ptr_col=this%dwt_deadcrootc_to_cwdc, default='inactive')
 
        this%dwt_closs(begc:endc) = spval
-        call hist_addfld1d (fname='DWT_CLOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='total carbon loss from land cover conversion', &
-              ptr_col=this%dwt_closs, default='inactive')
+        !#py call hist_addfld1d (fname='DWT_CLOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total carbon loss from land cover conversion', &
+              !#py !#py ptr_col=this%dwt_closs, default='inactive')
 
        this%product_closs(begc:endc) = spval
-        call hist_addfld1d (fname='PRODUCT_CLOSS', units='gC/m^2/s', &
-             avgflag='A', long_name='total carbon loss from wood product pools', &
-              ptr_col=this%product_closs, default='inactive')
+        !#py call hist_addfld1d (fname='PRODUCT_CLOSS', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total carbon loss from wood product pools', &
+              !#py !#py ptr_col=this%product_closs, default='inactive')
 
        this%landuseflux(begc:endc) = spval
-        call hist_addfld1d (fname='LAND_USE_FLUX', units='gC/m^2/s', &
-             avgflag='A', long_name='total C emitted from land cover conversion and wood product pools', &
-              ptr_col=this%landuseflux)
+        !#py call hist_addfld1d (fname='LAND_USE_FLUX', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='total C emitted from land cover conversion and wood product pools', &
+              !#py !#py ptr_col=this%landuseflux)
 
        this%landuptake(begc:endc) = spval
-        call hist_addfld1d (fname='LAND_UPTAKE', units='gC/m^2/s', &
-             avgflag='A', long_name='NEE minus LAND_USE_FLUX, negative for update', &
-              ptr_col=this%landuptake)
+        !#py call hist_addfld1d (fname='LAND_UPTAKE', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='NEE minus LAND_USE_FLUX, negative for update', &
+              !#py !#py ptr_col=this%landuptake)
 
        this%annsum_npp(begc:endc) = spval
-        call hist_addfld1d (fname='CANNSUM_NPP', units='gC/m^2/s', &
-             avgflag='A', long_name='annual sum of column-level NPP', &
-              ptr_col=this%annsum_npp, default='inactive')
+        !#py call hist_addfld1d (fname='CANNSUM_NPP', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='annual sum of column-level NPP', &
+              !#py !#py ptr_col=this%annsum_npp, default='inactive')
 
 
         ! C4MIP output variable, plant carbon flux to cwd (a part of fVegLitter)
         this%plant_c_to_cwdc(begc:endc) = spval
-        call hist_addfld1d (fname='VEGC_TO_CWDC', units='gC/m^2/s', &
-             avgflag='A', long_name='plant carbon flux to cwd', &
-             ptr_col=this%plant_c_to_cwdc, default='inactive')
+        !#py call hist_addfld1d (fname='VEGC_TO_CWDC', units='gC/m^2/s', &
+             !#py avgflag='A', long_name='plant carbon flux to cwd', &
+             !#py !#py ptr_col=this%plant_c_to_cwdc, default='inactive')
 
        ! C4MIP output variable, plant phosphorus flux to cwd (a part of fVegLitter)
         this%plant_p_to_cwdp(begc:endc) = spval
-        call hist_addfld1d (fname='VEGP_TO_CWDP', units='gP/m^2/s', &
-           avgflag='A', long_name='plant phosphorus flux to cwd', &
-           ptr_col=this%plant_p_to_cwdp, default='inactive')
+        !#py call hist_addfld1d (fname='VEGP_TO_CWDP', units='gP/m^2/s', &
+           !#py avgflag='A', long_name='plant phosphorus flux to cwd', &
+           !#py !#py ptr_col=this%plant_p_to_cwdp, default='inactive')
 
        ! end of C12 block
 
@@ -6182,17 +6070,17 @@ end subroutine col_cs_restart
              data1dptr => this%m_decomp_cpools_to_fire(:,k)
              fieldname = 'C13_M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_FIRE'
              longname =  'C13 '//trim(decomp_cascade_con%decomp_pool_name_long(k))//' C fire loss'
-              call hist_addfld1d (fname=fieldname, units='gC13/m^2',  &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data1dptr, default='inactive')
+              !#py call hist_addfld1d (fname=fieldname, units='gC13/m^2',  &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data1dptr, default='inactive')
 
              if ( nlevdecomp_full > 1 ) then
                 data2dptr => this%m_decomp_cpools_to_fire_vr(:,:,k)
                 fieldname = 'C13_M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_FIRE'//trim(vr_suffix)
                 longname =  'C13 '//trim(decomp_cascade_con%decomp_pool_name_long(k))//' C fire loss'
-                 call hist_addfld_decomp (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              end if
           endif
        end do
@@ -6221,9 +6109,9 @@ end subroutine col_cs_restart
                 endif
                 longname =  'C13 Het. Resp. from '&
                      //trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))
-                 call hist_addfld_decomp (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
              !-- transfer fluxes (none from terminal pool, if present)
              if ( decomp_cascade_con%cascade_receiver_pool(l) /= 0 ) then
@@ -6236,143 +6124,143 @@ end subroutine col_cs_restart
                      //trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))&
                      //' C to '//&
                      trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' C'
-                 call hist_addfld_decomp (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC13/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
           end do
        endif ! .not. is_active_betr_bgc
 
        this%lithr(begc:endc) = spval
-        call hist_addfld1d (fname='C13_LITHR', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 fine root C litterfall to litter 3 C', &
-              ptr_col=this%lithr)
+        !#py call hist_addfld1d (fname='C13_LITHR', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 fine root C litterfall to litter 3 C', &
+              !#py !#py ptr_col=this%lithr)
 
        this%somhr(begc:endc) = spval
-        call hist_addfld1d (fname='C13_SOMHR', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 soil organic matter heterotrophic respiration', &
-              ptr_col=this%somhr)
+        !#py call hist_addfld1d (fname='C13_SOMHR', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 soil organic matter heterotrophic respiration', &
+              !#py !#py ptr_col=this%somhr)
 
        this%hr(begc:endc) = spval
-        call hist_addfld1d (fname='C13_HR', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total heterotrophic respiration', &
-              ptr_col=this%hr)
+        !#py call hist_addfld1d (fname='C13_HR', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total heterotrophic respiration', &
+              !#py !#py ptr_col=this%hr)
 
 
        this%sr(begc:endc) = spval
-        call hist_addfld1d (fname='C13_SR', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total soil respiration (HR + root resp)', &
-              ptr_col=this%sr)
+        !#py call hist_addfld1d (fname='C13_SR', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total soil respiration (HR + root resp)', &
+              !#py !#py ptr_col=this%sr)
 
        this%er(begc:endc) = spval
-        call hist_addfld1d (fname='C13_ER', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total ecosystem respiration, autotrophic + heterotrophic', &
-              ptr_col=this%er)
+        !#py call hist_addfld1d (fname='C13_ER', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total ecosystem respiration, autotrophic + heterotrophic', &
+              !#py !#py ptr_col=this%er)
 
        this%litfire(begc:endc) = spval
-        call hist_addfld1d (fname='C13_LITFIRE', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 litter fire losses', &
-              ptr_col=this%litfire, default='inactive')
+        !#py call hist_addfld1d (fname='C13_LITFIRE', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 litter fire losses', &
+              !#py !#py ptr_col=this%litfire, default='inactive')
 
        this%somfire(begc:endc) = spval
-        call hist_addfld1d (fname='C13_SOMFIRE', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 soil organic matter fire losses', &
-              ptr_col=this%somfire, default='inactive')
+        !#py call hist_addfld1d (fname='C13_SOMFIRE', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 soil organic matter fire losses', &
+              !#py !#py ptr_col=this%somfire, default='inactive')
 
        this%totfire(begc:endc) = spval
-        call hist_addfld1d (fname='C13_TOTFIRE', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total ecosystem fire losses', &
-              ptr_col=this%totfire, default='inactive')
+        !#py call hist_addfld1d (fname='C13_TOTFIRE', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total ecosystem fire losses', &
+              !#py !#py ptr_col=this%totfire, default='inactive')
 
        this%nep(begc:endc) = spval
-        call hist_addfld1d (fname='C13_NEP', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 net ecosystem production, excludes fire flux, positive for sink', &
-              ptr_col=this%nep)
+        !#py call hist_addfld1d (fname='C13_NEP', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 net ecosystem production, excludes fire flux, positive for sink', &
+              !#py !#py ptr_col=this%nep)
 
        this%nee(begc:endc) = spval
-        call hist_addfld1d (fname='C13_NEE', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 net ecosystem exchange of carbon, includes fire flux, positive for source', &
-              ptr_col=this%nee)
+        !#py call hist_addfld1d (fname='C13_NEE', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 net ecosystem exchange of carbon, includes fire flux, positive for source', &
+              !#py !#py ptr_col=this%nee)
 
        this%fire_closs(begc:endc) = spval
-        call hist_addfld1d (fname='C13_COL_FIRE_CLOSS', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total column-level fire C loss', &
-              ptr_col=this%fire_closs)
+        !#py call hist_addfld1d (fname='C13_COL_FIRE_CLOSS', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total column-level fire C loss', &
+              !#py !#py ptr_col=this%fire_closs)
 
        this%dwt_slash_cflux(begc:endc) = spval
-        call hist_addfld1d (fname='C13_DWT_SLASH_CFLUX', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 slash C flux to litter and CWD due to land use', &
-              ptr_col=this%dwt_slash_cflux)
+        !#py call hist_addfld1d (fname='C13_DWT_SLASH_CFLUX', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 slash C flux to litter and CWD due to land use', &
+              !#py !#py ptr_col=this%dwt_slash_cflux)
 
        this%dwt_conv_cflux(begc:endc) = spval
-        call hist_addfld1d (fname='C13_DWT_CONV_CFLUX', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 conversion C flux (immediate loss to atm)', &
-              ptr_col=this%dwt_conv_cflux)
+        !#py call hist_addfld1d (fname='C13_DWT_CONV_CFLUX', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 conversion C flux (immediate loss to atm)', &
+              !#py !#py ptr_col=this%dwt_conv_cflux)
 
         this%dwt_crop_productc_gain(begc:endc) = spval
-        call hist_addfld1d (fname='C13_DWT_CROP_PRODUCTC_GAIN', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 addition to crop product pool', &
-             ptr_col=this%dwt_crop_productc_gain)
+        !#py call hist_addfld1d (fname='C13_DWT_CROP_PRODUCTC_GAIN', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 addition to crop product pool', &
+             !#py !#py ptr_col=this%dwt_crop_productc_gain)
 
        this%dwt_prod10c_gain(begc:endc) = spval
-        call hist_addfld1d (fname='C13_DWT_PROD10C_GAIN', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 addition to 10-yr wood product pool', &
-              ptr_col=this%dwt_prod10c_gain)
+        !#py call hist_addfld1d (fname='C13_DWT_PROD10C_GAIN', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 addition to 10-yr wood product pool', &
+              !#py !#py ptr_col=this%dwt_prod10c_gain)
 
        this%prod10c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PROD10C_LOSS', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 loss from 10-yr wood product pool', &
-              ptr_col=this%prod10c_loss)
+        !#py call hist_addfld1d (fname='C13_PROD10C_LOSS', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 loss from 10-yr wood product pool', &
+              !#py !#py ptr_col=this%prod10c_loss)
 
        this%dwt_prod100c_gain(begc:endc) = spval
-        call hist_addfld1d (fname='C13_DWT_PROD100C_GAIN', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 addition to 100-yr wood product pool', &
-              ptr_col=this%dwt_prod100c_gain)
+        !#py call hist_addfld1d (fname='C13_DWT_PROD100C_GAIN', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 addition to 100-yr wood product pool', &
+              !#py !#py ptr_col=this%dwt_prod100c_gain)
 
        this%prod100c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PROD100C_LOSS', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 loss from 100-yr wood product pool', &
-              ptr_col=this%prod100c_loss)
+        !#py call hist_addfld1d (fname='C13_PROD100C_LOSS', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 loss from 100-yr wood product pool', &
+              !#py !#py ptr_col=this%prod100c_loss)
 
        this%prod1c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PROD1C_LOSS', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 loss from 1-yr crop product pool', &
-              ptr_col=this%prod1c_loss)
+        !#py call hist_addfld1d (fname='C13_PROD1C_LOSS', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 loss from 1-yr crop product pool', &
+              !#py !#py ptr_col=this%prod1c_loss)
 
        this%dwt_frootc_to_litr_met_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C13_DWT_FROOTC_TO_LITR_MET_C', units='gC13/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C13 fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_met_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='C13_DWT_FROOTC_TO_LITR_MET_C', units='gC13/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C13 fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_met_c, default='inactive')
 
        this%dwt_frootc_to_litr_cel_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C13_DWT_FROOTC_TO_LITR_CEL_C', units='gC13/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C13 fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_cel_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='C13_DWT_FROOTC_TO_LITR_CEL_C', units='gC13/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C13 fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_cel_c, default='inactive')
 
        this%dwt_frootc_to_litr_lig_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C13_DWT_FROOTC_TO_LITR_LIG_C', units='gC13/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C13 fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_lig_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='C13_DWT_FROOTC_TO_LITR_LIG_C', units='gC13/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C13 fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_lig_c, default='inactive')
 
        this%dwt_livecrootc_to_cwdc(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C13_DWT_LIVECROOTC_TO_CWDC', units='gC13/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C13 live coarse root to CWD due to landcover change', &
-              ptr_col=this%dwt_livecrootc_to_cwdc, default='inactive')
+        !#py call hist_addfld_decomp (fname='C13_DWT_LIVECROOTC_TO_CWDC', units='gC13/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C13 live coarse root to CWD due to landcover change', &
+              !#py !#py ptr_col=this%dwt_livecrootc_to_cwdc, default='inactive')
 
        this%dwt_deadcrootc_to_cwdc(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C13_DWT_DEADCROOTC_TO_CWDC', units='gC13/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C13 dead coarse root to CWD due to landcover change', &
-              ptr_col=this%dwt_deadcrootc_to_cwdc, default='inactive')
+        !#py call hist_addfld_decomp (fname='C13_DWT_DEADCROOTC_TO_CWDC', units='gC13/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C13 dead coarse root to CWD due to landcover change', &
+              !#py !#py ptr_col=this%dwt_deadcrootc_to_cwdc, default='inactive')
 
        this%dwt_closs(begc:endc) = spval
-        call hist_addfld1d (fname='C13_DWT_CLOSS', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total carbon loss from land cover conversion', &
-              ptr_col=this%dwt_closs)
+        !#py call hist_addfld1d (fname='C13_DWT_CLOSS', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total carbon loss from land cover conversion', &
+              !#py !#py ptr_col=this%dwt_closs)
 
        this%product_closs(begc:endc) = spval
-        call hist_addfld1d (fname='C13_PRODUCT_CLOSS', units='gC13/m^2/s', &
-             avgflag='A', long_name='C13 total carbon loss from wood product pools', &
-              ptr_col=this%product_closs)
+        !#py call hist_addfld1d (fname='C13_PRODUCT_CLOSS', units='gC13/m^2/s', &
+             !#py avgflag='A', long_name='C13 total carbon loss from wood product pools', &
+              !#py !#py ptr_col=this%product_closs)
 
        ! end of C13 block
 
@@ -6384,17 +6272,17 @@ end subroutine col_cs_restart
              data1dptr => this%m_decomp_cpools_to_fire(:,k)
              fieldname = 'C14_M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_FIRE'
              longname =  'C14 '//trim(decomp_cascade_con%decomp_pool_name_long(k))//' C fire loss'
-              call hist_addfld1d (fname=fieldname, units='gC14/m^2',  &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data1dptr, default='inactive')
+              !#py call hist_addfld1d (fname=fieldname, units='gC14/m^2',  &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data1dptr, default='inactive')
 
              if ( nlevdecomp_full > 1 ) then
                 data2dptr => this%m_decomp_cpools_to_fire_vr(:,:,k)
                 fieldname = 'C14_M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'C_TO_FIRE'//trim(vr_suffix)
                 longname =  'C14 '//trim(decomp_cascade_con%decomp_pool_name_long(k))//' C fire loss'
-                 call hist_addfld_decomp (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              end if
           endif
        end do
@@ -6424,9 +6312,9 @@ end subroutine col_cs_restart
                 endif
                 longname =  'C14 Het. Resp. from '&
                      //trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))
-                 call hist_addfld_decomp (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
              !-- transfer fluxes (none from terminal pool, if present)
              if ( decomp_cascade_con%cascade_receiver_pool(l) /= 0 ) then
@@ -6438,137 +6326,137 @@ end subroutine col_cs_restart
                 longname =  'C14 decomp. of '&
                      //trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                      ' C to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' C'
-                 call hist_addfld_decomp (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gC14/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
           end do
        endif ! .not. is_active_betr_bgc
 
        this%lithr(begc:endc) = spval
-        call hist_addfld1d (fname='C14_LITHR', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 fine root C litterfall to litter 3 C', &
-              ptr_col=this%lithr)
+        !#py call hist_addfld1d (fname='C14_LITHR', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 fine root C litterfall to litter 3 C', &
+              !#py !#py ptr_col=this%lithr)
 
        this%somhr(begc:endc) = spval
-        call hist_addfld1d (fname='C14_SOMHR', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 soil organic matter heterotrophic respiration', &
-              ptr_col=this%somhr)
+        !#py call hist_addfld1d (fname='C14_SOMHR', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 soil organic matter heterotrophic respiration', &
+              !#py !#py ptr_col=this%somhr)
 
        this%hr(begc:endc) = spval
-        call hist_addfld1d (fname='C14_HR', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total heterotrophic respiration', &
-              ptr_col=this%hr)
+        !#py call hist_addfld1d (fname='C14_HR', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total heterotrophic respiration', &
+              !#py !#py ptr_col=this%hr)
 
        this%sr(begc:endc) = spval
-        call hist_addfld1d (fname='C14_SR', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total soil respiration (HR + root resp)', &
-              ptr_col=this%sr)
+        !#py call hist_addfld1d (fname='C14_SR', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total soil respiration (HR + root resp)', &
+              !#py !#py ptr_col=this%sr)
 
        this%er(begc:endc) = spval
-        call hist_addfld1d (fname='C14_ER', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total ecosystem respiration, autotrophic + heterotrophic', &
-              ptr_col=this%er)
+        !#py call hist_addfld1d (fname='C14_ER', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total ecosystem respiration, autotrophic + heterotrophic', &
+              !#py !#py ptr_col=this%er)
 
        this%litfire(begc:endc) = spval
-        call hist_addfld1d (fname='C14_LITFIRE', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 litter fire losses', &
-              ptr_col=this%litfire, default='inactive')
+        !#py call hist_addfld1d (fname='C14_LITFIRE', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 litter fire losses', &
+              !#py !#py ptr_col=this%litfire, default='inactive')
 
        this%somfire(begc:endc) = spval
-        call hist_addfld1d (fname='C14_SOMFIRE', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 soil organic matter fire losses', &
-              ptr_col=this%somfire, default='inactive')
+        !#py call hist_addfld1d (fname='C14_SOMFIRE', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 soil organic matter fire losses', &
+              !#py !#py ptr_col=this%somfire, default='inactive')
 
        this%totfire(begc:endc) = spval
-        call hist_addfld1d (fname='C14_TOTFIRE', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total ecosystem fire losses', &
-              ptr_col=this%totfire, default='inactive')
+        !#py call hist_addfld1d (fname='C14_TOTFIRE', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total ecosystem fire losses', &
+              !#py !#py ptr_col=this%totfire, default='inactive')
 
        this%nep(begc:endc) = spval
-        call hist_addfld1d (fname='C14_NEP', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 net ecosystem production, excludes fire flux, positive for sink', &
-              ptr_col=this%nep)
+        !#py call hist_addfld1d (fname='C14_NEP', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 net ecosystem production, excludes fire flux, positive for sink', &
+              !#py !#py ptr_col=this%nep)
 
        this%nee(begc:endc) = spval
-        call hist_addfld1d (fname='C14_NEE', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 net ecosystem exchange of carbon, includes fire flux, positive for source', &
-              ptr_col=this%nee)
+        !#py call hist_addfld1d (fname='C14_NEE', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 net ecosystem exchange of carbon, includes fire flux, positive for source', &
+              !#py !#py ptr_col=this%nee)
 
        this%fire_closs(begc:endc) = spval
-        call hist_addfld1d (fname='C14_COL_FIRE_CLOSS', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total column-level fire C loss', &
-              ptr_col=this%fire_closs)
+        !#py call hist_addfld1d (fname='C14_COL_FIRE_CLOSS', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total column-level fire C loss', &
+              !#py !#py ptr_col=this%fire_closs)
 
        this%dwt_slash_cflux(begc:endc) = spval
-        call hist_addfld1d (fname='C14_DWT_SLASH_CFLUX', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 slash C flux to litter and CWD due to land use', &
-              ptr_col=this%dwt_slash_cflux)
+        !#py call hist_addfld1d (fname='C14_DWT_SLASH_CFLUX', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 slash C flux to litter and CWD due to land use', &
+              !#py !#py ptr_col=this%dwt_slash_cflux)
 
        this%dwt_conv_cflux(begc:endc) = spval
-        call hist_addfld1d (fname='C14_DWT_CONV_CFLUX', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 conversion C flux (immediate loss to atm)', &
-              ptr_col=this%dwt_conv_cflux)
+        !#py call hist_addfld1d (fname='C14_DWT_CONV_CFLUX', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 conversion C flux (immediate loss to atm)', &
+              !#py !#py ptr_col=this%dwt_conv_cflux)
 
        this%dwt_prod10c_gain(begc:endc) = spval
-        call hist_addfld1d (fname='C14_DWT_PROD10C_GAIN', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 addition to 10-yr wood product pool', &
-              ptr_col=this%dwt_prod10c_gain)
+        !#py call hist_addfld1d (fname='C14_DWT_PROD10C_GAIN', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 addition to 10-yr wood product pool', &
+              !#py !#py ptr_col=this%dwt_prod10c_gain)
 
        this%prod10c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PROD10C_LOSS', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 loss from 10-yr wood product pool', &
-              ptr_col=this%prod10c_loss)
+        !#py call hist_addfld1d (fname='C14_PROD10C_LOSS', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 loss from 10-yr wood product pool', &
+              !#py !#py ptr_col=this%prod10c_loss)
 
        this%dwt_prod100c_gain(begc:endc) = spval
-        call hist_addfld1d (fname='C14_DWT_PROD100C_GAIN', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 addition to 100-yr wood product pool', &
-              ptr_col=this%dwt_prod100c_gain)
+        !#py call hist_addfld1d (fname='C14_DWT_PROD100C_GAIN', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 addition to 100-yr wood product pool', &
+              !#py !#py ptr_col=this%dwt_prod100c_gain)
 
        this%prod100c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PROD100C_LOSS', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 loss from 100-yr wood product pool', &
-              ptr_col=this%prod100c_loss)
+        !#py call hist_addfld1d (fname='C14_PROD100C_LOSS', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 loss from 100-yr wood product pool', &
+              !#py !#py ptr_col=this%prod100c_loss)
 
        this%prod1c_loss(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PROD1C_LOSS', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 loss from 1-yr crop product pool', &
-              ptr_col=this%prod1c_loss)
+        !#py call hist_addfld1d (fname='C14_PROD1C_LOSS', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 loss from 1-yr crop product pool', &
+              !#py !#py ptr_col=this%prod1c_loss)
 
        this%dwt_frootc_to_litr_met_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C14_DWT_FROOTC_TO_LITR_MET_C', units='gC14/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C14 fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_met_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='C14_DWT_FROOTC_TO_LITR_MET_C', units='gC14/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C14 fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_met_c, default='inactive')
 
        this%dwt_frootc_to_litr_cel_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C14_DWT_FROOTC_TO_LITR_CEL_C', units='gC14/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C14 fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_cel_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='C14_DWT_FROOTC_TO_LITR_CEL_C', units='gC14/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C14 fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_cel_c, default='inactive')
 
        this%dwt_frootc_to_litr_lig_c(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C14_DWT_FROOTC_TO_LITR_LIG_C', units='gC14/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C14 fine root to litter due to landcover change', &
-              ptr_col=this%dwt_frootc_to_litr_lig_c, default='inactive')
+        !#py call hist_addfld_decomp (fname='C14_DWT_FROOTC_TO_LITR_LIG_C', units='gC14/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C14 fine root to litter due to landcover change', &
+              !#py !#py ptr_col=this%dwt_frootc_to_litr_lig_c, default='inactive')
 
        this%dwt_livecrootc_to_cwdc(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C14_DWT_LIVECROOTC_TO_CWDC', units='gC14/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C14 live coarse root to CWD due to landcover change', &
-              ptr_col=this%dwt_livecrootc_to_cwdc, default='inactive')
+        !#py call hist_addfld_decomp (fname='C14_DWT_LIVECROOTC_TO_CWDC', units='gC14/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C14 live coarse root to CWD due to landcover change', &
+              !#py !#py ptr_col=this%dwt_livecrootc_to_cwdc, default='inactive')
 
        this%dwt_deadcrootc_to_cwdc(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='C14_DWT_DEADCROOTC_TO_CWDC', units='gC14/m^2/s',  type2d='levdcmp', &
-             avgflag='A', long_name='C14 dead coarse root to CWD due to landcover change', &
-              ptr_col=this%dwt_deadcrootc_to_cwdc, default='inactive')
+        !#py call hist_addfld_decomp (fname='C14_DWT_DEADCROOTC_TO_CWDC', units='gC14/m^2/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='C14 dead coarse root to CWD due to landcover change', &
+              !#py !#py ptr_col=this%dwt_deadcrootc_to_cwdc, default='inactive')
 
        this%dwt_closs(begc:endc) = spval
-        call hist_addfld1d (fname='C14_DWT_CLOSS', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total carbon loss from land cover conversion', &
-              ptr_col=this%dwt_closs)
+        !#py call hist_addfld1d (fname='C14_DWT_CLOSS', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total carbon loss from land cover conversion', &
+              !#py !#py ptr_col=this%dwt_closs)
 
        this%product_closs(begc:endc) = spval
-        call hist_addfld1d (fname='C14_PRODUCT_CLOSS', units='gC14/m^2/s', &
-             avgflag='A', long_name='C14 total carbon loss from wood product pools', &
-              ptr_col=this%product_closs)
+        !#py call hist_addfld1d (fname='C14_PRODUCT_CLOSS', units='gC14/m^2/s', &
+             !#py avgflag='A', long_name='C14 total carbon loss from wood product pools', &
+              !#py !#py ptr_col=this%product_closs)
 
        ! end of C14 block
     end if  ! use_fates (C12) or C12 or C13 or C14
@@ -6580,17 +6468,17 @@ end subroutine col_cs_restart
        data2dptr => this%bgc_cpool_ext_inputs_vr(:,:,k)
        fieldname='BGC_'//trim(ctag)//'POOL_EINPUT_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'_vr'
        longname=trim(ctag)//' input to '//trim(decomp_cascade_con%decomp_pool_name_history(k))
-        call hist_addfld_decomp (fname=fieldname, units='g'//ctag//'/m^3',  type2d='levdcmp', &
-             avgflag='A', long_name=longname, &
-              ptr_col=data2dptr, default='inactive')
+        !#py call hist_addfld_decomp (fname=fieldname, units='g'//ctag//'/m^3',  type2d='levdcmp', &
+             !#py avgflag='A', long_name=longname, &
+              !#py !#py ptr_col=data2dptr, default='inactive')
 
        this%bgc_cpool_ext_loss_vr(begc:endc, :, k) = spval
        data2dptr => this%bgc_cpool_ext_loss_vr(:,:,k)
        fieldname='BGC_'//trim(ctag)//'POOL_ELOSS_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'_vr'
        longname=trim(ctag)//' loss of '//trim(decomp_cascade_con%decomp_pool_name_history(k))
-        call hist_addfld_decomp (fname=fieldname, units='g'//ctag//'/m^3',  type2d='levdcmp', &
-             avgflag='A', long_name=longname, &
-              ptr_col=data2dptr, default='inactive')
+        !#py call hist_addfld_decomp (fname=fieldname, units='g'//ctag//'/m^3',  type2d='levdcmp', &
+             !#py avgflag='A', long_name=longname, &
+              !#py !#py ptr_col=data2dptr, default='inactive')
     enddo
 
     !-----------------------------------------------------------------------
@@ -6659,81 +6547,81 @@ end subroutine col_cs_restart
   end subroutine col_cf_init
 
   !-----------------------------------------------------------------------
-  subroutine col_cf_restart ( this, bounds, ncid, flag )
-    !
-    ! !DESCRIPTION:
-    ! Read/write restart data for column carbon flux
-    !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    ! !ARGUMENTS:
-    class (column_carbon_flux)        :: this
-    type(bounds_type) , intent(in)    :: bounds
-    type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
-    character(len=*)  , intent(in)    :: flag   !'read' or 'write'
-    !
-    ! !LOCAL VARIABLES:
-    integer :: j,c ! indices
-    logical :: readvar      ! determine if variable is on initial file
-
-    ! pflotran
-    integer :: k
-    real(r8), pointer :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
-    real(r8), pointer :: ptr1d(:)   ! temp. pointers for slicing larger arrays
-    character(len=128) :: varname   ! temporary
-    !------------------------------------------------------------------------
-
-    if (use_vertsoilc) then
-       ptr2d => this%t_scalar
-       call restartvar(ncid=ncid, flag=flag, varname='T_SCALAR', xtype=ncd_double,  &
-            dim1name='column',dim2name='levgrnd', switchdim=.true., &
-            long_name='T scaling factor', units='-', fill_value=spval, &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    end if
-
-    !    if(use_fates) return
-
-    !-------------------------------
-    ! Prognostic crop variables
-    !-------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='col_lag_npp', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%lag_npp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='cannsum_npp', xtype=ncd_double,  &
-         dim1name='column', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%annsum_npp)
-
-
-    ! clm_interface & pflotran
-    !------------------------------------------------------------------------
-    if (use_pflotran .and. pf_cmode) then
-       do k = 1, ndecomp_pools
-          varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'external_c'
-          if (use_vertsoilc) then
-             ptr2d => this%externalc_to_decomp_cpools(:,:,k)
-             call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr",  &
-                  xtype=ncd_double, dim1name='column', dim2name='levgrnd', switchdim=.true., &
-                  long_name='net soil organic C adding/removal/transport', &
-                  units='gC/m3/s', fill_value=spval, &
-                  interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%externalc_to_decomp_cpools(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
-             call restartvar(ncid=ncid, flag=flag, varname=varname, &
-                  xtype=ncd_double, dim1name='column', &
-                  long_name='net soil organic C adding/removal/transport', &
-                  units='gC/m3/s', fill_value=spval, &
-                  interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-             this%externalc_to_decomp_cpools(:,:,k) = 0._r8
-          end if
-       end do
-    end if
-
-  end subroutine col_cf_restart
+!#py   subroutine col_cf_restart ( this, bounds, ncid, flag )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write restart data for column carbon flux
+!#py     !
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     ! !ARGUMENTS:
+!#py     class (column_carbon_flux)        :: this
+!#py     type(bounds_type) , intent(in)    :: bounds
+!#py     type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
+!#py     character(len=*)  , intent(in)    :: flag   !'read' or 'write'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer :: j,c ! indices
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py
+!#py     ! pflotran
+!#py     integer :: k
+!#py     real(r8), pointer :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer :: ptr1d(:)   ! temp. pointers for slicing larger arrays
+!#py     character(len=128) :: varname   ! temporary
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%t_scalar
+!#py        call restartvar(ncid=ncid, flag=flag, varname='T_SCALAR', xtype=ncd_double,  &
+!#py             dim1name='column',dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='T scaling factor', units='-', fill_value=spval, &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     end if
+!#py
+!#py     !    if(use_fates) return
+!#py
+!#py     !-------------------------------
+!#py     ! Prognostic crop variables
+!#py     !-------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='col_lag_npp', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%lag_npp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='cannsum_npp', xtype=ncd_double,  &
+!#py          dim1name='column', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%annsum_npp)
+!#py
+!#py
+!#py     ! clm_interface & pflotran
+!#py     !------------------------------------------------------------------------
+!#py     if (use_pflotran .and. pf_cmode) then
+!#py        do k = 1, ndecomp_pools
+!#py           varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'external_c'
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%externalc_to_decomp_cpools(:,:,k)
+!#py              call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr",  &
+!#py                   xtype=ncd_double, dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                   long_name='net soil organic C adding/removal/transport', &
+!#py                   units='gC/m3/s', fill_value=spval, &
+!#py                   interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%externalc_to_decomp_cpools(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
+!#py              call restartvar(ncid=ncid, flag=flag, varname=varname, &
+!#py                   xtype=ncd_double, dim1name='column', &
+!#py                   long_name='net soil organic C adding/removal/transport', &
+!#py                   units='gC/m3/s', fill_value=spval, &
+!#py                   interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              this%externalc_to_decomp_cpools(:,:,k) = 0._r8
+!#py           end if
+!#py        end do
+!#py     end if
+!#py
+!#py !#py !#py   end subroutine col_cf_restart
 
   !-----------------------------------------------------------------------
   subroutine col_cf_summary(this, bounds, num_soilc, filter_soilc, isotope)
@@ -6770,7 +6658,7 @@ end subroutine col_cs_restart
        if (nfix_timeconst > 0._r8 .and. nfix_timeconst < 500._r8 ) then
 
           ! this code is to calculate an exponentially-relaxed npp value for use in NDynamics code
-         dtime = dtime_mod
+           dtime = dtime_mod
           nfixlags = nfix_timeconst * secspday
 
           do fc = 1,num_soilc
@@ -6825,7 +6713,13 @@ end subroutine col_cs_restart
                this%somhr(c)
        end do
 
-
+! #ifndef _OPENACC
+!     elseif (is_active_betr_bgc) then
+!        do fc = 1, num_soilc
+!           c = filter_soilc(fc)
+!           this%hr(c) = dot_sum(this%hr_vr(c,1:nlevdecomp),dzsoi_decomp(1:nlevdecomp))
+!        enddo
+! #endif
     endif
 
     ! some zeroing
@@ -6896,11 +6790,11 @@ end subroutine col_cs_restart
     !----------------------------------------------------------------
     ! bgc interface & pflotran:
     !----------------------------------------------------------------
-   #ifndef _OPENACC
+#ifndef _OPENACC
     if (use_elm_interface .and. (use_pflotran .and. pf_cmode)) then
         call col_cf_summary_pf(this, bounds, num_soilc, filter_soilc)
     end if
-   #endif
+#endif
     !----------------------------------------------------------------
 
     do fc = 1,num_soilc
@@ -7182,9 +7076,9 @@ end subroutine col_cs_restart
 
        do j = 1,nlevdecomp
           do fc = 1,num_soilc
-            c = filter_soilc(fc)
+             c = filter_soilc(fc)
 
-            this%decomp_cascade_hr(c,k) = &
+             this%decomp_cascade_hr(c,k) = &
                 this%decomp_cascade_hr(c,k) + &
                 this%decomp_cascade_hr_vr(c,j,k) * dzsoi_decomp(j)
 
@@ -7194,39 +7088,39 @@ end subroutine col_cs_restart
 
       ! litter heterotrophic respiration (LITHR)
       do k = 1, ndecomp_cascade_transitions
-       if ( is_litter(decomp_cascade_con%cascade_donor_pool(k)) .or. is_cwd((decomp_cascade_con%cascade_donor_pool(k)))) then
+        if ( is_litter(decomp_cascade_con%cascade_donor_pool(k)) .or. is_cwd((decomp_cascade_con%cascade_donor_pool(k)))) then
           do fc = 1,num_soilc
             c = filter_soilc(fc)
             this%lithr(c) = &
               this%lithr(c) + &
               this%decomp_cascade_hr(c,k)
           end do
-       end if
+        end if
       end do
 
       ! soil organic matter heterotrophic respiration (SOMHR)
       do k = 1, ndecomp_cascade_transitions
-       if ( is_soil(decomp_cascade_con%cascade_donor_pool(k)) ) then
+        if ( is_soil(decomp_cascade_con%cascade_donor_pool(k)) ) then
           do fc = 1,num_soilc
             c = filter_soilc(fc)
             this%somhr(c) = &
               this%somhr(c) + &
               this%decomp_cascade_hr(c,k)
           end do
-       end if
+        end if
       end do
 
       ! total heterotrophic respiration, vertically resolved (HR)
 
       do k = 1, ndecomp_cascade_transitions
-       do j = 1,nlevdecomp
+        do j = 1,nlevdecomp
           do fc = 1,num_soilc
             c = filter_soilc(fc)
             this%hr_vr(c,j) = &
                 this%hr_vr(c,j) + &
                 this%decomp_cascade_hr_vr(c,j,k)
           end do
-       end do
+        end do
       end do
     endif
 
@@ -7463,6 +7357,8 @@ end subroutine col_cs_restart
        this%rr(c) = 0._r8   ! This counterpart is
                             ! actually in SummaryRR
     end do
+
+
   end subroutine col_cf_zero_forfates_veg_rr
 
 
@@ -7515,7 +7411,7 @@ end subroutine col_cs_restart
     !
     ! !ARGUMENTS:
     class(column_carbon_flux)       :: this
-      !$acc routine seq
+      !$acc routine seq 
     type(bounds_type) ,  intent(in) :: bounds
     integer,             intent(in) :: num_soilc       ! number of soil columns in filter
     integer,             intent(in) :: filter_soilc(:) ! filter for soil columns
@@ -7534,7 +7430,7 @@ end subroutine col_cs_restart
         is_cwd    =>    decomp_cascade_con%is_cwd      & ! Input:  [logical (:) ]  TRUE => pool is a cwd pool
         )
 
-     dtime = get_step_size()
+     !#py dtime = get_step_size()
     ! total heterotrophic respiration (HR)
     do fc = 1,num_soilc
        c = filter_soilc(fc)
@@ -7697,7 +7593,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_nf_init(this, begc, endc)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_nitrogen_flux) :: this
     integer, intent(in) :: begc,endc
@@ -7892,26 +7788,26 @@ end subroutine col_cs_restart
     endif
 
     this%ndep_to_sminn(begc:endc) = spval
-     call hist_addfld1d (fname='NDEP_TO_SMINN', units='gN/m^2/s', &
-          avgflag='A', long_name='atmospheric N deposition to soil mineral N', &
-           ptr_col=this%ndep_to_sminn)
+     !#py call hist_addfld1d (fname='NDEP_TO_SMINN', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='atmospheric N deposition to soil mineral N', &
+           !#py !#py ptr_col=this%ndep_to_sminn)
 
     this%nfix_to_ecosysn(begc:endc) = spval
-    call hist_addfld1d (fname='NFIX_TO_ECOSYSN', units='gN/m^2/s', &
-        avgflag='A', long_name='symbiotic/asymbiotic N fixation to the whole ecosystem', &
-        ptr_col=this%nfix_to_ecosysn,default='inactive')
+    !#py call hist_addfld1d (fname='NFIX_TO_ECOSYSN', units='gN/m^2/s', &
+        !#py avgflag='A', long_name='symbiotic/asymbiotic N fixation to the whole ecosystem', &
+        !#py !#py ptr_col=this%nfix_to_ecosysn,default='inactive')
 
 
     this%nfix_to_sminn(begc:endc) = spval
-     call hist_addfld1d (fname='NFIX_TO_SMINN', units='gN/m^2/s', &
-          avgflag='A', long_name='symbiotic/asymbiotic N fixation to soil mineral N', &
-           ptr_col=this%nfix_to_sminn)
+     !#py call hist_addfld1d (fname='NFIX_TO_SMINN', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='symbiotic/asymbiotic N fixation to soil mineral N', &
+           !#py !#py ptr_col=this%nfix_to_sminn)
 
     ! C4MIP output variable, plant nitrogen flux to cwd (a part of fVegLitter)
     this%plant_n_to_cwdn(begc:endc) = spval
-    call hist_addfld1d (fname='VEGN_TO_CWDN', units='gN/m^2/s', &
-        avgflag='A', long_name='plant nitrogen flux to cwd', &
-        ptr_col=this%plant_n_to_cwdn, default='inactive')
+    !#py call hist_addfld1d (fname='VEGN_TO_CWDN', units='gN/m^2/s', &
+        !#py avgflag='A', long_name='plant nitrogen flux to cwd', &
+        !#py !#py ptr_col=this%plant_n_to_cwdn, default='inactive')
 
     do k = 1, ndecomp_pools
        if ( decomp_cascade_con%is_litter(k) .or. decomp_cascade_con%is_cwd(k) ) then
@@ -7919,18 +7815,18 @@ end subroutine col_cs_restart
           data1dptr => this%m_decomp_npools_to_fire(:,k)
           fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_TO_FIRE'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N fire loss'
-           call hist_addfld1d (fname=fieldname, units='gN/m^2',  &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr, default='inactive')
+           !#py call hist_addfld1d (fname=fieldname, units='gN/m^2',  &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr, default='inactive')
 
           if ( nlevdecomp_full > 1 ) then
              this%m_decomp_npools_to_fire_vr(begc:endc,:,k) = spval
              data2dptr => this%m_decomp_npools_to_fire_vr(:,:,k)
              fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_TO_FIRE'//trim(vr_suffix)
              longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N fire loss'
-              call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data2dptr, default='inactive')
+              !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data2dptr, default='inactive')
           endif
        endif
     end do
@@ -7955,9 +7851,9 @@ end subroutine col_cs_restart
                 longname =  'mineral N flux for decomp. of '&
                      //trim(decomp_cascade_con%decomp_pool_name_history(decomp_cascade_con%cascade_donor_pool(l)))
              endif
-              call hist_addfld1d (fname=fieldname, units='gN/m^2', &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data1dptr)
+              !#py call hist_addfld1d (fname=fieldname, units='gN/m^2', &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data1dptr)
           end if
 
           !-- transfer fluxes (none from terminal pool, if present)
@@ -7968,9 +7864,9 @@ end subroutine col_cs_restart
                   trim(decomp_cascade_con%decomp_pool_name_history(decomp_cascade_con%cascade_receiver_pool(l)))//'N'
              longname =  'decomp. of '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                   ' N to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' N'
-              call hist_addfld1d (fname=fieldname, units='gN/m^2',  &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data1dptr)
+              !#py call hist_addfld1d (fname=fieldname, units='gN/m^2',  &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data1dptr)
           end if
 
           ! vertically resolved fluxes
@@ -7992,9 +7888,9 @@ end subroutine col_cs_restart
                    longname =  'mineral N flux for decomp. of '&
                         //trim(decomp_cascade_con%decomp_pool_name_history(decomp_cascade_con%cascade_donor_pool(l)))
                 endif
-                 call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
 
              !-- transfer fluxes (none from terminal pool, if present)
@@ -8007,9 +7903,9 @@ end subroutine col_cs_restart
                 longname =  'decomp. of '&
                      //trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                      ' N to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' N'
-                 call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
-                      avgflag='A', long_name=longname, &
-                       ptr_col=data2dptr, default='inactive')
+                 !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
+                      !#py avgflag='A', long_name=longname, &
+                       !#py !#py ptr_col=data2dptr, default='inactive')
              endif
 
           endif
@@ -8018,45 +7914,45 @@ end subroutine col_cs_restart
     this%sminn_no3_input_vr(begc:endc,:) = spval
     data2dptr => this%sminn_no3_input_vr(:,:)
     fieldname='SMINN_NO3_INPUT_vr'
-     call hist_addfld_decomp (fname=fieldname, units='gN/m^3/s',  type2d='levdcmp', &
-         avgflag='A', long_name=longname, &
-          ptr_col=data2dptr, default='inactive')
+     !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3/s',  type2d='levdcmp', &
+         !#py avgflag='A', long_name=longname, &
+          !#py !#py ptr_col=data2dptr, default='inactive')
 
     this%sminn_nh4_input_vr(begc:endc,:)  = spval
     data2dptr => this%sminn_nh4_input_vr(:,:)
     fieldname='SMINN_NH4_INPUT_vr'
-     call hist_addfld_decomp (fname=fieldname, units='gN/m^3/s',  type2d='levdcmp', &
-         avgflag='A', long_name=longname, &
-          ptr_col=data2dptr, default='inactive')
+     !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3/s',  type2d='levdcmp', &
+         !#py avgflag='A', long_name=longname, &
+          !#py !#py ptr_col=data2dptr, default='inactive')
 
     do k = 1, ndecomp_pools
       this%bgc_npool_ext_inputs_vr(begc:endc, :, k) = spval
       data2dptr => this%bgc_npool_ext_inputs_vr(:,:,k)
       fieldname='BGC_NPOOL_EINPUT_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'_vr'
       longname='N input to '//trim(decomp_cascade_con%decomp_pool_name_history(k))
-       call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
-         avgflag='A', long_name=longname, &
-          ptr_col=data2dptr, default='inactive')
+       !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
+         !#py avgflag='A', long_name=longname, &
+          !#py !#py ptr_col=data2dptr, default='inactive')
 
       this%bgc_npool_ext_loss_vr(begc:endc, :, k) = spval
       data2dptr => this%bgc_npool_ext_loss_vr(:,:,k)
       fieldname='BGC_NPOOL_ELOSS_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'_vr'
       longname='N LOSS to '//trim(decomp_cascade_con%decomp_pool_name_history(k))
-       call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
-         avgflag='A', long_name=longname, &
-          ptr_col=data2dptr, default='inactive')
+       !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3',  type2d='levdcmp', &
+         !#py avgflag='A', long_name=longname, &
+          !#py !#py ptr_col=data2dptr, default='inactive')
 
     enddo
 
     this%denit(begc:endc) = spval
-     call hist_addfld1d (fname='DENIT', units='gN/m^2/s', &
-          avgflag='A', long_name='total rate of denitrification', &
-           ptr_col=this%denit)
+     !#py call hist_addfld1d (fname='DENIT', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='total rate of denitrification', &
+           !#py !#py ptr_col=this%denit)
 
     this%som_n_leached(begc:endc) = spval
-     call hist_addfld1d (fname='SOM_N_LEACHED', units='gN/m^2/s', &
-          avgflag='A', long_name='total flux of N from SOM pools due to leaching', &
-           ptr_col=this%som_n_leached, default='inactive')
+     !#py call hist_addfld1d (fname='SOM_N_LEACHED', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='total flux of N from SOM pools due to leaching', &
+           !#py !#py ptr_col=this%som_n_leached, default='inactive')
 
     do k = 1, ndecomp_pools
        if(trim(decomp_cascade_con%decomp_pool_name_history(k))=='')exit
@@ -8065,34 +7961,34 @@ end subroutine col_cs_restart
           data1dptr => this%decomp_npools_leached(:,k)
           fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_TO_LEACHING'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N leaching loss'
-           call hist_addfld1d (fname=fieldname, units='gN/m^2/s', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr, default='inactive')
+           !#py call hist_addfld1d (fname=fieldname, units='gN/m^2/s', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr, default='inactive')
 
           this%decomp_npools_transport_tendency(begc:endc,:,k) = spval
           data2dptr => this%decomp_npools_transport_tendency(:,:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_TNDNCY_VERT_TRANSPORT'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N tendency due to vertical transport'
-           call hist_addfld_decomp (fname=fieldname, units='gN/m^3/s',  type2d='levdcmp', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data2dptr)
+           !#py call hist_addfld_decomp (fname=fieldname, units='gN/m^3/s',  type2d='levdcmp', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data2dptr)
        end if
     end do
 
     this%somn_erode(begc:endc) = spval
-    call hist_addfld1d (fname='SOMN_ERO', units='gN/m^2/s', &
-         avgflag='A', long_name='SON detachment', &
-         ptr_col=this%somn_erode, default='inactive')
+    !#py call hist_addfld1d (fname='SOMN_ERO', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='SON detachment', &
+         !#py !#py ptr_col=this%somn_erode, default='inactive')
 
     this%somn_deposit(begc:endc) = spval
-    call hist_addfld1d (fname='SOMN_DEP', units='gN/m^2/s', &
-         avgflag='A', long_name='SON hillslope redeposition', &
-         ptr_col=this%somn_deposit, default='inactive')
+    !#py call hist_addfld1d (fname='SOMN_DEP', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='SON hillslope redeposition', &
+         !#py !#py ptr_col=this%somn_deposit, default='inactive')
 
     this%somn_yield(begc:endc) = spval
-    call hist_addfld1d (fname='SOMN_YLD', units='gN/m^2/s', &
-         avgflag='A', long_name='SON erosional loss to inland waters', &
-         ptr_col=this%somn_yield, default='inactive')
+    !#py call hist_addfld1d (fname='SOMN_YLD', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='SON erosional loss to inland waters', &
+         !#py !#py ptr_col=this%somn_yield, default='inactive')
 
     this%decomp_npools_erode(begc:endc,:) = spval
     this%decomp_npools_deposit(begc:endc,:) = spval
@@ -8102,470 +7998,470 @@ end subroutine col_cs_restart
           data1dptr => this%decomp_npools_erode(:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_ERO'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N detachment'
-          call hist_addfld1d (fname=fieldname, units='gN/m^2/s',  &
-               avgflag='A', long_name=longname, &
-               ptr_col=data1dptr, default='inactive')
+          !#py call hist_addfld1d (fname=fieldname, units='gN/m^2/s',  &
+               !#py avgflag='A', long_name=longname, &
+               !#py !#py ptr_col=data1dptr, default='inactive')
 
           data1dptr => this%decomp_npools_deposit(:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_DEP'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N hillslope redeposition'
-          call hist_addfld1d (fname=fieldname, units='gN/m^2/s',  &
-               avgflag='A', long_name=longname, &
-               ptr_col=data1dptr, default='inactive')
+          !#py call hist_addfld1d (fname=fieldname, units='gN/m^2/s',  &
+               !#py avgflag='A', long_name=longname, &
+               !#py !#py ptr_col=data1dptr, default='inactive')
 
           data1dptr => this%decomp_npools_yield(:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'N_YLD'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' N erosional loss to inland waters'
-          call hist_addfld1d (fname=fieldname, units='gN/m^2/s',  &
-               avgflag='A', long_name=longname, &
-               ptr_col=data1dptr, default='inactive')
+          !#py call hist_addfld1d (fname=fieldname, units='gN/m^2/s',  &
+               !#py avgflag='A', long_name=longname, &
+               !#py !#py ptr_col=data1dptr, default='inactive')
        endif
     end do
 
     this%f_nit(begc:endc) = spval
-    call hist_addfld1d (fname='F_NIT', units='gN/m^2/s',  &
-         avgflag='A', long_name='nitrification flux', &
-         ptr_col=this%f_nit)
+    !#py call hist_addfld1d (fname='F_NIT', units='gN/m^2/s',  &
+         !#py avgflag='A', long_name='nitrification flux', &
+         !#py !#py ptr_col=this%f_nit)
 
     this%f_denit(begc:endc) = spval
-    call hist_addfld1d (fname='F_DENIT', units='gN/m^2/s', &
-         avgflag='A', long_name='denitrification flux', &
-         ptr_col=this%f_denit)
+    !#py call hist_addfld1d (fname='F_DENIT', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='denitrification flux', &
+         !#py !#py ptr_col=this%f_denit)
 
     this%pot_f_nit(begc:endc) = spval
-    call hist_addfld1d (fname='POT_F_NIT', units='gN/m^2/s', &
-         avgflag='A', long_name='potential nitrification flux', &
-         ptr_col=this%pot_f_nit)
+    !#py call hist_addfld1d (fname='POT_F_NIT', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='potential nitrification flux', &
+         !#py !#py ptr_col=this%pot_f_nit)
 
     this%pot_f_denit(begc:endc) = spval
-    call hist_addfld1d (fname='POT_F_DENIT', units='gN/m^2/s', &
-         avgflag='A', long_name='potential denitrification flux', &
-         ptr_col=this%pot_f_denit)
+    !#py call hist_addfld1d (fname='POT_F_DENIT', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='potential denitrification flux', &
+         !#py !#py ptr_col=this%pot_f_denit)
 
     this%smin_no3_leached(begc:endc) = spval
-    call hist_addfld1d (fname='SMIN_NO3_LEACHED', units='gN/m^2/s', &
-         avgflag='A', long_name='soil NO3 pool loss to leaching', &
-         ptr_col=this%smin_no3_leached)
+    !#py call hist_addfld1d (fname='SMIN_NO3_LEACHED', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='soil NO3 pool loss to leaching', &
+         !#py !#py ptr_col=this%smin_no3_leached)
 
     this%smin_no3_runoff(begc:endc) = spval
-    call hist_addfld1d (fname='SMIN_NO3_RUNOFF', units='gN/m^2/s', &
-         avgflag='A', long_name='soil NO3 pool loss to runoff', &
-         ptr_col=this%smin_no3_runoff)
+    !#py call hist_addfld1d (fname='SMIN_NO3_RUNOFF', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='soil NO3 pool loss to runoff', &
+         !#py !#py ptr_col=this%smin_no3_runoff)
 
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%f_nit_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_NIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='nitrification flux', &
-              ptr_col=this%f_nit_vr)
+        !#py call hist_addfld_decomp (fname='F_NIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='nitrification flux', &
+              !#py !#py ptr_col=this%f_nit_vr)
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%f_denit_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_DENIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='denitrification flux', &
-              ptr_col=this%f_denit_vr)
+        !#py call hist_addfld_decomp (fname='F_DENIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='denitrification flux', &
+              !#py !#py ptr_col=this%f_denit_vr)
     end if
 
     if (nlevdecomp_full > 1 ) then
        this%pot_f_nit_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='POT_F_NIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='potential nitrification flux', &
-              ptr_col=this%pot_f_nit_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='POT_F_NIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='potential nitrification flux', &
+              !#py !#py ptr_col=this%pot_f_nit_vr, default='inactive')
     end if
 
     if (nlevdecomp_full > 1 ) then
        this%pot_f_denit_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='POT_F_DENIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='potential denitrification flux', &
-              ptr_col=this%pot_f_denit_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='POT_F_DENIT'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='potential denitrification flux', &
+              !#py !#py ptr_col=this%pot_f_denit_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%smin_no3_leached_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMIN_NO3_LEACHED'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='soil NO3 pool loss to leaching', &
-              ptr_col=this%smin_no3_leached_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMIN_NO3_LEACHED'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='soil NO3 pool loss to leaching', &
+              !#py !#py ptr_col=this%smin_no3_leached_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%smin_no3_runoff_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMIN_NO3_RUNOFF'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='soil NO3 pool loss to runoff', &
-              ptr_col=this%smin_no3_runoff_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMIN_NO3_RUNOFF'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='soil NO3 pool loss to runoff', &
+              !#py !#py ptr_col=this%smin_no3_runoff_vr, default='inactive')
     endif
 
     this%n2_n2o_ratio_denit_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='n2_n2o_ratio_denit', units='gN/gN', type2d='levdcmp', &
-         avgflag='A', long_name='n2_n2o_ratio_denit', &
-         ptr_col=this%n2_n2o_ratio_denit_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='n2_n2o_ratio_denit', units='gN/gN', type2d='levdcmp', &
+         !#py avgflag='A', long_name='n2_n2o_ratio_denit', &
+         !#py !#py ptr_col=this%n2_n2o_ratio_denit_vr, default='inactive')
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%actual_immob_no3_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='ACTUAL_IMMOB_NO3', units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='immobilization of NO3', &
-              ptr_col=this%actual_immob_no3_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='ACTUAL_IMMOB_NO3', units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='immobilization of NO3', &
+              !#py !#py ptr_col=this%actual_immob_no3_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%actual_immob_nh4_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='ACTUAL_IMMOB_NH4', units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='immobilization of NH4', &
-              ptr_col=this%actual_immob_nh4_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='ACTUAL_IMMOB_NH4', units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='immobilization of NH4', &
+              !#py !#py ptr_col=this%actual_immob_nh4_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%smin_no3_to_plant_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMIN_NO3_TO_PLANT', units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='plant uptake of NO3', &
-              ptr_col=this%smin_no3_to_plant_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMIN_NO3_TO_PLANT', units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='plant uptake of NO3', &
+              !#py !#py ptr_col=this%smin_no3_to_plant_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%smin_nh4_to_plant_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMIN_NH4_TO_PLANT', units='gN/m^3/s', type2d='levdcmp', &
-             avgflag='A', long_name='plant uptake of NH4', &
-              ptr_col=this%smin_nh4_to_plant_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMIN_NH4_TO_PLANT', units='gN/m^3/s', type2d='levdcmp', &
+             !#py avgflag='A', long_name='plant uptake of NH4', &
+              !#py !#py ptr_col=this%smin_nh4_to_plant_vr, default='inactive')
     end if
 
     this%smin_no3_massdens_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='SMIN_NO3_MASSDENS', units='ugN/cm^3 soil', type2d='levdcmp', &
-         avgflag='A', long_name='SMIN_NO3_MASSDENS', &
-         ptr_col=this%smin_no3_massdens_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='SMIN_NO3_MASSDENS', units='ugN/cm^3 soil', type2d='levdcmp', &
+         !#py avgflag='A', long_name='SMIN_NO3_MASSDENS', &
+         !#py !#py ptr_col=this%smin_no3_massdens_vr, default='inactive')
 
     this%k_nitr_t_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='K_NITR_T', units='unitless', type2d='levdcmp', &
-         avgflag='A', long_name='K_NITR_T', &
-         ptr_col=this%k_nitr_t_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='K_NITR_T', units='unitless', type2d='levdcmp', &
+         !#py avgflag='A', long_name='K_NITR_T', &
+         !#py !#py ptr_col=this%k_nitr_t_vr, default='inactive')
 
     this%k_nitr_ph_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='K_NITR_PH', units='unitless', type2d='levdcmp', &
-         avgflag='A', long_name='K_NITR_PH', &
-         ptr_col=this%k_nitr_ph_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='K_NITR_PH', units='unitless', type2d='levdcmp', &
+         !#py avgflag='A', long_name='K_NITR_PH', &
+         !#py !#py ptr_col=this%k_nitr_ph_vr, default='inactive')
 
     this%k_nitr_h2o_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='K_NITR_H2O', units='unitless', type2d='levdcmp', &
-         avgflag='A', long_name='K_NITR_H2O', &
-         ptr_col=this%k_nitr_h2o_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='K_NITR_H2O', units='unitless', type2d='levdcmp', &
+         !#py avgflag='A', long_name='K_NITR_H2O', &
+         !#py !#py ptr_col=this%k_nitr_h2o_vr, default='inactive')
 
     this%k_nitr_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='K_NITR', units='1/s', type2d='levdcmp', &
-         avgflag='A', long_name='K_NITR', &
-         ptr_col=this%k_nitr_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='K_NITR', units='1/s', type2d='levdcmp', &
+         !#py avgflag='A', long_name='K_NITR', &
+         !#py !#py ptr_col=this%k_nitr_vr, default='inactive')
 
     this%wfps_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='WFPS', units='percent', type2d='levdcmp', &
-         avgflag='A', long_name='WFPS', &
-         ptr_col=this%wfps_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='WFPS', units='percent', type2d='levdcmp', &
+         !#py avgflag='A', long_name='WFPS', &
+         !#py !#py ptr_col=this%wfps_vr, default='inactive')
 
     this%fmax_denit_carbonsubstrate_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='FMAX_DENIT_CARBONSUBSTRATE', units='gN/m^3/s', type2d='levdcmp', &
-         avgflag='A', long_name='FMAX_DENIT_CARBONSUBSTRATE', &
-         ptr_col=this%fmax_denit_carbonsubstrate_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='FMAX_DENIT_CARBONSUBSTRATE', units='gN/m^3/s', type2d='levdcmp', &
+         !#py avgflag='A', long_name='FMAX_DENIT_CARBONSUBSTRATE', &
+         !#py !#py ptr_col=this%fmax_denit_carbonsubstrate_vr, default='inactive')
 
     this%fmax_denit_nitrate_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='FMAX_DENIT_NITRATE', units='gN/m^3/s', type2d='levdcmp', &
-         avgflag='A', long_name='FMAX_DENIT_NITRATE', &
-         ptr_col=this%fmax_denit_nitrate_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='FMAX_DENIT_NITRATE', units='gN/m^3/s', type2d='levdcmp', &
+         !#py avgflag='A', long_name='FMAX_DENIT_NITRATE', &
+         !#py !#py ptr_col=this%fmax_denit_nitrate_vr, default='inactive')
 
     this%f_denit_base_vr(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='F_DENIT_BASE', units='gN/m^3/s', type2d='levdcmp', &
-         avgflag='A', long_name='F_DENIT_BASE', &
-         ptr_col=this%f_denit_base_vr, default='inactive')
+    !#py call hist_addfld_decomp (fname='F_DENIT_BASE', units='gN/m^3/s', type2d='levdcmp', &
+         !#py avgflag='A', long_name='F_DENIT_BASE', &
+         !#py !#py ptr_col=this%f_denit_base_vr, default='inactive')
 
     this%diffus(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='diffus', units='m^2/s', type2d='levdcmp', &
-         avgflag='A', long_name='diffusivity', &
-         ptr_col=this%diffus, default='inactive')
+    !#py call hist_addfld_decomp (fname='diffus', units='m^2/s', type2d='levdcmp', &
+         !#py avgflag='A', long_name='diffusivity', &
+         !#py !#py ptr_col=this%diffus, default='inactive')
 
     this%ratio_k1(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='ratio_k1', units='none', type2d='levdcmp', &
-         avgflag='A', long_name='ratio_k1', &
-         ptr_col=this%ratio_k1, default='inactive')
+    !#py call hist_addfld_decomp (fname='ratio_k1', units='none', type2d='levdcmp', &
+         !#py avgflag='A', long_name='ratio_k1', &
+         !#py !#py ptr_col=this%ratio_k1, default='inactive')
 
     this%ratio_no3_co2(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='ratio_no3_co2', units='ratio', type2d='levdcmp', &
-         avgflag='A', long_name='ratio_no3_co2', &
-         ptr_col=this%ratio_no3_co2, default='inactive')
+    !#py call hist_addfld_decomp (fname='ratio_no3_co2', units='ratio', type2d='levdcmp', &
+         !#py avgflag='A', long_name='ratio_no3_co2', &
+         !#py !#py ptr_col=this%ratio_no3_co2, default='inactive')
 
     this%soil_co2_prod(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='soil_co2_prod', units='ug C / g soil / day', type2d='levdcmp', &
-         avgflag='A', long_name='soil_co2_prod', &
-         ptr_col=this%soil_co2_prod, default='inactive')
+    !#py call hist_addfld_decomp (fname='soil_co2_prod', units='ug C / g soil / day', type2d='levdcmp', &
+         !#py avgflag='A', long_name='soil_co2_prod', &
+         !#py !#py ptr_col=this%soil_co2_prod, default='inactive')
 
     this%fr_WFPS(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='fr_WFPS', units='fraction', type2d='levdcmp', &
-         avgflag='A', long_name='fr_WFPS', &
-         ptr_col=this%fr_WFPS, default='inactive')
+    !#py call hist_addfld_decomp (fname='fr_WFPS', units='fraction', type2d='levdcmp', &
+         !#py avgflag='A', long_name='fr_WFPS', &
+         !#py !#py ptr_col=this%fr_WFPS, default='inactive')
 
     this%soil_bulkdensity(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='soil_bulkdensity', units='kg/m3', type2d='levdcmp', &
-         avgflag='A', long_name='soil_bulkdensity', &
-         ptr_col=this%soil_bulkdensity, default='inactive')
+    !#py call hist_addfld_decomp (fname='soil_bulkdensity', units='kg/m3', type2d='levdcmp', &
+         !#py avgflag='A', long_name='soil_bulkdensity', &
+         !#py !#py ptr_col=this%soil_bulkdensity, default='inactive')
 
     this%anaerobic_frac(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='anaerobic_frac', units='m3/m3', type2d='levdcmp', &
-         avgflag='A', long_name='anaerobic_frac', &
-         ptr_col=this%anaerobic_frac, default='inactive')
+    !#py call hist_addfld_decomp (fname='anaerobic_frac', units='m3/m3', type2d='levdcmp', &
+         !#py avgflag='A', long_name='anaerobic_frac', &
+         !#py !#py ptr_col=this%anaerobic_frac, default='inactive')
 
     this%r_psi(begc:endc,:) = spval
-    call hist_addfld_decomp (fname='r_psi', units='m', type2d='levdcmp', &
-         avgflag='A', long_name='r_psi', &
-         ptr_col=this%r_psi, default='inactive')
+    !#py call hist_addfld_decomp (fname='r_psi', units='m', type2d='levdcmp', &
+         !#py avgflag='A', long_name='r_psi', &
+         !#py !#py ptr_col=this%r_psi, default='inactive')
 
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%potential_immob_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='POTENTIAL_IMMOB'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='potential N immobilization', &
-              ptr_col=this%potential_immob_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='POTENTIAL_IMMOB'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='potential N immobilization', &
+              !#py !#py ptr_col=this%potential_immob_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%actual_immob_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='ACTUAL_IMMOB'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='actual N immobilization', &
-              ptr_col=this%actual_immob_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='ACTUAL_IMMOB'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='actual N immobilization', &
+              !#py !#py ptr_col=this%actual_immob_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%sminn_to_plant_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMINN_TO_PLANT'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='plant uptake of soil mineral N', &
-              ptr_col=this%sminn_to_plant_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMINN_TO_PLANT'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='plant uptake of soil mineral N', &
+              !#py !#py ptr_col=this%sminn_to_plant_vr, default='inactive')
     end if
 
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%supplement_to_sminn_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SUPPLEMENT_TO_SMINN'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='supplemental N supply', &
-              ptr_col=this%supplement_to_sminn_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SUPPLEMENT_TO_SMINN'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='supplemental N supply', &
+              !#py !#py ptr_col=this%supplement_to_sminn_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%gross_nmin_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='GROSS_NMIN'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='gross rate of N mineralization', &
-              ptr_col=this%gross_nmin_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='GROSS_NMIN'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='gross rate of N mineralization', &
+              !#py !#py ptr_col=this%gross_nmin_vr, default='inactive')
     end if
 
     if ((nlevdecomp_full > 1) .or. (use_pflotran .and. pf_cmode)) then
        this%net_nmin_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='NET_NMIN'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='net rate of N mineralization', &
-              ptr_col=this%net_nmin_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='NET_NMIN'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='net rate of N mineralization', &
+              !#py !#py ptr_col=this%net_nmin_vr, default='inactive')
     end if
 
     this%potential_immob(begc:endc) = spval
-     call hist_addfld1d (fname='POTENTIAL_IMMOB', units='gN/m^2/s', &
-          avgflag='A', long_name='potential N immobilization', &
-           ptr_col=this%potential_immob)
+     !#py call hist_addfld1d (fname='POTENTIAL_IMMOB', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='potential N immobilization', &
+           !#py !#py ptr_col=this%potential_immob)
 
     this%actual_immob(begc:endc) = spval
-     call hist_addfld1d (fname='ACTUAL_IMMOB', units='gN/m^2/s', &
-          avgflag='A', long_name='actual N immobilization', &
-           ptr_col=this%actual_immob)
+     !#py call hist_addfld1d (fname='ACTUAL_IMMOB', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='actual N immobilization', &
+           !#py !#py ptr_col=this%actual_immob)
 
     this%sminn_to_plant(begc:endc) = spval
-     call hist_addfld1d (fname='SMINN_TO_PLANT', units='gN/m^2/s', &
-          avgflag='A', long_name='plant uptake of soil mineral N', &
-           ptr_col=this%sminn_to_plant)
+     !#py call hist_addfld1d (fname='SMINN_TO_PLANT', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='plant uptake of soil mineral N', &
+           !#py !#py ptr_col=this%sminn_to_plant)
 
     this%supplement_to_sminn(begc:endc) = spval
-     call hist_addfld1d (fname='SUPPLEMENT_TO_SMINN', units='gN/m^2/s', &
-          avgflag='A', long_name='supplemental N supply', &
-           ptr_col=this%supplement_to_sminn)
+     !#py call hist_addfld1d (fname='SUPPLEMENT_TO_SMINN', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='supplemental N supply', &
+           !#py !#py ptr_col=this%supplement_to_sminn)
 
     this%gross_nmin(begc:endc) = spval
-     call hist_addfld1d (fname='GROSS_NMIN', units='gN/m^2/s', &
-          avgflag='A', long_name='gross rate of N mineralization', &
-           ptr_col=this%gross_nmin)
+     !#py call hist_addfld1d (fname='GROSS_NMIN', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='gross rate of N mineralization', &
+           !#py !#py ptr_col=this%gross_nmin)
 
     this%net_nmin(begc:endc) = spval
-    call hist_addfld1d (fname='NET_NMIN', units='gN/m^2/s', &
-         avgflag='A', long_name='net rate of N mineralization', &
-         ptr_col=this%net_nmin)
+    !#py call hist_addfld1d (fname='NET_NMIN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='net rate of N mineralization', &
+         !#py !#py ptr_col=this%net_nmin)
 
     this%f_n2o_nit(begc:endc) = spval
-    call hist_addfld1d (fname='F_N2O_NIT', units='gN/m^2/s', &
-         avgflag='A', long_name='nitrification N2O flux', &
-         ptr_col=this%f_n2o_nit)
+    !#py call hist_addfld1d (fname='F_N2O_NIT', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='nitrification N2O flux', &
+         !#py !#py ptr_col=this%f_n2o_nit)
 
     this%f_n2o_denit(begc:endc) = spval
-    call hist_addfld1d (fname='F_N2O_DENIT', units='gN/m^2/s', &
-         avgflag='A', long_name='denitrification N2O flux', &
-         ptr_col=this%f_n2o_denit)
+    !#py call hist_addfld1d (fname='F_N2O_DENIT', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='denitrification N2O flux', &
+         !#py !#py ptr_col=this%f_n2o_denit)
 
     this%fire_nloss(begc:endc) = spval
-     call hist_addfld1d (fname='COL_FIRE_NLOSS', units='gN/m^2/s', &
-          avgflag='A', long_name='total column-level fire N loss', &
-           ptr_col=this%fire_nloss, default='inactive')
+     !#py call hist_addfld1d (fname='COL_FIRE_NLOSS', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='total column-level fire N loss', &
+           !#py !#py ptr_col=this%fire_nloss, default='inactive')
 
     this%fire_decomp_nloss(begc:endc) = spval
-     call hist_addfld1d (fname='DECOMP_FIRE_NLOSS', units='gN/m^2/s', &
-        avgflag='A', long_name='fire N loss from decomposable pools', &
-         ptr_col=this%fire_decomp_nloss, default='inactive')
+     !#py call hist_addfld1d (fname='DECOMP_FIRE_NLOSS', units='gN/m^2/s', &
+        !#py avgflag='A', long_name='fire N loss from decomposable pools', &
+         !#py !#py ptr_col=this%fire_decomp_nloss, default='inactive')
 
     this%dwt_slash_nflux(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_SLASH_NFLUX', units='gN/m^2/s', &
-          avgflag='A', long_name='slash N flux to litter and CWD due to land use', &
-           ptr_col=this%dwt_slash_nflux)
+     !#py call hist_addfld1d (fname='DWT_SLASH_NFLUX', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='slash N flux to litter and CWD due to land use', &
+           !#py !#py ptr_col=this%dwt_slash_nflux)
 
     this%dwt_conv_nflux(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_CONV_NFLUX', units='gN/m^2/s', &
-          avgflag='A', long_name='conversion N flux (immediate loss to atm)', &
-           ptr_col=this%dwt_conv_nflux, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_CONV_NFLUX', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='conversion N flux (immediate loss to atm)', &
+           !#py !#py ptr_col=this%dwt_conv_nflux, default='inactive')
 
     this%dwt_crop_productn_gain(begc:endc) = spval
-    call hist_addfld1d (fname='DWT_CROP_PRODUCTN_GAIN', units='gN/m^2/s', &
-        avgflag='A', long_name='addition to crop product pool', &
-        ptr_col=this%dwt_crop_productn_gain, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_CROP_PRODUCTN_GAIN', units='gN/m^2/s', &
+        !#py avgflag='A', long_name='addition to crop product pool', &
+        !#py !#py ptr_col=this%dwt_crop_productn_gain, default='inactive')
 
     this%dwt_prod10n_gain(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_PROD10N_GAIN', units='gN/m^2/s', &
-          avgflag='A', long_name='addition to 10-yr wood product pool', &
-           ptr_col=this%dwt_prod10n_gain, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_PROD10N_GAIN', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='addition to 10-yr wood product pool', &
+           !#py !#py ptr_col=this%dwt_prod10n_gain, default='inactive')
 
     this%prod10n_loss(begc:endc) = spval
-     call hist_addfld1d (fname='PROD10N_LOSS', units='gN/m^2/s', &
-          avgflag='A', long_name='loss from 10-yr wood product pool', &
-           ptr_col=this%prod10n_loss, default='inactive')
+     !#py call hist_addfld1d (fname='PROD10N_LOSS', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='loss from 10-yr wood product pool', &
+           !#py !#py ptr_col=this%prod10n_loss, default='inactive')
 
     this%dwt_prod100n_gain(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_PROD100N_GAIN', units='gN/m^2/s', &
-          avgflag='A', long_name='addition to 100-yr wood product pool', &
-           ptr_col=this%dwt_prod100n_gain, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_PROD100N_GAIN', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='addition to 100-yr wood product pool', &
+           !#py !#py ptr_col=this%dwt_prod100n_gain, default='inactive')
 
     this%prod100n_loss(begc:endc) = spval
-     call hist_addfld1d (fname='PROD100N_LOSS', units='gN/m^2/s', &
-          avgflag='A', long_name='loss from 100-yr wood product pool', &
-           ptr_col=this%prod100n_loss, default='inactive')
+     !#py call hist_addfld1d (fname='PROD100N_LOSS', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='loss from 100-yr wood product pool', &
+           !#py !#py ptr_col=this%prod100n_loss, default='inactive')
 
     this%prod1n_loss(begc:endc) = spval
-     call hist_addfld1d (fname='PROD1N_LOSS', units='gN/m^2/s', &
-          avgflag='A', long_name='loss from 1-yr crop product pool', &
-           ptr_col=this%prod1n_loss, default='inactive')
+     !#py call hist_addfld1d (fname='PROD1N_LOSS', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='loss from 1-yr crop product pool', &
+           !#py !#py ptr_col=this%prod1n_loss, default='inactive')
 
     this%product_nloss(begc:endc) = spval
-     call hist_addfld1d (fname='PRODUCT_NLOSS', units='gN/m^2/s', &
-          avgflag='A', long_name='total N loss from wood product pools', &
-           ptr_col=this%product_nloss, default='inactive')
+     !#py call hist_addfld1d (fname='PRODUCT_NLOSS', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='total N loss from wood product pools', &
+           !#py !#py ptr_col=this%product_nloss, default='inactive')
 
     this%dwt_frootn_to_litr_met_n(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_FROOTN_TO_LITR_MET_N', units='gN/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='fine root to litter due to landcover change', &
-           ptr_col=this%dwt_frootn_to_litr_met_n, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_FROOTN_TO_LITR_MET_N', units='gN/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+           !#py !#py ptr_col=this%dwt_frootn_to_litr_met_n, default='inactive')
 
     this%dwt_frootn_to_litr_cel_n(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_FROOTN_TO_LITR_CEL_N', units='gN/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='fine root to litter due to landcover change', &
-           ptr_col=this%dwt_frootn_to_litr_cel_n, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_FROOTN_TO_LITR_CEL_N', units='gN/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+           !#py !#py ptr_col=this%dwt_frootn_to_litr_cel_n, default='inactive')
 
     this%dwt_frootn_to_litr_lig_n(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_FROOTN_TO_LITR_LIG_N', units='gN/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='fine root to litter due to landcover change', &
-           ptr_col=this%dwt_frootn_to_litr_lig_n, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_FROOTN_TO_LITR_LIG_N', units='gN/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+           !#py !#py ptr_col=this%dwt_frootn_to_litr_lig_n, default='inactive')
 
     this%dwt_livecrootn_to_cwdn(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_LIVECROOTN_TO_CWDN', units='gN/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='live coarse root to CWD due to landcover change', &
-           ptr_col=this%dwt_livecrootn_to_cwdn, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_LIVECROOTN_TO_CWDN', units='gN/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='live coarse root to CWD due to landcover change', &
+           !#py !#py ptr_col=this%dwt_livecrootn_to_cwdn, default='inactive')
 
     this%dwt_deadcrootn_to_cwdn(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_DEADCROOTN_TO_CWDN', units='gN/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='dead coarse root to CWD due to landcover change', &
-           ptr_col=this%dwt_deadcrootn_to_cwdn, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_DEADCROOTN_TO_CWDN', units='gN/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='dead coarse root to CWD due to landcover change', &
+           !#py !#py ptr_col=this%dwt_deadcrootn_to_cwdn, default='inactive')
 
     this%dwt_nloss(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_NLOSS', units='gN/m^2/s', &
-          avgflag='A', long_name='total nitrogen loss from landcover conversion', &
-           ptr_col=this%dwt_nloss, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_NLOSS', units='gN/m^2/s', &
+          !#py avgflag='A', long_name='total nitrogen loss from landcover conversion', &
+           !#py !#py ptr_col=this%dwt_nloss, default='inactive')
 
     if (crop_prog) then
        this%fert_to_sminn(begc:endc) = spval
-        call hist_addfld1d (fname='FERT_TO_SMINN', units='gN/m^2/s', &
-             avgflag='A', long_name='fertilizer to soil mineral N', &
-              ptr_col=this%fert_to_sminn)
+        !#py call hist_addfld1d (fname='FERT_TO_SMINN', units='gN/m^2/s', &
+             !#py avgflag='A', long_name='fertilizer to soil mineral N', &
+              !#py !#py ptr_col=this%fert_to_sminn)
     end if
 
     if (crop_prog) then
        this%soyfixn_to_sminn(begc:endc) = spval
-        call hist_addfld1d (fname='SOYFIXN_TO_SMINN', units='gN/m^2/s', &
-             avgflag='A', long_name='Soybean fixation to soil mineral N', &
-              ptr_col=this%soyfixn_to_sminn)
+        !#py call hist_addfld1d (fname='SOYFIXN_TO_SMINN', units='gN/m^2/s', &
+             !#py avgflag='A', long_name='Soybean fixation to soil mineral N', &
+              !#py !#py ptr_col=this%soyfixn_to_sminn)
     end if
 
     this%plant_ndemand(begc:endc) = spval
-        call hist_addfld1d (fname='PLANT_NDEMAND_COL', units='gN/m^2/s', &
-             avgflag='A', long_name='N flux required to support initial GPP', &
-              ptr_col=this%plant_ndemand)
+        !#py call hist_addfld1d (fname='PLANT_NDEMAND_COL', units='gN/m^2/s', &
+             !#py avgflag='A', long_name='N flux required to support initial GPP', &
+              !#py !#py ptr_col=this%plant_ndemand)
 
     if (use_pflotran.and.pf_cmode) then
        this%f_ngas_decomp(begc:endc) = spval
-        call hist_addfld1d (fname='F_NGAS_DECOMP', units='gN/m^2/s',  &
-              avgflag='A', long_name='N gas emission from excess mineral N pool due to mineralization', &
-               ptr_col=this%f_ngas_decomp, default='inactive')
+        !#py call hist_addfld1d (fname='F_NGAS_DECOMP', units='gN/m^2/s',  &
+              !#py avgflag='A', long_name='N gas emission from excess mineral N pool due to mineralization', &
+               !#py !#py ptr_col=this%f_ngas_decomp, default='inactive')
 
        this%f_ngas_nitri(begc:endc) = spval
-        call hist_addfld1d (fname='F_NGAS_NITRI', units='gN/m^2/s',  &
-              avgflag='A', long_name='N gas emission from nitrification', &
-               ptr_col=this%f_ngas_nitri, default='inactive')
+        !#py call hist_addfld1d (fname='F_NGAS_NITRI', units='gN/m^2/s',  &
+              !#py avgflag='A', long_name='N gas emission from nitrification', &
+               !#py !#py ptr_col=this%f_ngas_nitri, default='inactive')
 
        this%f_ngas_denit(begc:endc) = spval
-        call hist_addfld1d (fname='F_NGAS_DENIT', units='gN/m^2/s',  &
-              avgflag='A', long_name='N gas emission from denitrification', &
-               ptr_col=this%f_ngas_denit, default='inactive')
+        !#py call hist_addfld1d (fname='F_NGAS_DENIT', units='gN/m^2/s',  &
+              !#py avgflag='A', long_name='N gas emission from denitrification', &
+               !#py !#py ptr_col=this%f_ngas_denit, default='inactive')
 
        this%f_n2o_soil(begc:endc) = spval
-        call hist_addfld1d (fname='F_N2O_SOIL', units='gN/m^2/s',  &
-              avgflag='A', long_name='soil n2o exchange flux', &
-               ptr_col=this%f_n2o_soil)
+        !#py call hist_addfld1d (fname='F_N2O_SOIL', units='gN/m^2/s',  &
+              !#py avgflag='A', long_name='soil n2o exchange flux', &
+               !#py !#py ptr_col=this%f_n2o_soil)
 
        this%f_n2_soil(begc:endc) = spval
-        call hist_addfld1d (fname='F_N2_SOIL', units='gN/m^2/s',  &
-              avgflag='A', long_name='soil n2 exchange flux', &
-               ptr_col=this%f_n2_soil)
+        !#py call hist_addfld1d (fname='F_N2_SOIL', units='gN/m^2/s',  &
+              !#py avgflag='A', long_name='soil n2 exchange flux', &
+               !#py !#py ptr_col=this%f_n2_soil)
 
        this%smin_nh4_to_plant(begc:endc) = spval
-        call hist_addfld1d (fname='SMIN_NH4_TO_PLANT', units='gN/m^2/s', &
-             avgflag='A', long_name='plant uptake of NH4', &
-              ptr_col=this%smin_nh4_to_plant, default='inactive')
+        !#py call hist_addfld1d (fname='SMIN_NH4_TO_PLANT', units='gN/m^2/s', &
+             !#py avgflag='A', long_name='plant uptake of NH4', &
+              !#py !#py ptr_col=this%smin_nh4_to_plant, default='inactive')
 
        this%smin_no3_to_plant(begc:endc) = spval
-        call hist_addfld1d (fname='SMIN_NO3_TO_PLANT', units='gN/m^2/s', &
-             avgflag='A', long_name='plant uptake of NO3', &
-              ptr_col=this%smin_no3_to_plant, default='inactive')
+        !#py call hist_addfld1d (fname='SMIN_NO3_TO_PLANT', units='gN/m^2/s', &
+             !#py avgflag='A', long_name='plant uptake of NO3', &
+              !#py !#py ptr_col=this%smin_no3_to_plant, default='inactive')
 
        this%f_ngas_decomp_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_NGAS_DECOMP'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-           avgflag='A', long_name='n gas emission from excess mineral N pool due to mineralization', &
-            ptr_col=this%f_ngas_decomp_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='F_NGAS_DECOMP'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+           !#py avgflag='A', long_name='n gas emission from excess mineral N pool due to mineralization', &
+            !#py !#py ptr_col=this%f_ngas_decomp_vr, default='inactive')
 
        this%f_ngas_nitri_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_NGAS_NITRI'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-           avgflag='A', long_name='n gas emission in nitrification', &
-            ptr_col=this%f_ngas_nitri_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='F_NGAS_NITRI'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+           !#py avgflag='A', long_name='n gas emission in nitrification', &
+            !#py !#py ptr_col=this%f_ngas_nitri_vr, default='inactive')
 
        this%f_ngas_denit_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_NGAS_DENIT'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
-           avgflag='A', long_name='n gas emission in denitrification', &
-            ptr_col=this%f_ngas_denit_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='F_NGAS_DENIT'//trim(vr_suffix), units='gN/m^3/s',  type2d='levdcmp', &
+           !#py avgflag='A', long_name='n gas emission in denitrification', &
+            !#py !#py ptr_col=this%f_ngas_denit_vr, default='inactive')
 
        this%f_n2o_soil_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_N2O_SOIL'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-           avgflag='A', long_name='soil N2O exchange flux', &
-            ptr_col=this%f_n2o_soil_vr)
+        !#py call hist_addfld_decomp (fname='F_N2O_SOIL'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+           !#py avgflag='A', long_name='soil N2O exchange flux', &
+            !#py !#py ptr_col=this%f_n2o_soil_vr)
 
        this%f_n2_soil_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='F_N2_SOIL'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-           avgflag='A', long_name='soil N2 exchange flux', &
-            ptr_col=this%f_n2_soil_vr)
+        !#py call hist_addfld_decomp (fname='F_N2_SOIL'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+           !#py avgflag='A', long_name='soil N2 exchange flux', &
+            !#py !#py ptr_col=this%f_n2_soil_vr)
 
        this%plant_ndemand_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='PLANT_NDEMAND'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
-           avgflag='A', long_name='plant N demand distribution via roots', &
-            ptr_col=this%plant_ndemand_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='PLANT_NDEMAND'//trim(vr_suffix), units='gN/m^3/s', type2d='levdcmp', &
+           !#py avgflag='A', long_name='plant N demand distribution via roots', &
+            !#py !#py ptr_col=this%plant_ndemand_vr, default='inactive')
     end if ! if (use_pflotran.and.pf_cmode)
 
     !-----------------------------------------------------------------------
@@ -8590,111 +8486,111 @@ end subroutine col_cs_restart
   end subroutine col_nf_init
 
   !-----------------------------------------------------------------------
-  subroutine col_nf_restart (this,  bounds, ncid, flag )
-    !
-    ! !DESCRIPTION:
-    ! Read/write restart data for column-level nitrogen fluxes
-    !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    ! !ARGUMENTS:
-    class (column_nitrogen_flux)      :: this
-    type(bounds_type) , intent(in)    :: bounds
-    type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
-    character(len=*)  , intent(in)    :: flag   !'read' or 'write'
-    !
-    ! !LOCAL VARIABLES:
-    logical           :: readvar    ! determine if variable is on initial file
-    integer           :: k
-    real(r8), pointer :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
-    real(r8), pointer :: ptr1d(:)   ! temp. pointers for slicing larger arrays
-    character(len=128):: varname    ! temporary
-    !------------------------------------------------------------------------
-
-    ! pot_f_nit_vr
-    if (use_vertsoilc) then
-       ptr2d => this%pot_f_nit_vr(:,:)
-       call restartvar(ncid=ncid, flag=flag, varname='pot_f_nit_vr', xtype=ncd_double, &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='potential soil nitrification flux', units='gN/m3/s', &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%pot_f_nit_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname='pot_f_nit_vr', xtype=ncd_double, &
-            dim1name='column', &
-            long_name='soil nitrification flux', units='gN/m3/s', &
-            interpinic_flag='interp', readvar=readvar, data=ptr1d)
-    end if
-
-    if (flag=='read' .and. .not. readvar) then
-       call endrun(msg= 'ERROR:: pot_f_nit_vr'//' is required on an initialization dataset' )
-    end if
-    ! f_nit_vr
-    if (use_vertsoilc) then
-       ptr2d => this%f_nit_vr(:,:)
-       call restartvar(ncid=ncid, flag=flag, varname='f_nit_vr', xtype=ncd_double, &
-            dim1name='column', dim2name='levgrnd', switchdim=.true., &
-            long_name='soil nitrification flux', units='gN/m3/s', &
-            interpinic_flag='interp', readvar=readvar, data=ptr2d)
-    else
-       ptr1d => this%f_nit_vr(:,1)
-       call restartvar(ncid=ncid, flag=flag, varname='f_nit_vr', xtype=ncd_double, &
-            dim1name='column', &
-            long_name='soil nitrification flux', units='gN/m3/s', &
-            interpinic_flag='interp', readvar=readvar, data=ptr1d)
-    end if
-    if (flag=='read' .and. .not. readvar) then
-       call endrun(msg='ERROR:: f_nit_vr'//' is required on an initialization dataset'//&
-            errMsg(__FILE__, __LINE__))
-    end if
-
-    if (use_pflotran .and. pf_cmode) then
-       ! externaln_to_decomp_npools_col
-       do k = 1, ndecomp_pools
-          varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'external_n'
-          if (use_vertsoilc) then
-             ptr2d => this%externaln_to_decomp_npools(:,:,k)
-             call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
-                  dim1name='column', dim2name='levgrnd', switchdim=.true., &
-                  long_name='net organic N adding/removal/transport to soil', units='gN/m3/s', fill_value=spval, &
-                  interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%externaln_to_decomp_npools(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
-             call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-                  dim1name='column', &
-                  long_name='net organic N adding/removal/transport to soil', units='gN/m3/s', fill_value=spval, &
-                  interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-          !   call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
-          !        errMsg(__FILE__, __LINE__))
-             this%externaln_to_decomp_npools(:,:,k) = 0._r8
-          end if
-       end do
-       !no3_net_transport_vr
-       if (.not.pf_hmode) then
-          if (use_vertsoilc) then
-             ptr2d => this%no3_net_transport_vr(:,:)
-             call restartvar(ncid=ncid, flag=flag, varname='no3_net_transport_vr', xtype=ncd_double, &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='net soil NO3-N transport', units='gN/m3/s', &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%no3_net_transport_vr(:,1)
-             call restartvar(ncid=ncid, flag=flag, varname='no3_net_transport_vr', xtype=ncd_double, &
-               dim1name='column', &
-               long_name='net soil  NO3-N transport', units='gN/m3/s', &
-               interpinic_flag='interp', readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-          !   call endrun(msg='ERROR:: no3_net_transport_vr'//' is required on an initialization dataset'//&
-          !     errMsg(__FILE__, __LINE__))
-             this%no3_net_transport_vr(:,:) = 0._r8
-          end if
-       end if
-
-    end if ! if (use_pflotran .and. pf_cmode)
-
-  end subroutine col_nf_restart
+!#py   subroutine col_nf_restart (this,  bounds, ncid, flag )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write restart data for column-level nitrogen fluxes
+!#py     !
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     ! !ARGUMENTS:
+!#py     class (column_nitrogen_flux)      :: this
+!#py     type(bounds_type) , intent(in)    :: bounds
+!#py     type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
+!#py     character(len=*)  , intent(in)    :: flag   !'read' or 'write'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical           :: readvar    ! determine if variable is on initial file
+!#py     integer           :: k
+!#py     real(r8), pointer :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer :: ptr1d(:)   ! temp. pointers for slicing larger arrays
+!#py     character(len=128):: varname    ! temporary
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     ! pot_f_nit_vr
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%pot_f_nit_vr(:,:)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='pot_f_nit_vr', xtype=ncd_double, &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='potential soil nitrification flux', units='gN/m3/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%pot_f_nit_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='pot_f_nit_vr', xtype=ncd_double, &
+!#py             dim1name='column', &
+!#py             long_name='soil nitrification flux', units='gN/m3/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py     end if
+!#py
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        call endrun(msg= 'ERROR:: pot_f_nit_vr'//' is required on an initialization dataset' )
+!#py     end if
+!#py     ! f_nit_vr
+!#py     if (use_vertsoilc) then
+!#py        ptr2d => this%f_nit_vr(:,:)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='f_nit_vr', xtype=ncd_double, &
+!#py             dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py             long_name='soil nitrification flux', units='gN/m3/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py     else
+!#py        ptr1d => this%f_nit_vr(:,1)
+!#py        call restartvar(ncid=ncid, flag=flag, varname='f_nit_vr', xtype=ncd_double, &
+!#py             dim1name='column', &
+!#py             long_name='soil nitrification flux', units='gN/m3/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py     end if
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        call endrun(msg='ERROR:: f_nit_vr'//' is required on an initialization dataset'//&
+!#py             errMsg(__FILE__, __LINE__))
+!#py     end if
+!#py
+!#py     if (use_pflotran .and. pf_cmode) then
+!#py        ! externaln_to_decomp_npools_col
+!#py        do k = 1, ndecomp_pools
+!#py           varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'external_n'
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%externaln_to_decomp_npools(:,:,k)
+!#py              call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
+!#py                   dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                   long_name='net organic N adding/removal/transport to soil', units='gN/m3/s', fill_value=spval, &
+!#py                   interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%externaln_to_decomp_npools(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
+!#py              call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                   dim1name='column', &
+!#py                   long_name='net organic N adding/removal/transport to soil', units='gN/m3/s', fill_value=spval, &
+!#py                   interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py           !   call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
+!#py           !        errMsg(__FILE__, __LINE__))
+!#py              this%externaln_to_decomp_npools(:,:,k) = 0._r8
+!#py           end if
+!#py        end do
+!#py        !no3_net_transport_vr
+!#py        if (.not.pf_hmode) then
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%no3_net_transport_vr(:,:)
+!#py              call restartvar(ncid=ncid, flag=flag, varname='no3_net_transport_vr', xtype=ncd_double, &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='net soil NO3-N transport', units='gN/m3/s', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%no3_net_transport_vr(:,1)
+!#py              call restartvar(ncid=ncid, flag=flag, varname='no3_net_transport_vr', xtype=ncd_double, &
+!#py                dim1name='column', &
+!#py                long_name='net soil  NO3-N transport', units='gN/m3/s', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py           !   call endrun(msg='ERROR:: no3_net_transport_vr'//' is required on an initialization dataset'//&
+!#py           !     errMsg(__FILE__, __LINE__))
+!#py              this%no3_net_transport_vr(:,:) = 0._r8
+!#py           end if
+!#py        end if
+!#py
+!#py     end if ! if (use_pflotran .and. pf_cmode)
+!#py
+!#py !#py !#py   end subroutine col_nf_restart
 
   !-----------------------------------------------------------------------
   subroutine col_nf_setvalues ( this, num_column, filter_column, value_column)
@@ -9281,7 +9177,7 @@ end subroutine col_cs_restart
     real(r8):: dtime       ! radiation time step (seconds)
     !------------------------------------------------------------------------
 
-     dtime = real( get_step_size(), r8 )
+     !#py dtime = real( get_step_size(), r8 )
     ! nitrification-denitrification rates (not yet passing out from PF, but will)
     do fc = 1,num_soilc
        c = filter_soilc(fc)
@@ -9479,7 +9375,7 @@ end subroutine col_cs_restart
   !------------------------------------------------------------------------
   subroutine col_pf_init(this, begc, endc)
     !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+    !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
     ! !ARGUMENTS:
     class(column_phosphorus_flux) :: this
     integer, intent(in) :: begc,endc
@@ -9632,9 +9528,9 @@ end subroutine col_cs_restart
     endif
 
     this%pdep_to_sminp(begc:endc) = spval
-     call hist_addfld1d (fname='PDEP_TO_SMINP', units='gP/m^2/s', &
-          avgflag='A', long_name='atmospheric P deposition to soil mineral P', &
-           ptr_col=this%pdep_to_sminp)
+     !#py call hist_addfld1d (fname='PDEP_TO_SMINP', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='atmospheric P deposition to soil mineral P', &
+           !#py !#py ptr_col=this%pdep_to_sminp)
 
 
     do k = 1, ndecomp_pools
@@ -9643,18 +9539,18 @@ end subroutine col_cs_restart
           data1dptr => this%m_decomp_ppools_to_fire(:,k)
           fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_TO_FIRE'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P fire loss'
-           call hist_addfld1d (fname=fieldname, units='gP/m^2',  &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr, default='inactive')
+           !#py call hist_addfld1d (fname=fieldname, units='gP/m^2',  &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr, default='inactive')
 
           if ( nlevdecomp_full > 1 ) then
              this%m_decomp_ppools_to_fire_vr(begc:endc,:,k) = spval
              data2dptr => this%m_decomp_ppools_to_fire_vr(:,:,k)
              fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_TO_FIRE'//trim(vr_suffix)
              longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P fire loss'
-              call hist_addfld_decomp (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data2dptr, default='inactive')
+              !#py call hist_addfld_decomp (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data2dptr, default='inactive')
           endif
        endif
 
@@ -9665,12 +9561,12 @@ end subroutine col_cs_restart
           if ( nlevdecomp_full > 1 ) then
              this%biochem_pmin_ppools_vr(begc:endc,:,k) = spval
              data2dptr => this%biochem_pmin_ppools_vr(:,:,k)
-              write(aa,'(i1)') k
+              !#py write(aa,'(i1)') k
              fieldname = 'BIOCHEM_PMIN_PPOOL'//aa//trim(vr_suffix)
              longname  = 'Biochemical mineralization of ppool'//aa
-              call hist_addfld_decomp (fname=fieldname, units='gP/m^2/s',type2d='levdcmp', &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data2dptr, default='inactive')
+              !#py call hist_addfld_decomp (fname=fieldname, units='gP/m^2/s',type2d='levdcmp', &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data2dptr, default='inactive')
           endif
        endif
     end do
@@ -9695,9 +9591,9 @@ end subroutine col_cs_restart
              longname =  'mineral P flux for decomp. of '&
                   //trim(decomp_cascade_con%decomp_pool_name_history(decomp_cascade_con%cascade_donor_pool(l)))
           endif
-           call hist_addfld1d (fname=fieldname, units='gP/m^2', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr)
+           !#py call hist_addfld1d (fname=fieldname, units='gP/m^2', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr)
        end if
 
        !-- transfer fluxes (none from terminal pool, if present)
@@ -9708,9 +9604,9 @@ end subroutine col_cs_restart
                trim(decomp_cascade_con%decomp_pool_name_history(decomp_cascade_con%cascade_receiver_pool(l)))//'P'
           longname =  'decomp. of '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                ' P to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' N'
-           call hist_addfld1d (fname=fieldname, units='gP/m^2',  &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr)
+           !#py call hist_addfld1d (fname=fieldname, units='gP/m^2',  &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr)
        end if
 
        ! vertically resolved fluxes
@@ -9732,9 +9628,9 @@ end subroutine col_cs_restart
                 longname =  'mineral P flux for decomp. of '&
                      //trim(decomp_cascade_con%decomp_pool_name_history(decomp_cascade_con%cascade_donor_pool(l)))
              endif
-              call hist_addfld_decomp (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data2dptr, default='inactive')
+              !#py call hist_addfld_decomp (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data2dptr, default='inactive')
           endif
 
           !-- transfer fluxes (none from terminal pool, if present)
@@ -9747,18 +9643,18 @@ end subroutine col_cs_restart
              longname =  'decomp. of '&
                   //trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_donor_pool(l)))//&
                   ' P to '//trim(decomp_cascade_con%decomp_pool_name_long(decomp_cascade_con%cascade_receiver_pool(l)))//' P'
-              call hist_addfld_decomp (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
-                   avgflag='A', long_name=longname, &
-                    ptr_col=data2dptr, default='inactive')
+              !#py call hist_addfld_decomp (fname=fieldname, units='gP/m^3',  type2d='levdcmp', &
+                   !#py avgflag='A', long_name=longname, &
+                    !#py !#py ptr_col=data2dptr, default='inactive')
           endif
 
        endif
     end do
 
     this%som_p_leached(begc:endc) = spval
-     call hist_addfld1d (fname='SOM_P_LEACHED', units='gP/m^2/s', &
-          avgflag='A', long_name='total flux of P from SOM pools due to leaching', &
-           ptr_col=this%som_p_leached, default='inactive')
+     !#py call hist_addfld1d (fname='SOM_P_LEACHED', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='total flux of P from SOM pools due to leaching', &
+           !#py !#py ptr_col=this%som_p_leached, default='inactive')
 
     do k = 1, ndecomp_pools
        if(trim(decomp_cascade_con%decomp_pool_name_history(k))=='')exit
@@ -9767,34 +9663,34 @@ end subroutine col_cs_restart
           data1dptr => this%decomp_ppools_leached(:,k)
           fieldname = 'M_'//trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_TO_LEACHING'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P leaching loss'
-           call hist_addfld1d (fname=fieldname, units='gP/m^2/s', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data1dptr, default='inactive')
+           !#py call hist_addfld1d (fname=fieldname, units='gP/m^2/s', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data1dptr, default='inactive')
 
           this%decomp_ppools_transport_tendency(begc:endc,:,k) = spval
           data2dptr => this%decomp_ppools_transport_tendency(:,:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_TNDNCY_VERT_TRANSPORT'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P tendency due to vertical transport'
-           call hist_addfld_decomp (fname=fieldname, units='gP/m^3/s',  type2d='levdcmp', &
-                avgflag='A', long_name=longname, &
-                 ptr_col=data2dptr)
+           !#py call hist_addfld_decomp (fname=fieldname, units='gP/m^3/s',  type2d='levdcmp', &
+                !#py avgflag='A', long_name=longname, &
+                 !#py !#py ptr_col=data2dptr)
        end if
     end do
 
     this%somp_erode(begc:endc) = spval
-    call hist_addfld1d (fname='SOMP_ERO', units='gP/m^2/s', &
-         avgflag='A', long_name='SOP detachment', &
-         ptr_col=this%somp_erode, default='inactive')
+    !#py call hist_addfld1d (fname='SOMP_ERO', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='SOP detachment', &
+         !#py !#py ptr_col=this%somp_erode, default='inactive')
 
     this%somp_deposit(begc:endc) = spval
-    call hist_addfld1d (fname='SOMP_DEP', units='gP/m^2/s', &
-         avgflag='A', long_name='SOP hillslope redeposition', &
-         ptr_col=this%somp_deposit, default='inactive')
+    !#py call hist_addfld1d (fname='SOMP_DEP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='SOP hillslope redeposition', &
+         !#py !#py ptr_col=this%somp_deposit, default='inactive')
 
     this%somp_yield(begc:endc) = spval
-    call hist_addfld1d (fname='SOMP_YLD', units='gP/m^2/s', &
-         avgflag='A', long_name='SOP erosional loss to inland waters', &
-         ptr_col=this%somp_yield, default='inactive')
+    !#py call hist_addfld1d (fname='SOMP_YLD', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='SOP erosional loss to inland waters', &
+         !#py !#py ptr_col=this%somp_yield, default='inactive')
 
     this%decomp_ppools_erode(begc:endc,:) = spval
     this%decomp_ppools_deposit(begc:endc,:) = spval
@@ -9804,372 +9700,372 @@ end subroutine col_cs_restart
           data1dptr => this%decomp_ppools_erode(:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_ERO'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P detachment'
-          call hist_addfld1d (fname=fieldname, units='gP/m^2/s',  &
-               avgflag='A', long_name=longname, &
-               ptr_col=data1dptr, default='inactive')
+          !#py call hist_addfld1d (fname=fieldname, units='gP/m^2/s',  &
+               !#py avgflag='A', long_name=longname, &
+               !#py !#py ptr_col=data1dptr, default='inactive')
 
           data1dptr => this%decomp_ppools_deposit(:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_DEP'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P hillslope redeposition'
-          call hist_addfld1d (fname=fieldname, units='gP/m^2/s',  &
-               avgflag='A', long_name=longname, &
-               ptr_col=data1dptr, default='inactive')
+          !#py call hist_addfld1d (fname=fieldname, units='gP/m^2/s',  &
+               !#py avgflag='A', long_name=longname, &
+               !#py !#py ptr_col=data1dptr, default='inactive')
 
           data1dptr => this%decomp_ppools_yield(:,k)
           fieldname = trim(decomp_cascade_con%decomp_pool_name_history(k))//'P_YLD'
           longname =  trim(decomp_cascade_con%decomp_pool_name_long(k))//' P erosional loss to inland waters'
-          call hist_addfld1d (fname=fieldname, units='gP/m^2/s',  &
-               avgflag='A', long_name=longname, &
-               ptr_col=data1dptr, default='inactive')
+          !#py call hist_addfld1d (fname=fieldname, units='gP/m^2/s',  &
+               !#py avgflag='A', long_name=longname, &
+               !#py !#py ptr_col=data1dptr, default='inactive')
        endif
     end do
 
     this%primp_to_labilep(begc:endc) = spval
-     call hist_addfld1d (fname='PRIMP_TO_LABILEP', units='gP/m^2/s',   &
-          avgflag='A', long_name='PRIMARY MINERAL P TO LABILE P', &
-           ptr_col=this%primp_to_labilep)
+     !#py call hist_addfld1d (fname='PRIMP_TO_LABILEP', units='gP/m^2/s',   &
+          !#py avgflag='A', long_name='PRIMARY MINERAL P TO LABILE P', &
+           !#py !#py ptr_col=this%primp_to_labilep)
 
     if ( nlevdecomp_full > 1 ) then
        this%primp_to_labilep_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='PRIMP_TO_LABILEP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='PRIMARY MINERAL P TO LABILE P', &
-              ptr_col=this%primp_to_labilep_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='PRIMP_TO_LABILEP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='PRIMARY MINERAL P TO LABILE P', &
+              !#py !#py ptr_col=this%primp_to_labilep_vr, default='inactive')
     endif
 
     this%labilep_to_secondp(begc:endc) = spval
-     call hist_addfld1d (fname='LABILEP_TO_SECONDP', units='gP/m^2/s',   &
-          avgflag='A', long_name='LABILE P TO SECONDARY MINERAL P', &
-           ptr_col=this%labilep_to_secondp)
+     !#py call hist_addfld1d (fname='LABILEP_TO_SECONDP', units='gP/m^2/s',   &
+          !#py avgflag='A', long_name='LABILE P TO SECONDARY MINERAL P', &
+           !#py !#py ptr_col=this%labilep_to_secondp)
 
     if ( nlevdecomp_full > 1 ) then
        this%labilep_to_secondp_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='LABILEP_TO_SECONDP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='LABILE P TO SECONDARY MINERAL P', &
-              ptr_col=this%labilep_to_secondp_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='LABILEP_TO_SECONDP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='LABILE P TO SECONDARY MINERAL P', &
+              !#py !#py ptr_col=this%labilep_to_secondp_vr, default='inactive')
     endif
 
 
     this%secondp_to_labilep(begc:endc) = spval
-     call hist_addfld1d (fname='SECONDP_TO_LABILEP', units='gP/m^2/s',   &
-          avgflag='A', long_name='SECONDARY MINERAL P TO LABILE P', &
-           ptr_col=this%secondp_to_labilep)
+     !#py call hist_addfld1d (fname='SECONDP_TO_LABILEP', units='gP/m^2/s',   &
+          !#py avgflag='A', long_name='SECONDARY MINERAL P TO LABILE P', &
+           !#py !#py ptr_col=this%secondp_to_labilep)
 
     if ( nlevdecomp_full > 1 ) then
        this%secondp_to_labilep_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SECONDP_TO_LABILEP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='SECONDARY MINERAL P TO LABILE P', &
-              ptr_col=this%secondp_to_labilep_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SECONDP_TO_LABILEP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='SECONDARY MINERAL P TO LABILE P', &
+              !#py !#py ptr_col=this%secondp_to_labilep_vr, default='inactive')
     endif
 
     this%secondp_to_occlp(begc:endc) = spval
-     call hist_addfld1d (fname='SECONDP_TO_OCCLP', units='gP/m^2/s',   &
-          avgflag='A', long_name='SECONDARY MINERAL P TO OCCLUDED P', &
-           ptr_col=this%secondp_to_occlp)
+     !#py call hist_addfld1d (fname='SECONDP_TO_OCCLP', units='gP/m^2/s',   &
+          !#py avgflag='A', long_name='SECONDARY MINERAL P TO OCCLUDED P', &
+           !#py !#py ptr_col=this%secondp_to_occlp)
 
     if ( nlevdecomp_full > 1 ) then
        this%secondp_to_occlp_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SECONDP_TO_OCCLP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='SECONDARY MINERAL P TO OCCLUDED P', &
-              ptr_col=this%secondp_to_occlp_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SECONDP_TO_OCCLP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='SECONDARY MINERAL P TO OCCLUDED P', &
+              !#py !#py ptr_col=this%secondp_to_occlp_vr, default='inactive')
     endif
 
     this%sminp_leached(begc:endc) = spval
-     call hist_addfld1d (fname='SMINP_LEACHED', units='gP/m^2/s',   &
-          avgflag='A', long_name='soil mineral P pool loss to leaching', &
-           ptr_col=this%sminp_leached)
+     !#py call hist_addfld1d (fname='SMINP_LEACHED', units='gP/m^2/s',   &
+          !#py avgflag='A', long_name='soil mineral P pool loss to leaching', &
+           !#py !#py ptr_col=this%sminp_leached)
 
     if ( nlevdecomp_full > 1 ) then
        this%sminp_leached_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMINP_LEACHED'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='soil mineral P pool loss to leaching', &
-              ptr_col=this%sminp_leached_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMINP_LEACHED'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='soil mineral P pool loss to leaching', &
+              !#py !#py ptr_col=this%sminp_leached_vr, default='inactive')
     endif
 
     this%labilep_erode(begc:endc) = spval
-    call hist_addfld1d (fname='LABILEP_ERO', units='gP/m^2/s', &
-         avgflag='A', long_name='labile mineral P detachment', &
-         ptr_col=this%labilep_erode, default='inactive')
+    !#py call hist_addfld1d (fname='LABILEP_ERO', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='labile mineral P detachment', &
+         !#py !#py ptr_col=this%labilep_erode, default='inactive')
 
     this%labilep_deposit(begc:endc) = spval
-    call hist_addfld1d (fname='LABILEP_DEP', units='gP/m^2/s', &
-         avgflag='A', long_name='labile mineral P hillslope redeposition', &
-         ptr_col=this%labilep_deposit, default='inactive')
+    !#py call hist_addfld1d (fname='LABILEP_DEP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='labile mineral P hillslope redeposition', &
+         !#py !#py ptr_col=this%labilep_deposit, default='inactive')
 
     this%labilep_yield(begc:endc) = spval
-    call hist_addfld1d (fname='LABILEP_YLD', units='gP/m^2/s', &
-         avgflag='A', long_name='labile mineral P erosional loss to inland waters', &
-         ptr_col=this%labilep_yield, default='inactive')
+    !#py call hist_addfld1d (fname='LABILEP_YLD', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='labile mineral P erosional loss to inland waters', &
+         !#py !#py ptr_col=this%labilep_yield, default='inactive')
 
     if ( nlevdecomp_full > 1 ) then
        this%labilep_yield_vr(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='LABILEP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-            avgflag='A', long_name='labile mineral P pool erosional loss to inland waters', &
-            ptr_col=this%labilep_yield_vr, default='inactive')
+       !#py call hist_addfld_decomp (fname='LABILEP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='labile mineral P pool erosional loss to inland waters', &
+            !#py !#py ptr_col=this%labilep_yield_vr, default='inactive')
     endif
 
     this%secondp_erode(begc:endc) = spval
-    call hist_addfld1d (fname='SECONDP_ERO', units='gP/m^2/s', &
-         avgflag='A', long_name='secondary mineral P detachment', &
-         ptr_col=this%secondp_erode, default='inactive')
+    !#py call hist_addfld1d (fname='SECONDP_ERO', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='secondary mineral P detachment', &
+         !#py !#py ptr_col=this%secondp_erode, default='inactive')
 
     this%secondp_deposit(begc:endc) = spval
-    call hist_addfld1d (fname='SECONDP_DEP', units='gP/m^2/s', &
-         avgflag='A', long_name='secondary mineral P hillslope redeposition', &
-         ptr_col=this%secondp_deposit, default='inactive')
+    !#py call hist_addfld1d (fname='SECONDP_DEP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='secondary mineral P hillslope redeposition', &
+         !#py !#py ptr_col=this%secondp_deposit, default='inactive')
 
     this%secondp_yield(begc:endc) = spval
-    call hist_addfld1d (fname='SECONDP_YLD', units='gP/m^2/s', &
-         avgflag='A', long_name='secondary mineral P erosional loss to inland waters', &
-         ptr_col=this%secondp_yield, default='inactive')
+    !#py call hist_addfld1d (fname='SECONDP_YLD', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='secondary mineral P erosional loss to inland waters', &
+         !#py !#py ptr_col=this%secondp_yield, default='inactive')
 
     if ( nlevdecomp_full > 1 ) then
        this%secondp_yield_vr(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='SECONDP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-            avgflag='A', long_name='secondary mineral P pool erosional loss to inland waters', &
-            ptr_col=this%secondp_yield_vr, default='inactive')
+       !#py call hist_addfld_decomp (fname='SECONDP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='secondary mineral P pool erosional loss to inland waters', &
+            !#py !#py ptr_col=this%secondp_yield_vr, default='inactive')
     endif
 
     this%occlp_erode(begc:endc) = spval
-    call hist_addfld1d (fname='OCCLP_ERO', units='gP/m^2/s', &
-         avgflag='A', long_name='occlued mineral P detachment', &
-         ptr_col=this%occlp_erode, default='inactive')
+    !#py call hist_addfld1d (fname='OCCLP_ERO', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='occlued mineral P detachment', &
+         !#py !#py ptr_col=this%occlp_erode, default='inactive')
 
     this%occlp_deposit(begc:endc) = spval
-    call hist_addfld1d (fname='OCCLP_DEP', units='gP/m^2/s', &
-         avgflag='A', long_name='occluded mineral P hillslope redeposition', &
-         ptr_col=this%occlp_deposit, default='inactive')
+    !#py call hist_addfld1d (fname='OCCLP_DEP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='occluded mineral P hillslope redeposition', &
+         !#py !#py ptr_col=this%occlp_deposit, default='inactive')
 
     this%occlp_yield(begc:endc) = spval
-    call hist_addfld1d (fname='OCCLP_YLD', units='gP/m^2/s', &
-         avgflag='A', long_name='occluded mineral P erosional loss to inland waters', &
-         ptr_col=this%occlp_yield, default='inactive')
+    !#py call hist_addfld1d (fname='OCCLP_YLD', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='occluded mineral P erosional loss to inland waters', &
+         !#py !#py ptr_col=this%occlp_yield, default='inactive')
 
     if ( nlevdecomp_full > 1 ) then
        this%occlp_yield_vr(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='OCCLP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-            avgflag='A', long_name='occluded mineral P pool erosional loss to inland waters', &
-            ptr_col=this%occlp_yield_vr, default='inactive')
+       !#py call hist_addfld_decomp (fname='OCCLP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='occluded mineral P pool erosional loss to inland waters', &
+            !#py !#py ptr_col=this%occlp_yield_vr, default='inactive')
     endif
 
     this%primp_erode(begc:endc) = spval
-    call hist_addfld1d (fname='PRIMP_ERO', units='gP/m^2/s', &
-         avgflag='A', long_name='primary mineral P detachment', &
-         ptr_col=this%primp_erode, default='inactive')
+    !#py call hist_addfld1d (fname='PRIMP_ERO', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='primary mineral P detachment', &
+         !#py !#py ptr_col=this%primp_erode, default='inactive')
 
     this%primp_deposit(begc:endc) = spval
-    call hist_addfld1d (fname='PRIMP_DEP', units='gP/m^2/s', &
-         avgflag='A', long_name='primary mineral P hillslope redeposition', &
-         ptr_col=this%primp_deposit, default='inactive')
+    !#py call hist_addfld1d (fname='PRIMP_DEP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='primary mineral P hillslope redeposition', &
+         !#py !#py ptr_col=this%primp_deposit, default='inactive')
 
     this%primp_yield(begc:endc) = spval
-    call hist_addfld1d (fname='PRIMP_YLD', units='gP/m^2/s', &
-         avgflag='A', long_name='primary mineral P erosional loss to inland waters', &
-         ptr_col=this%primp_yield, default='inactive')
+    !#py call hist_addfld1d (fname='PRIMP_YLD', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='primary mineral P erosional loss to inland waters', &
+         !#py !#py ptr_col=this%primp_yield, default='inactive')
 
     if ( nlevdecomp_full > 1 ) then
        this%primp_yield_vr(begc:endc,:) = spval
-       call hist_addfld_decomp (fname='PRIMP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-            avgflag='A', long_name='primary mineral P pool erosional loss to inland waters', &
-            ptr_col=this%primp_yield_vr, default='inactive')
+       !#py call hist_addfld_decomp (fname='PRIMP_YLD'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+            !#py avgflag='A', long_name='primary mineral P pool erosional loss to inland waters', &
+            !#py !#py ptr_col=this%primp_yield_vr, default='inactive')
     endif
 
 
     if ( nlevdecomp_full > 1 ) then
        this%potential_immob_p_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='POTENTIAL_IMMOB_P'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='potential P immobilization', &
-              ptr_col=this%potential_immob_p_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='POTENTIAL_IMMOB_P'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='potential P immobilization', &
+              !#py !#py ptr_col=this%potential_immob_p_vr, default='inactive')
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%actual_immob_p_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='ACTUAL_IMMOB_P'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='actual P immobilization', &
-              ptr_col=this%actual_immob_p_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='ACTUAL_IMMOB_P'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='actual P immobilization', &
+              !#py !#py ptr_col=this%actual_immob_p_vr, default='inactive')
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%sminp_to_plant_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SMINP_TO_PLANT'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='plant uptake of soil mineral P', &
-              ptr_col=this%sminp_to_plant_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SMINP_TO_PLANT'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='plant uptake of soil mineral P', &
+              !#py !#py ptr_col=this%sminp_to_plant_vr, default='inactive')
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%supplement_to_sminp_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='SUPPLEMENT_TO_SMINP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='supplemental P supply', &
-              ptr_col=this%supplement_to_sminp_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='SUPPLEMENT_TO_SMINP'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='supplemental P supply', &
+              !#py !#py ptr_col=this%supplement_to_sminp_vr, default='inactive')
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%gross_pmin_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='GROSS_PMIN'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='gross rate of P mineralization', &
-              ptr_col=this%gross_pmin_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='GROSS_PMIN'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='gross rate of P mineralization', &
+              !#py !#py ptr_col=this%gross_pmin_vr, default='inactive')
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%net_pmin_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='NET_PMIN'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='net rate of P mineralization', &
-              ptr_col=this%net_pmin_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='NET_PMIN'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='net rate of P mineralization', &
+              !#py !#py ptr_col=this%net_pmin_vr, default='inactive')
     end if
 
     if ( nlevdecomp_full > 1 ) then
        this%biochem_pmin_vr(begc:endc,:) = spval
-        call hist_addfld_decomp (fname='BIOCHEM_PMIN'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
-             avgflag='A', long_name='biochemical rate of P mineralization', &
-              ptr_col=this%biochem_pmin_vr, default='inactive')
+        !#py call hist_addfld_decomp (fname='BIOCHEM_PMIN'//trim(vr_suffix), units='gP/m^3/s',  type2d='levdcmp', &
+             !#py avgflag='A', long_name='biochemical rate of P mineralization', &
+              !#py !#py ptr_col=this%biochem_pmin_vr, default='inactive')
     end if
 
     this%potential_immob_p(begc:endc) = spval
-     call hist_addfld1d (fname='POTENTIAL_IMMOB_P', units='gP/m^2/s', &
-          avgflag='A', long_name='potential P immobilization', &
-           ptr_col=this%potential_immob_p)
+     !#py call hist_addfld1d (fname='POTENTIAL_IMMOB_P', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='potential P immobilization', &
+           !#py !#py ptr_col=this%potential_immob_p)
 
     this%actual_immob_p(begc:endc) = spval
-     call hist_addfld1d (fname='ACTUAL_IMMOB_P', units='gP/m^2/s', &
-          avgflag='A', long_name='actual P immobilization', &
-           ptr_col=this%actual_immob_p)
+     !#py call hist_addfld1d (fname='ACTUAL_IMMOB_P', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='actual P immobilization', &
+           !#py !#py ptr_col=this%actual_immob_p)
 
     this%sminp_to_plant(begc:endc) = spval
-     call hist_addfld1d (fname='SMINP_TO_PLANT', units='gP/m^2/s', &
-          avgflag='A', long_name='plant uptake of soil mineral P', &
-           ptr_col=this%sminp_to_plant)
+     !#py call hist_addfld1d (fname='SMINP_TO_PLANT', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='plant uptake of soil mineral P', &
+           !#py !#py ptr_col=this%sminp_to_plant)
 
     this%supplement_to_sminp(begc:endc) = spval
-     call hist_addfld1d (fname='SUPPLEMENT_TO_SMINP', units='gP/m^2/s', &
-          avgflag='A', long_name='supplemental P supply', &
-           ptr_col=this%supplement_to_sminp)
+     !#py call hist_addfld1d (fname='SUPPLEMENT_TO_SMINP', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='supplemental P supply', &
+           !#py !#py ptr_col=this%supplement_to_sminp)
 
     this%gross_pmin(begc:endc) = spval
-     call hist_addfld1d (fname='GROSS_PMIN', units='gP/m^2/s', &
-          avgflag='A', long_name='gross rate of P mineralization', &
-           ptr_col=this%gross_pmin)
+     !#py call hist_addfld1d (fname='GROSS_PMIN', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='gross rate of P mineralization', &
+           !#py !#py ptr_col=this%gross_pmin)
 
     this%net_pmin(begc:endc) = spval
-     call hist_addfld1d (fname='NET_PMIN', units='gP/m^2/s', &
-          avgflag='A', long_name='net rate of P mineralization', &
-           ptr_col=this%net_pmin)
+     !#py call hist_addfld1d (fname='NET_PMIN', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='net rate of P mineralization', &
+           !#py !#py ptr_col=this%net_pmin)
 
     this%biochem_pmin(begc:endc) = spval
-     call hist_addfld1d (fname='BIOCHEM_PMIN', units='gP/m^2/s', &
-          avgflag='A', long_name='biochemical rate of P mineralization', &
-           ptr_col=this%biochem_pmin)
+     !#py call hist_addfld1d (fname='BIOCHEM_PMIN', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='biochemical rate of P mineralization', &
+           !#py !#py ptr_col=this%biochem_pmin)
 
     this%biochem_pmin_to_plant(begc:endc) = spval
-    call hist_addfld1d (fname='BIOCHEM_PMIN_TO_PLANT', units='gP/m^2/s', &
-         avgflag='A', long_name='plant uptake of biochemical P mineralization', &
-         ptr_col=this%biochem_pmin_to_plant)
+    !#py call hist_addfld1d (fname='BIOCHEM_PMIN_TO_PLANT', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='plant uptake of biochemical P mineralization', &
+         !#py !#py ptr_col=this%biochem_pmin_to_plant)
 
 
     this%fire_ploss(begc:endc) = spval
-     call hist_addfld1d (fname='COL_FIRE_PLOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='total column-level fire P loss', &
-           ptr_col=this%fire_ploss, default='inactive')
+     !#py call hist_addfld1d (fname='COL_FIRE_PLOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='total column-level fire P loss', &
+           !#py !#py ptr_col=this%fire_ploss, default='inactive')
 
     this%fire_decomp_ploss(begc:endc) = spval
-     call hist_addfld1d (fname='DECOMP_FIRE_PLOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='fire P loss of decomposable pools', &
-           ptr_col=this%fire_decomp_ploss, default='inactive')
+     !#py call hist_addfld1d (fname='DECOMP_FIRE_PLOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='fire P loss of decomposable pools', &
+           !#py !#py ptr_col=this%fire_decomp_ploss, default='inactive')
 
     this%dwt_slash_pflux(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_SLASH_PFLUX', units='gP/m^2/s', &
-          avgflag='A', long_name='slash P flux to litter and CWD due to land use', &
-           ptr_col=this%dwt_slash_pflux)
+     !#py call hist_addfld1d (fname='DWT_SLASH_PFLUX', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='slash P flux to litter and CWD due to land use', &
+           !#py !#py ptr_col=this%dwt_slash_pflux)
 
     this%dwt_conv_pflux(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_CONV_PFLUX', units='gP/m^2/s', &
-          avgflag='A', long_name='conversion P flux (immediate loss to atm)', &
-           ptr_col=this%dwt_conv_pflux, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_CONV_PFLUX', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='conversion P flux (immediate loss to atm)', &
+           !#py !#py ptr_col=this%dwt_conv_pflux, default='inactive')
 
     this%dwt_crop_productp_gain(begc:endc) = spval
-    call hist_addfld1d (fname='DWT_CROP_PRODUCTP_GAIN', units='gP/m^2/s', &
-        avgflag='A', long_name='addition to crop product pool', &
-        ptr_col=this%dwt_crop_productp_gain, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_CROP_PRODUCTP_GAIN', units='gP/m^2/s', &
+        !#py avgflag='A', long_name='addition to crop product pool', &
+        !#py !#py ptr_col=this%dwt_crop_productp_gain, default='inactive')
 
     this%dwt_prod10p_gain(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_PROD10P_GAIN', units='gP/m^2/s', &
-          avgflag='A', long_name='addition to 10-yr wood product pool', &
-           ptr_col=this%dwt_prod10p_gain, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_PROD10P_GAIN', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='addition to 10-yr wood product pool', &
+           !#py !#py ptr_col=this%dwt_prod10p_gain, default='inactive')
 
     this%prod10p_loss(begc:endc) = spval
-     call hist_addfld1d (fname='PROD10P_LOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='loss from 10-yr wood product pool', &
-           ptr_col=this%prod10p_loss, default='inactive')
+     !#py call hist_addfld1d (fname='PROD10P_LOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='loss from 10-yr wood product pool', &
+           !#py !#py ptr_col=this%prod10p_loss, default='inactive')
 
     this%dwt_prod100p_gain(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_PROD100P_GAIN', units='gP/m^2/s', &
-          avgflag='A', long_name='addition to 100-yr wood product pool', &
-           ptr_col=this%dwt_prod100p_gain, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_PROD100P_GAIN', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='addition to 100-yr wood product pool', &
+           !#py !#py ptr_col=this%dwt_prod100p_gain, default='inactive')
 
     this%prod100p_loss(begc:endc) = spval
-     call hist_addfld1d (fname='PROD100P_LOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='loss from 100-yr wood product pool', &
-           ptr_col=this%prod100p_loss, default='inactive')
+     !#py call hist_addfld1d (fname='PROD100P_LOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='loss from 100-yr wood product pool', &
+           !#py !#py ptr_col=this%prod100p_loss, default='inactive')
 
     this%prod1p_loss(begc:endc) = spval
-     call hist_addfld1d (fname='PROD1P_LOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='loss from 1-yr crop product pool', &
-           ptr_col=this%prod1p_loss)
+     !#py call hist_addfld1d (fname='PROD1P_LOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='loss from 1-yr crop product pool', &
+           !#py !#py ptr_col=this%prod1p_loss)
 
     this%product_ploss(begc:endc) = spval
-     call hist_addfld1d (fname='PRODUCT_PLOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='total P loss from wood product pools', &
-           ptr_col=this%product_ploss, default='inactive')
+     !#py call hist_addfld1d (fname='PRODUCT_PLOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='total P loss from wood product pools', &
+           !#py !#py ptr_col=this%product_ploss, default='inactive')
 
     this%dwt_frootp_to_litr_met_p(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_FROOTP_TO_LITR_MET_P', units='gP/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='fine root to litter due to landcover change', &
-           ptr_col=this%dwt_frootp_to_litr_met_p, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_FROOTP_TO_LITR_MET_P', units='gP/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+           !#py !#py ptr_col=this%dwt_frootp_to_litr_met_p, default='inactive')
 
     this%dwt_frootp_to_litr_cel_p(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_FROOTP_TO_LITR_CEL_P', units='gP/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='fine root to litter due to landcover change', &
-           ptr_col=this%dwt_frootp_to_litr_cel_p, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_FROOTP_TO_LITR_CEL_P', units='gP/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+           !#py !#py ptr_col=this%dwt_frootp_to_litr_cel_p, default='inactive')
 
     this%dwt_frootp_to_litr_lig_p(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_FROOTP_TO_LITR_LIG_P', units='gP/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='fine root to litter due to landcover change', &
-           ptr_col=this%dwt_frootp_to_litr_lig_p, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_FROOTP_TO_LITR_LIG_P', units='gP/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='fine root to litter due to landcover change', &
+           !#py !#py ptr_col=this%dwt_frootp_to_litr_lig_p, default='inactive')
 
     this%dwt_livecrootp_to_cwdp(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_LIVECROOTP_TO_CWDP', units='gP/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='live coarse root to CWD due to landcover change', &
-           ptr_col=this%dwt_livecrootp_to_cwdp, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_LIVECROOTP_TO_CWDP', units='gP/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='live coarse root to CWD due to landcover change', &
+           !#py !#py ptr_col=this%dwt_livecrootp_to_cwdp, default='inactive')
 
     this%dwt_deadcrootp_to_cwdp(begc:endc,:) = spval
-     call hist_addfld_decomp (fname='DWT_DEADCROOTP_TO_CWDP', units='gP/m^2/s',  type2d='levdcmp', &
-          avgflag='A', long_name='dead coarse root to CWD due to landcover change', &
-           ptr_col=this%dwt_deadcrootp_to_cwdp, default='inactive')
+     !#py call hist_addfld_decomp (fname='DWT_DEADCROOTP_TO_CWDP', units='gP/m^2/s',  type2d='levdcmp', &
+          !#py avgflag='A', long_name='dead coarse root to CWD due to landcover change', &
+           !#py !#py ptr_col=this%dwt_deadcrootp_to_cwdp, default='inactive')
 
     this%dwt_ploss(begc:endc) = spval
-     call hist_addfld1d (fname='DWT_PLOSS', units='gP/m^2/s', &
-          avgflag='A', long_name='total phosphorus loss from landcover conversion', &
-           ptr_col=this%dwt_ploss, default='inactive')
+     !#py call hist_addfld1d (fname='DWT_PLOSS', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='total phosphorus loss from landcover conversion', &
+           !#py !#py ptr_col=this%dwt_ploss, default='inactive')
 
     if (crop_prog) then
        this%fert_p_to_sminp(begc:endc) = spval
-        call hist_addfld1d (fname='FERT_TO_LABILEP', units='gP/m^2/s', &
-             avgflag='A', long_name='fertilizer to soil mineral P', &
-              ptr_col=this%fert_p_to_sminp)
+        !#py call hist_addfld1d (fname='FERT_TO_LABILEP', units='gP/m^2/s', &
+             !#py avgflag='A', long_name='fertilizer to soil mineral P', &
+              !#py !#py ptr_col=this%fert_p_to_sminp)
     end if
 
     this%plant_pdemand(begc:endc) = spval
-     call hist_addfld1d (fname='PLANT_PDEMAND_COL', units='gN/m^2/s', &
-         avgflag='A', long_name='P flux required to support initial GPP', &
-          ptr_col=this%plant_pdemand)
+     !#py call hist_addfld1d (fname='PLANT_PDEMAND_COL', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='P flux required to support initial GPP', &
+          !#py !#py ptr_col=this%plant_pdemand)
 
     this%adsorb_to_labilep(begc:endc) = spval
-     call hist_addfld1d (fname='ADSORBTION_P', units='gP/m^2/s', &
-          avgflag='A', long_name='adsorb P flux', &
-           ptr_col=this%adsorb_to_labilep, default='active')
+     !#py call hist_addfld1d (fname='ADSORBTION_P', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='adsorb P flux', &
+           !#py !#py ptr_col=this%adsorb_to_labilep, default='active')
 
     this%desorb_to_solutionp(begc:endc) = spval
-     call hist_addfld1d (fname='DESORPTION_P', units='gP/m^2/s', &
-          avgflag='A', long_name='desorp P flux', &
-           ptr_col=this%desorb_to_solutionp, default='active')
+     !#py call hist_addfld1d (fname='DESORPTION_P', units='gP/m^2/s', &
+          !#py avgflag='A', long_name='desorp P flux', &
+           !#py !#py ptr_col=this%desorb_to_solutionp, default='active')
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of col_pf
@@ -10180,14 +10076,13 @@ end subroutine col_cs_restart
        if (lun_pp%ifspecial(l)) then
           num_special_col = num_special_col + 1
           special_col(num_special_col) = c
-       else
-          this%col_plant_pdemand_vr (c,1:nlevdecomp) = 0._r8
        end if
     end do
 
     do fc = 1,num_special_col
        c = special_col(fc)
        this%dwt_ploss(c) = 0._r8
+       this%col_plant_pdemand_vr (c,1:nlevdecomp) = 0._r8
     end do
 
     call col_pf_SetValues (this,num_column=num_special_col, filter_column=special_col, value_column=0._r8)
@@ -10195,75 +10090,75 @@ end subroutine col_cs_restart
   end subroutine col_pf_init
 
   !-----------------------------------------------------------------------
-  subroutine col_pf_restart (this,  bounds, ncid, flag )
-    !
-    ! !DESCRIPTION:
-    ! Read/write restart data for column-level phosphorus fluxes
-    !
-    use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
-    ! !ARGUMENTS:
-    class (column_phosphorus_flux)     :: this
-    type(bounds_type) , intent(in)     :: bounds
-    type(file_desc_t) , intent(inout)  :: ncid   ! netcdf id
-    character(len=*)  , intent(in)     :: flag   !'read' or 'write'
-    !
-    ! !LOCAL VARIABLES:
-    integer            :: k            ! indices
-    logical            :: readvar      ! determine if variable is on initial file
-    real(r8), pointer  :: ptr2d(:,:)   ! temp. pointers for slicing larger arrays
-    real(r8), pointer  :: ptr1d(:)     ! temp. pointers for slicing larger arrays
-    character(len=128) :: varname      ! temporary
-    !------------------------------------------------------------------------
-
-    if (use_pflotran .and. pf_cmode) then
-       ! externalp_to_decomp_ppools_col
-       do k = 1, ndecomp_pools
-          varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'external_p'
-          if (use_vertsoilc) then
-             ptr2d => this%externalp_to_decomp_ppools(:,:,k)
-             call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
-                  dim1name='column', dim2name='levgrnd', switchdim=.true., &
-                  long_name='net organic P adding/removal/transport to soil', units='gP/m3/s', fill_value=spval, &
-                  interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%externalp_to_decomp_ppools(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
-             call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
-                  dim1name='column', &
-                  long_name='net organic P adding/removal/transport to soil', units='gP/m3/s', fill_value=spval, &
-                  interpinic_flag='interp' , readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-          !   call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
-          !        errMsg(__FILE__, __LINE__))
-             this%externalp_to_decomp_ppools(:,:,k) = 0._r8
-          end if
-       end do
-
-       !sminp_net_transport_vr
-       if (.not.pf_hmode) then
-          if (use_vertsoilc) then
-             ptr2d => this%sminp_net_transport_vr(:,:)
-             call restartvar(ncid=ncid, flag=flag, varname='sminp_net_transport_vr', xtype=ncd_double, &
-               dim1name='column', dim2name='levgrnd', switchdim=.true., &
-               long_name='net soil mineral-P transport', units='gP/m3/s', &
-               interpinic_flag='interp', readvar=readvar, data=ptr2d)
-          else
-             ptr1d => this%sminp_net_transport_vr(:,1)
-             call restartvar(ncid=ncid, flag=flag, varname='sminp_net_transport_vr', xtype=ncd_double, &
-               dim1name='column', &
-               long_name='net soil  mineral-P transport', units='gP/m3/s', &
-               interpinic_flag='interp', readvar=readvar, data=ptr1d)
-          end if
-          if (flag=='read' .and. .not. readvar) then
-          !   call endrun(msg='ERROR:: no3_net_transport_vr'//' is required on an initialization dataset'//&
-          !     errMsg(__FILE__, __LINE__))
-             this%sminp_net_transport_vr(:,:) = 0._r8
-          end if
-       end if
-
-    end if ! if (use_pflotran .and. pf_cmode)
-
-  end subroutine col_pf_restart
+!#py   subroutine col_pf_restart (this,  bounds, ncid, flag )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write restart data for column-level phosphorus fluxes
+!#py     !
+!#py     !#py use shr_infnan_mod  , only : isnan => shr_infnan_isnan,nan => shr_infnan_nan, assignment(=)
+!#py     ! !ARGUMENTS:
+!#py     class (column_phosphorus_flux)     :: this
+!#py     type(bounds_type) , intent(in)     :: bounds
+!#py     type(file_desc_t) , intent(inout)  :: ncid   ! netcdf id
+!#py     character(len=*)  , intent(in)     :: flag   !'read' or 'write'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer            :: k            ! indices
+!#py     logical            :: readvar      ! determine if variable is on initial file
+!#py     real(r8), pointer  :: ptr2d(:,:)   ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer  :: ptr1d(:)     ! temp. pointers for slicing larger arrays
+!#py     character(len=128) :: varname      ! temporary
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     if (use_pflotran .and. pf_cmode) then
+!#py        ! externalp_to_decomp_ppools_col
+!#py        do k = 1, ndecomp_pools
+!#py           varname=trim(decomp_cascade_con%decomp_pool_name_restart(k))//'external_p'
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%externalp_to_decomp_ppools(:,:,k)
+!#py              call restartvar(ncid=ncid, flag=flag, varname=trim(varname)//"_vr", xtype=ncd_double,  &
+!#py                   dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                   long_name='net organic P adding/removal/transport to soil', units='gP/m3/s', fill_value=spval, &
+!#py                   interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%externalp_to_decomp_ppools(:,1,k) ! nlevdecomp = 1; so treat as 1D variable
+!#py              call restartvar(ncid=ncid, flag=flag, varname=varname, xtype=ncd_double,  &
+!#py                   dim1name='column', &
+!#py                   long_name='net organic P adding/removal/transport to soil', units='gP/m3/s', fill_value=spval, &
+!#py                   interpinic_flag='interp' , readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py           !   call endrun(msg='ERROR:: '//trim(varname)//' is required on an initialization dataset'//&
+!#py           !        errMsg(__FILE__, __LINE__))
+!#py              this%externalp_to_decomp_ppools(:,:,k) = 0._r8
+!#py           end if
+!#py        end do
+!#py
+!#py        !sminp_net_transport_vr
+!#py        if (.not.pf_hmode) then
+!#py           if (use_vertsoilc) then
+!#py              ptr2d => this%sminp_net_transport_vr(:,:)
+!#py              call restartvar(ncid=ncid, flag=flag, varname='sminp_net_transport_vr', xtype=ncd_double, &
+!#py                dim1name='column', dim2name='levgrnd', switchdim=.true., &
+!#py                long_name='net soil mineral-P transport', units='gP/m3/s', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr2d)
+!#py           else
+!#py              ptr1d => this%sminp_net_transport_vr(:,1)
+!#py              call restartvar(ncid=ncid, flag=flag, varname='sminp_net_transport_vr', xtype=ncd_double, &
+!#py                dim1name='column', &
+!#py                long_name='net soil  mineral-P transport', units='gP/m3/s', &
+!#py                interpinic_flag='interp', readvar=readvar, data=ptr1d)
+!#py           end if
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py           !   call endrun(msg='ERROR:: no3_net_transport_vr'//' is required on an initialization dataset'//&
+!#py           !     errMsg(__FILE__, __LINE__))
+!#py              this%sminp_net_transport_vr(:,:) = 0._r8
+!#py           end if
+!#py        end if
+!#py
+!#py     end if ! if (use_pflotran .and. pf_cmode)
+!#py
+!#py !#py !#py   end subroutine col_pf_restart
 
   !-----------------------------------------------------------------------
   subroutine col_pf_setvalues ( this, num_column, filter_column, value_column)
@@ -10544,6 +10439,7 @@ end subroutine col_cs_restart
 
   !-----------------------------------------------------------------------
   subroutine col_pf_summary(this, bounds, num_soilc, filter_soilc)
+    !$acc routine seq
     ! !ARGUMENTS:
     type (column_phosphorus_flux) :: this
     type(bounds_type) , intent(in) :: bounds
@@ -10857,7 +10753,7 @@ end subroutine col_cs_restart
     !-----------------------------------------------------------------------
 
     ! set time steps
-     dtime = real( get_step_size(), r8 )
+     !#py dtime = real( get_step_size(), r8 )
     if (use_pflotran .and. pf_cmode) then
         ! TODO
     end if

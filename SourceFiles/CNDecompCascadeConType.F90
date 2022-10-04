@@ -5,10 +5,10 @@ module CNDecompCascadeConType
   ! Decomposition Cascade Type
   !
   ! !USES:
-   use shr_kind_mod , only : r8 => shr_kind_r8
-   use decompMod    , only : bounds_type
-   use elm_varpar   , only : ndecomp_cascade_transitions, ndecomp_pools
-  !#py use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+  use shr_kind_mod   , only: r8 => shr_kind_r8
+  use decompMod      , only : bounds_type
+  !#py !#py use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+  use elm_varpar     , only : ndecomp_cascade_transitions, ndecomp_pools
   !
   implicit none
   save
@@ -56,7 +56,7 @@ contains
     ! !DESCRIPTION:
     ! Initialize decomposition cascade state
     !------------------------------------------------------------------------
-    
+
     !-- properties of each pathway along decomposition cascade
     allocate(decomp_cascade_con%cascade_step_name(1:ndecomp_cascade_transitions))
     allocate(decomp_cascade_con%cascade_donor_pool(1:ndecomp_cascade_transitions))
@@ -96,14 +96,14 @@ contains
     decomp_cascade_con%is_litter(0:ndecomp_pools)                      = .false.
     decomp_cascade_con%is_soil(0:ndecomp_pools)                        = .false.
     decomp_cascade_con%is_cwd(0:ndecomp_pools)                         = .false.
-    decomp_cascade_con%initial_cn_ratio(0:ndecomp_pools)               = nan
-    decomp_cascade_con%initial_cp_ratio(0:ndecomp_pools)               = nan
-    decomp_cascade_con%initial_stock(0:ndecomp_pools)                  = nan
+    !#py decomp_cascade_con%initial_cn_ratio(0:ndecomp_pools)               = nan
+    !#py decomp_cascade_con%initial_cp_ratio(0:ndecomp_pools)               = nan
+    !#py decomp_cascade_con%initial_stock(0:ndecomp_pools)                  = nan
     decomp_cascade_con%is_metabolic(0:ndecomp_pools)                   = .false.
     decomp_cascade_con%is_cellulose(0:ndecomp_pools)                   = .false.
     decomp_cascade_con%is_lignin(0:ndecomp_pools)                      = .false.
-    decomp_cascade_con%spinup_factor(0:ndecomp_pools)                  = nan
-    decomp_cascade_con%decomp_k_pools(0:ndecomp_pools)                 = nan
+    !#py decomp_cascade_con%spinup_factor(0:ndecomp_pools)                  = nan
+    !#py decomp_cascade_con%decomp_k_pools(0:ndecomp_pools)                 = nan
 
   end subroutine init_decomp_cascade_constants
 

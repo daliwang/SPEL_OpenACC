@@ -17,18 +17,45 @@ use elm_varpar
 use elm_varctl 
 use landunit_varcon 
 contains 
-subroutine read_vars(in_file,bounds_clump,mode)
+subroutine read_weights(in_file,numg)
+     use fileio_mod, only : fio_open, fio_read, fio_close
+     use elm_varsur, only : wt_lunit, urban_valid
+     implicit none
+     character(len=256), intent(in) :: in_file
+     integer, intent(in) :: numg
+     integer :: errcode = 0
+
+     call fio_open(18,in_file,1)
+     call fio_read(18,'wt_lunit',wt_lunit(1:numg,:),errcode=errcode)
+     if(errcode .ne. 0) stop
+     call fio_read(18,'urban_valid',urban_valid(1:numg),errcode=errcode)
+     if(errcode .ne. 0) stop
+
+     end subroutine read_weights
+
+subroutine read_vars(in_file,bounds,mode,nsets)
      use fileio_mod, only : fio_open, fio_read, fio_close
      implicit none 
      character(len=256),intent(in) :: in_file 
-     type(bounds_type), intent(in) :: bounds_clump 
+     type(bounds_type), intent(in) :: bounds 
      integer, intent(in) :: mode
+     integer, intent(in) :: nsets
      integer :: errcode = 0 
-     integer :: begp =  1,  endp = 33  
-     integer :: begc =  1,  endc = 17  
-     integer :: begg =  1,  endg = 1 ; 
-     integer :: begl =  1,  endt = 1 ; 
-     integer :: begt =  1,  endl = 5 ; 
+     integer :: begp,  endp  
+     integer :: begc,  endc  
+     integer :: begg,  endg; 
+     integer :: begl,  endt; 
+     integer :: begt,  endl; 
+     begp = bounds%begp; endp = bounds%endp/nsets 
+     begc = bounds%begc; endc = bounds%endc/nsets 
+     begl = bounds%begl; endl = bounds%endl/nsets 
+     begt = bounds%begt; endt = bounds%endt/nsets 
+     begg = bounds%begg; endg = bounds%endg/nsets 
+     print *,"begp range :",begp, endp
+     print *,"begc range :",begc, endc
+     print *,"begl range :",begl, endl
+     print *,"begt range :",begt, endt
+     print *,"begg range :",begg, endg
      call fio_open(18,in_file, 1) 
      if(mode == 1) then
      print *, 'reading in physical properties'
@@ -77,7 +104,7 @@ subroutine read_vars(in_file,bounds_clump,mode)
      if (errcode .ne. 0) stop
      call fio_read(18,'grc_pp%prev_dayl', grc_pp%prev_dayl(begg:endg), errcode=errcode)
      if (errcode .ne. 0) stop
-     call fio_read(18,'grc_pp%landunit_indices', grc_pp%landunit_indices(:, begg:endg), errcode=errcode)
+     call fio_read(18,'grc_pp%landunit_indices', grc_pp%landunit_indices(:,begg:endg), errcode=errcode)
      if (errcode .ne. 0) stop
      
      !====================== lun_pp ======================!
@@ -245,7 +272,7 @@ subroutine read_vars(in_file,bounds_clump,mode)
      if (errcode .ne. 0) stop
      call fio_read(18,'top_pp%npfts', top_pp%npfts(begt:endt), errcode=errcode)
      if (errcode .ne. 0) stop
-     call fio_read(18,'top_pp%landunit_indices', top_pp%landunit_indices(:, begt:endt), errcode=errcode)
+     call fio_read(18,'top_pp%landunit_indices', top_pp%landunit_indices(:,begt:endt), errcode=errcode)
      if (errcode .ne. 0) stop
      call fio_read(18,'top_pp%active', top_pp%active(begt:endt), errcode=errcode)
      if (errcode .ne. 0) stop
@@ -344,6 +371,8 @@ subroutine read_vars(in_file,bounds_clump,mode)
      call fio_read(18,'lakestate_vars%ws_col', lakestate_vars%ws_col(begc:endc), errcode=errcode)
      if (errcode .ne. 0) stop
      call fio_read(18,'lakestate_vars%lake_icefrac_col', lakestate_vars%lake_icefrac_col(begc:endc,:), errcode=errcode)
+     if (errcode .ne. 0) stop
+     call fio_read(18,'lakestate_vars%lake_icethick_col', lakestate_vars%lake_icethick_col(begc:endc), errcode=errcode)
      if (errcode .ne. 0) stop
      end if 
      call fio_close(18) 

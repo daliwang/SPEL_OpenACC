@@ -16,10 +16,9 @@ module seq_drydep_mod_elm
 
   ! !USES:
 
-  !#py use shr_sys_mod,   only : shr_sys_abort
-  !#py !#py use shr_log_mod,   only : s_loglev  => shr_log_Level
   use shr_kind_mod,  only : r8 => shr_kind_r8, CS => SHR_KIND_CS, CX => SHR_KIND_CX
-  use shr_const_mod, only : SHR_CONST_G, SHR_CONST_RDAIR, SHR_CONST_CPDAIR, SHR_CONST_MWWV
+  use shr_const_mod, only : SHR_CONST_G, SHR_CONST_RDAIR, &
+       SHR_CONST_CPDAIR, SHR_CONST_MWWV
 
   implicit none
   save
@@ -28,7 +27,7 @@ module seq_drydep_mod_elm
 
   ! !PUBLIC MEMBER FUNCTIONS
 
-  public :: seq_drydep_readnl       ! Read namelist
+ !! public :: seq_drydep_readnl       ! Read namelist
   public :: seq_drydep_init         ! Initialization of drydep data
   public :: seq_drydep_setHCoeff    ! Calculate Henry's law coefficients
 
@@ -103,17 +102,17 @@ module seq_drydep_mod_elm
   !---------------------------------------------------------------------------
 
   !--- deposition of h2 and CO on soils ---
-  !#py real(r8), parameter, public :: h2_a(NLUse) = &
-       !#py (/  0.000_r8,  0.000_r8, 0.270_r8,  0.000_r8,  0.000_r8,  &
-       !#py 0.000_r8,  0.000_r8, 0.000_r8,  0.000_r8,  0.000_r8, 0.000_r8/)
+  real(r8), parameter, public :: h2_a(NLUse) = &
+       (/  0.000_r8,  0.000_r8, 0.270_r8,  0.000_r8,  0.000_r8,  &
+       0.000_r8,  0.000_r8, 0.000_r8,  0.000_r8,  0.000_r8, 0.000_r8/)
   !--- deposition of h2 and CO on soils ---
-  !#py real(r8), parameter, public :: h2_b(NLUse) = &
-       !#py (/  0.000_r8,-41.390_r8, -0.472_r8,-41.900_r8,-41.900_r8,  &
-       !#py -41.900_r8,  0.000_r8,  0.000_r8,  0.000_r8,-41.390_r8,  0.000_r8/)
+  real(r8), parameter, public :: h2_b(NLUse) = &
+       (/  0.000_r8,-41.390_r8, -0.472_r8,-41.900_r8,-41.900_r8,  &
+       -41.900_r8,  0.000_r8,  0.000_r8,  0.000_r8,-41.390_r8,  0.000_r8/)
   !--- deposition of h2 and CO on soils ---
-  !#py real(r8), parameter, public :: h2_c(NLUse) = &
-       !#py (/  0.000_r8, 16.850_r8, 1.235_r8, 19.700_r8, 19.700_r8, &
-       !#py 19.700_r8,  0.000_r8, 0.000_r8,  0.000_r8, 17.700_r8, 1.000_r8/)
+  real(r8), parameter, public :: h2_c(NLUse) = &
+       (/  0.000_r8, 16.850_r8, 1.235_r8, 19.700_r8, 19.700_r8, &
+       19.700_r8,  0.000_r8, 0.000_r8,  0.000_r8, 17.700_r8, 1.000_r8/)
 
   !--- deposition of h2 and CO on soils
   !
@@ -230,61 +229,61 @@ module seq_drydep_mod_elm
   !---------------------------------------------------------------------------
 
   !--- data for foxd (reactivity factor for oxidation) ----
-  !#py real(r8), public, parameter :: dfoxd(n_species_table) = &
-       !#py (/  1._r8     &
-       !#py ,1._r8     &
-       !#py ,1._r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1._r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,0._r8     &
-       !#py ,0._r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,1._r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,1._r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,.1_r8     &
-       !#py ,1.e-36_r8 &
-       !#py ,1.e-36_r8 & ! HCN
+  real(r8), public, parameter :: dfoxd(n_species_table) = &
+       (/  1._r8     &
+       ,1._r8     &
+       ,1._r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1._r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,0._r8     &
+       ,0._r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,1._r8     &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,1._r8     &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,.1_r8     &
+       ,1.e-36_r8 &
+       ,1.e-36_r8 & ! HCN
        ,1.e-36_r8 & ! CH3CN
        ,1.e-36_r8 & ! SO2
        ,0.1_r8    &
@@ -330,308 +329,190 @@ module seq_drydep_mod_elm
   !---------------------------------------------------------------------------
 
   !--- Names of species that can work with ---
-  !#py character(len=20), public, parameter :: species_name_table(n_species_table) = &
-       !#py (/ 'OX      '                       &
-       !#py ,'H2O2    '                       &
-       !#py ,'OH      '                       &
-       !#py ,'HO2     '                       &
-       !#py ,'CO      '                       &
-       !#py ,'CH4     '                       &
-       !#py ,'CH3O2   '                       &
-       !#py ,'CH3OOH  '                       &
-       !#py ,'CH2O    '                       &
-       !#py ,'CHOOH   '                       &
-       !#py ,'NO      '                       &
-       !#py ,'NO2     '                       &
-       !#py ,'HNO3    '                       &
-       !#py ,'CO2     '                       &
-       !#py ,'NH3     '                       &
-       !#py ,'N2O5    '                       &
-       !#py ,'NO3     '                       &
-       !#py ,'CH3OH   '                       &
-       !#py ,'HO2NO2  '                       &
-       !#py ,'O1D     '                       &
-       !#py ,'C2H6    '                       &
-       !#py ,'C2H5O2  '                       &
-       !#py ,'PO2     '                       &
-       !#py ,'MACRO2  '                       &
-       !#py ,'ISOPO2  '                       &
-       !#py ,'C4H10   '                       &
-       !#py ,'CH3CHO  '                       &
-       !#py ,'C2H5OOH '                       &
-       !#py ,'C3H6    '                       &
-       !#py ,'POOH    '                       &
-       !#py ,'C2H4    '                       &
-       !#py ,'PAN     '                       &
-       !#py ,'CH3COOOH'                       &
-       !#py ,'C10H16  '                       &
-       !#py ,'CHOCHO  '                       &
-       !#py ,'CH3COCHO'                       &
-       !#py ,'GLYALD  '                       &
-       !#py ,'CH3CO3  '                       &
-       !#py ,'C3H8    '                       &
-       !#py ,'C3H7O2  '                       &
-       !#py ,'CH3COCH3'                       &
-       !#py ,'C3H7OOH '                       &
-       !#py ,'RO2     '                       &
-       !#py ,'ROOH    '                       &
-       !#py ,'Rn      '                       &
-       !#py ,'ISOP    '                       &
-       !#py ,'MVK     '                       &
-       !#py ,'MACR    '                       &
-       !#py ,'C2H5OH  '                       &
-       !#py ,'ONITR   '                       &
-       !#py ,'ONIT    '                       &
-       !#py ,'ISOPNO3 '                       &
-       !#py ,'HYDRALD '                       &
-       !#py ,'HCN     '                       &
-       !#py ,'CH3CN   '                       &
-       !#py ,'SO2     '                       &
-       !#py ,'SOAGff0 '                       &
-       !#py ,'SOAGff1 '                       &
-       !#py ,'SOAGff2 '                       &
-       !#py ,'SOAGff3 '                       &
-       !#py ,'SOAGff4 '                       &
-       !#py ,'SOAGbg0 '                       &
-       !#py ,'SOAGbg1 '                       &
-       !#py ,'SOAGbg2 '                       &
-       !#py ,'SOAGbg3 '                       &
-       !#py ,'SOAGbg4 '                       &
-       !#py ,'SOAG0   '                       &
-       !#py ,'SOAG1   '                       &
-       !#py ,'SOAG2   '                       &
-       !#py ,'SOAG3   '                       &
-       !#py ,'SOAG4   '                       &
-       !#py ,'IVOC    '                       &
-       !#py ,'SVOC    '                       &
-       !#py ,'IVOCbb  '                       &
-       !#py ,'IVOCff  '                       &
-       !#py ,'SVOCbb  '                       &
-       !#py ,'SVOCff  '                       &
-       !#py /)
+  character(len=20), public, parameter :: species_name_table(n_species_table) = &
+       (/ 'OX      '                       &
+       ,'H2O2    '                       &
+       ,'OH      '                       &
+       ,'HO2     '                       &
+       ,'CO      '                       &
+       ,'CH4     '                       &
+       ,'CH3O2   '                       &
+       ,'CH3OOH  '                       &
+       ,'CH2O    '                       &
+       ,'CHOOH   '                       &
+       ,'NO      '                       &
+       ,'NO2     '                       &
+       ,'HNO3    '                       &
+       ,'CO2     '                       &
+       ,'NH3     '                       &
+       ,'N2O5    '                       &
+       ,'NO3     '                       &
+       ,'CH3OH   '                       &
+       ,'HO2NO2  '                       &
+       ,'O1D     '                       &
+       ,'C2H6    '                       &
+       ,'C2H5O2  '                       &
+       ,'PO2     '                       &
+       ,'MACRO2  '                       &
+       ,'ISOPO2  '                       &
+       ,'C4H10   '                       &
+       ,'CH3CHO  '                       &
+       ,'C2H5OOH '                       &
+       ,'C3H6    '                       &
+       ,'POOH    '                       &
+       ,'C2H4    '                       &
+       ,'PAN     '                       &
+       ,'CH3COOOH'                       &
+       ,'C10H16  '                       &
+       ,'CHOCHO  '                       &
+       ,'CH3COCHO'                       &
+       ,'GLYALD  '                       &
+       ,'CH3CO3  '                       &
+       ,'C3H8    '                       &
+       ,'C3H7O2  '                       &
+       ,'CH3COCH3'                       &
+       ,'C3H7OOH '                       &
+       ,'RO2     '                       &
+       ,'ROOH    '                       &
+       ,'Rn      '                       &
+       ,'ISOP    '                       &
+       ,'MVK     '                       &
+       ,'MACR    '                       &
+       ,'C2H5OH  '                       &
+       ,'ONITR   '                       &
+       ,'ONIT    '                       &
+       ,'ISOPNO3 '                       &
+       ,'HYDRALD '                       &
+       ,'HCN     '                       &
+       ,'CH3CN   '                       &
+       ,'SO2     '                       &
+       ,'SOAGff0 '                       &
+       ,'SOAGff1 '                       &
+       ,'SOAGff2 '                       &
+       ,'SOAGff3 '                       &
+       ,'SOAGff4 '                       &
+       ,'SOAGbg0 '                       &
+       ,'SOAGbg1 '                       &
+       ,'SOAGbg2 '                       &
+       ,'SOAGbg3 '                       &
+       ,'SOAGbg4 '                       &
+       ,'SOAG0   '                       &
+       ,'SOAG1   '                       &
+       ,'SOAG2   '                       &
+       ,'SOAG3   '                       &
+       ,'SOAG4   '                       &
+       ,'IVOC    '                       &
+       ,'SVOC    '                       &
+       ,'IVOCbb  '                       &
+       ,'IVOCff  '                       &
+       ,'SVOCbb  '                       &
+       ,'SVOCff  '                       &
+       /)
 
   !--- data for effective Henry's Law coefficient ---
-  !#py real(r8), public, parameter :: dheff(n_species_table*6) = &
-       !#py (/1.15e-02_r8, 2560._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,8.33e+04_r8, 7379._r8,2.2e-12_r8,-3730._r8,0._r8     ,    0._r8  &
-       !#py ,3.00e+01_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,2.00e+03_r8, 6600._r8,3.5e-05_r8,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.00e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.11e+02_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,6.30e+03_r8, 6425._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,5.53e+03_r8, 5700._r8,1.8e-04_r8,-1510._r8,0._r8     ,    0._r8  &
-       !#py ,1.90e-03_r8, 1480._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,6.40e-03_r8, 2500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,0._r8      ,    0._r8,2.6e+06_r8, 8700._r8,0._r8     ,    0._r8  &
-       !#py ,3.40e-02_r8, 2420._r8,4.5e-07_r8,-1000._r8,3.6e-11_r8,-1760._r8  &
-       !#py ,7.40e+01_r8, 3400._r8,1.7e-05_r8, -450._r8,1.0e-14_r8,-6716._r8  &
-       !#py ,2.14e+00_r8, 3362._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,0.65e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,2.20e+02_r8, 4934._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,0._r8      ,    0._r8,3.2e+01_r8,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.00e-16_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.14e+01_r8, 6267._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.36e+02_r8, 5995._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,2.20e+02_r8, 5653._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,5.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,8.37e+02_r8, 5308._r8,1.8e-04_r8,-1510._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.00e+05_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.71e+03_r8, 7541._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,4.14e+04_r8, 4630._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.45e-03_r8, 2700._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.00e+06_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,2.70e+01_r8, 5300._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.36e+02_r8, 5995._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.36e+02_r8, 5995._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,2.00e+02_r8, 6500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.51e+03_r8, 6485._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.00e+03_r8, 6000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.00e+01_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.00e+01_r8, 6000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.20e+01_r8, 5000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,5.00e+01_r8, 4000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.23e+00_r8, 3120._r8,1.23e-02_r8,1960._r8,0._r8     ,    0._r8  &
-       !#py ,1.3e+07_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.2e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,4.0e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.3e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.6e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,7.9e+11_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,6.3e+10_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.2e+09_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,6.3e+08_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.2e+07_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,4.0e+11_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.2e+10_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.6e+09_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,3.2e+08_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.6e+07_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
-       !#py /)
+  real(r8), public, parameter :: dheff(n_species_table*6) = &
+       (/1.15e-02_r8, 2560._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,8.33e+04_r8, 7379._r8,2.2e-12_r8,-3730._r8,0._r8     ,    0._r8  &
+       ,3.00e+01_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,2.00e+03_r8, 6600._r8,3.5e-05_r8,    0._r8,0._r8     ,    0._r8  &
+       ,1.00e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.11e+02_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,6.30e+03_r8, 6425._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,5.53e+03_r8, 5700._r8,1.8e-04_r8,-1510._r8,0._r8     ,    0._r8  &
+       ,1.90e-03_r8, 1480._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,6.40e-03_r8, 2500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,0._r8      ,    0._r8,2.6e+06_r8, 8700._r8,0._r8     ,    0._r8  &
+       ,3.40e-02_r8, 2420._r8,4.5e-07_r8,-1000._r8,3.6e-11_r8,-1760._r8  &
+       ,7.40e+01_r8, 3400._r8,1.7e-05_r8, -450._r8,1.0e-14_r8,-6716._r8  &
+       ,2.14e+00_r8, 3362._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,0.65e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,2.20e+02_r8, 4934._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,0._r8      ,    0._r8,3.2e+01_r8,    0._r8,0._r8     ,    0._r8  &
+       ,1.00e-16_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.14e+01_r8, 6267._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.36e+02_r8, 5995._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,2.20e+02_r8, 5653._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,5.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,8.37e+02_r8, 5308._r8,1.8e-04_r8,-1510._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.00e+05_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.71e+03_r8, 7541._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,4.14e+04_r8, 4630._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.45e-03_r8, 2700._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.00e+06_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,2.70e+01_r8, 5300._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.36e+02_r8, 5995._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.47e+00_r8, 5241._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.36e+02_r8, 5995._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.70e-03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,2.00e+02_r8, 6500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.51e+03_r8, 6485._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.00e+03_r8, 6000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.00e+01_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.00e+01_r8, 6000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.20e+01_r8, 5000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,5.00e+01_r8, 4000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.23e+00_r8, 3120._r8,1.23e-02_r8,1960._r8,0._r8     ,    0._r8  &
+       ,1.3e+07_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.2e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,4.0e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.3e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.6e+05_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,7.9e+11_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,6.3e+10_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.2e+09_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,6.3e+08_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.2e+07_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,4.0e+11_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.2e+10_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.6e+09_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,3.2e+08_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.6e+07_r8,     0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       /)
 
   real(r8), private, parameter :: wh2o = SHR_CONST_MWWV
-  !#py real(r8), private, parameter :: mol_wgts(n_species_table) = &
-       !#py (/ 47.9981995_r8, 34.0135994_r8, 17.0067997_r8, 33.0061989_r8, 28.0104008_r8, &
-       !#py 16.0405998_r8, 47.0320015_r8, 48.0393982_r8, 30.0251999_r8, 46.0246010_r8, &
-       !#py 30.0061398_r8, 46.0055389_r8, 63.0123405_r8, 44.0098000_r8, 17.0289402_r8, &
-       !#py 108.010483_r8, 62.0049400_r8, 32.0400009_r8, 79.0117416_r8, 15.9994001_r8, &
-       !#py 30.0664005_r8, 61.0578003_r8, 91.0830002_r8, 119.093399_r8, 117.119797_r8, &
-       !#py 58.1180000_r8, 44.0509987_r8, 62.0652008_r8, 42.0774002_r8, 92.0904007_r8, &
-       !#py 28.0515995_r8, 121.047943_r8, 76.0497971_r8, 136.228394_r8, 58.0355988_r8, &
-       !#py 72.0614014_r8, 60.0503998_r8, 75.0423965_r8, 44.0922012_r8, 75.0836029_r8, &
-       !#py 58.0768013_r8, 76.0910034_r8, 31.9988003_r8, 33.0061989_r8, 222.000000_r8, &
-       !#py 68.1141968_r8, 70.0877991_r8, 70.0877991_r8, 46.0657997_r8, 147.125946_r8, &
-       !#py 119.074341_r8, 162.117935_r8, 100.112999_r8, 27.0256_r8   , 41.0524_r8   , &
-       !#py 64.064800_r8,  250._r8,       250._r8,       250._r8,       250._r8,       &
-       !#py 250._r8,       250._r8,       250._r8,       250._r8,       250._r8,       &
-       !#py 250._r8,       250._r8,       250._r8,       250._r8,       250._r8,       &
-       !#py 250._r8,       170.3_r8,      170.3_r8,      170.3_r8,       170.3_r8,     &
-       !#py 170.3_r8,      170.3_r8  /)
+  real(r8), private, parameter :: mol_wgts(n_species_table) = &
+       (/ 47.9981995_r8, 34.0135994_r8, 17.0067997_r8, 33.0061989_r8, 28.0104008_r8, &
+       16.0405998_r8, 47.0320015_r8, 48.0393982_r8, 30.0251999_r8, 46.0246010_r8, &
+       30.0061398_r8, 46.0055389_r8, 63.0123405_r8, 44.0098000_r8, 17.0289402_r8, &
+       108.010483_r8, 62.0049400_r8, 32.0400009_r8, 79.0117416_r8, 15.9994001_r8, &
+       30.0664005_r8, 61.0578003_r8, 91.0830002_r8, 119.093399_r8, 117.119797_r8, &
+       58.1180000_r8, 44.0509987_r8, 62.0652008_r8, 42.0774002_r8, 92.0904007_r8, &
+       28.0515995_r8, 121.047943_r8, 76.0497971_r8, 136.228394_r8, 58.0355988_r8, &
+       72.0614014_r8, 60.0503998_r8, 75.0423965_r8, 44.0922012_r8, 75.0836029_r8, &
+       58.0768013_r8, 76.0910034_r8, 31.9988003_r8, 33.0061989_r8, 222.000000_r8, &
+       68.1141968_r8, 70.0877991_r8, 70.0877991_r8, 46.0657997_r8, 147.125946_r8, &
+       119.074341_r8, 162.117935_r8, 100.112999_r8, 27.0256_r8   , 41.0524_r8   , &
+       64.064800_r8,  250._r8,       250._r8,       250._r8,       250._r8,       &
+       250._r8,       250._r8,       250._r8,       250._r8,       250._r8,       &
+       250._r8,       250._r8,       250._r8,       250._r8,       250._r8,       &
+       250._r8,       170.3_r8,      170.3_r8,      170.3_r8,       170.3_r8,     &
+       170.3_r8,      170.3_r8  /)
 
 
   !===============================================================================
 CONTAINS
   !===============================================================================
-
-  !====================================================================================
-
-  subroutine seq_drydep_readnl(NLFilename, ID, seq_drydep_fields)
-
-    !========================================================================
-    ! reads drydep_inparm namelist and sets up CCSM driver list of fields for
-    ! land-atmosphere communications.
-    !
-    ! !REVISION HISTORY:
-    !  2009-Feb-20 - E. Kluzek - Separate out as subroutine from previous input_init
-    !========================================================================
-
-    !#py use shr_file_mod,only : shr_file_getUnit, shr_file_freeUnit
-    !#py !#py use shr_log_mod, only : s_logunit => shr_log_Unit
-    !#py use seq_comm_mct,only : seq_comm_iamroot, seq_comm_setptrs
-    !#py use shr_mpi_mod, only : shr_mpi_bcast
-    !#py use shr_nl_mod, only : shr_nl_find_group_name
-    implicit none
-
-    character(len=*), intent(in)  :: NLFilename ! Namelist filename
-    integer         , intent(in)  :: ID         ! seq_comm ID
-    character(len=*), intent(out) :: seq_drydep_fields
-
-    !----- local -----
-    integer :: i                ! Indices
-    integer :: unitn            ! namelist unit number
-    integer :: ierr             ! error code
-    logical :: exists           ! if file exists or not
-    character(len=8) :: token   ! dry dep field name to add
-    integer :: mpicom           ! MPI communicator
-
-    !----- formats -----
-    character(*),parameter :: subName = '(seq_drydep_read) '
-    character(*),parameter :: F00   = "('(seq_drydep_read) ',8a)"
-    character(*),parameter :: FI1   = "('(seq_drydep_init) ',a,I2)"
-
-    namelist /drydep_inparm/ drydep_list, drydep_method
-
-    !-----------------------------------------------------------------------------
-    ! Read namelist and figure out the drydep field list to pass
-    ! First check if file exists and if not, n_drydep will be zero
-    !-----------------------------------------------------------------------------
-
-    !--- Open and read namelist ---
-    if ( len_trim(NLFilename) == 0  )then
-       !#py call shr_sys_abort( subName//'ERROR: nlfilename not set' )
-    end if
-    !#py !#py call seq_comm_setptrs(ID,mpicom=mpicom)
-    if (seq_comm_iamroot(ID)) then
-       inquire( file=trim(NLFileName), exist=exists)
-       if ( exists ) then
-          !#py unitn = shr_file_getUnit()
-          open( unitn, file=trim(NLFilename), status='old' )
-          !#py if ( s_loglev > 0 ) write(s_logunit,F00) &
-               !#py 'Read in drydep_inparm namelist from: ', trim(NLFilename)
-          !#py call shr_nl_find_group_name(unitn, 'drydep_inparm', ierr)
-          if (ierr == 0) then
-             ierr = 1
-             do while ( ierr /= 0 )
-                read(unitn, drydep_inparm, iostat=ierr)
-                if (ierr < 0) then
-                   !#py call shr_sys_abort( subName//'ERROR: encountered end-of-file on namelist read' )
-                endif
-             end do
-          else
-             !#py write(s_logunit,*) 'seq_drydep_read:  no drydep_inparm namelist found in ',NLFilename
-          endif
-          close( unitn )
-          !#py call shr_file_freeUnit( unitn )
-       end if
-    end if
-    !#py call shr_mpi_bcast( drydep_list, mpicom )
-    !#py call shr_mpi_bcast( drydep_method, mpicom )
-
-    n_drydep = 0
-
-    !--- Loop over species to fill list of fields to communicate for drydep ---
-    seq_drydep_fields = ' '
-    do i=1,maxspc
-       if ( len_trim(drydep_list(i))==0 ) exit
-       !#py write(token,333) i
-       seq_drydep_fields = trim(seq_drydep_fields)//':'//trim(token)
-       if ( i == 1 ) then
-          seq_drydep_fields = trim(token)
-          drydep_fields_token = trim(token)
-       endif
-       n_drydep = n_drydep+1
-    enddo
-
-    !--- Make sure method is valid and determine if land is passing drydep fields ---
-    lnd_drydep = n_drydep>0 .and. drydep_method == DD_XLND
-
-    if ( s_loglev > 0 ) then
-       !#py write(s_logunit,*) 'seq_drydep_read: drydep_method: ', trim(drydep_method)
-       if ( n_drydep == 0 )then
-          !#py write(s_logunit,F00) 'No dry deposition fields will be transfered'
-       else
-          !#py write(s_logunit,FI1) 'Number of dry deposition fields transfered is ', &
-               !#py n_drydep
-       end if
-    end if
-
-    !#py if ( trim(drydep_method)/=trim(DD_XATM) .and. &
-         !#py trim(drydep_method)/=trim(DD_XLND) .and. &
-         !#py trim(drydep_method)/=trim(DD_TABL) ) then
-       if ( s_loglev > 0 ) then
-          !#py write(s_logunit,*) 'seq_drydep_read: drydep_method : ', trim(drydep_method)
-          !#py write(s_logunit,*) 'seq_drydep_read: drydep_method must be set to : ', &
-               !#py DD_XATM,', ', DD_XLND,', or ', DD_TABL
-       end if
-       !#py call shr_sys_abort('seq_drydep_read: incorrect dry deposition method specification')
-    endif
-
-    ! Need to explicitly add Sl_ based on naming convention
-333 format ('Sl_dd',i3.3)
-
-  end subroutine seq_drydep_readnl
 
   !====================================================================================
 

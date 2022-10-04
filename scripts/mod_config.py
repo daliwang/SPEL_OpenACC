@@ -1,5 +1,5 @@
 
-home_dir = "/home/peter/ELM_OpenACC_test-unit/"
+home_dir = "../"
 elm_files = home_dir+"SourceFiles/"
 unittests_dir = home_dir+"unit-tests/"
 
@@ -20,43 +20,6 @@ preproc_list = ['AllocationMod','dynSubgridControlMod','CH4Mod',
 unit_test_files = ["elm_instMod.o","fileio_mod.o","readConstants.o","update_accMod.o",
                    "readMod.o","initializeParameters.o","duplicateMod.o","verificationMod.o",
                    "elm_initializeMod.o","main.o"]
-
-class Colorcodes(object):
-    """
-    Provides ANSI terminal color codes which are gathered via the ``tput``
-    utility. That way, they are portable. If there occurs any error with
-    ``tput``, all codes are initialized as an empty string.
-    The provides fields are listed below.
-    Control:
-    - bold
-    - reset
-    Colors:
-    - blue
-    - green
-    - orange
-    - red
-    :license: MIT
-    """
-    def __init__(self):
-        import subprocess
-        try:
-            self.bold = subprocess.check_output("tput bold".split())
-            self.reset = subprocess.check_output("tput sgr0".split())
-
-            self.blue = subprocess.check_output("tput setaf 4".split())
-            self.green = subprocess.check_output("tput setaf 2".split())
-            self.orange = subprocess.check_output("tput setaf 3".split())
-            self.red = subprocess.check_output("tput setaf 1".split())
-        except subprocess.CalledProcessError as e:
-            self.bold = ""
-            self.reset = ""
-
-            self.blue = ""
-            self.green = ""
-            self.orange = ""
-            self.red = ""
-
-_c = Colorcodes()
 
 class BColors:
     HEADER = '\033[95m'

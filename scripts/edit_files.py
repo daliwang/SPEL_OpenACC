@@ -1,9 +1,8 @@
 import sys
-import os
 import re
 import subprocess as sp
 from analyze_subroutines import Subroutine
-from mod_config import elm_files, unittests_dir
+from mod_config import elm_files
 
 #compile list of lower-case module names to remove
 bad_modules =  ['abortutils','shr_log_mod','clm_time_manager','shr_infnan_mod',
@@ -34,8 +33,8 @@ def comment_line(lines,ct,mode='normal',verbose=False):
     function comments out lines accounting for line continuation
     """
     if(mode == 'normal'): comment_ = '!#py '
-    if(mode == 'fates'):  comment_ = '!#fates_py '
-    if(mode == 'betr'):   comment_ = '!#betr_py '
+    if(mode == 'fates' ): comment_ = '!#fates_py '
+    if(mode == 'betr'  ): comment_ = '!#betr_py '
 
     newline = lines[ct]
     str_ = newline.split()[0]
@@ -46,10 +45,10 @@ def comment_line(lines,ct,mode='normal',verbose=False):
     while(continuation):
         ct +=1
         newline = lines[ct]
-        if(verbose): print(newline)
         str_ = newline.split()[0]
         newline = newline.replace(str_, comment_+str_,1)
         lines[ct] = newline
+        if(verbose): print(lines[ct])
         continuation = bool(newline.strip('\n').endswith('&'))
     return lines, ct
 
@@ -201,10 +200,12 @@ def get_used_mods(ifile,mods,verbose):
     
     return mods
 
-def modify_file(lines,casename,verbose=False,overwrite=False): 
+def modify_file(lines,casename,fn,verbose=False,overwrite=False): 
     """
     Function that modifies the source code of the file
     """
+    from utilityFunctions import getLocalVariables, find_file_for_subroutine, get_interface_list
+
     subs_removed = []
     ct = 0
     #Note: can use grep to get sub_start faster...
@@ -227,7 +228,8 @@ def modify_file(lines,casename,verbose=False,overwrite=False):
         bad_mod_string = f'({bad_mod_string})'
         match_use = re.search(f'[\s]+(use)[\s]+{bad_mod_string}',l.lower())
         if(match_use):
-            if(':' in l): #get bad subs ??
+            #get bad subs; Need to refine this for variables, etc...
+            if(':' in l and 'nan' not in l): 
                 subs = l.split(':')[1]
                 subs.replace('=>',' ')
                 subs = subs.split(',')
@@ -244,12 +246,28 @@ def modify_file(lines,casename,verbose=False,overwrite=False):
         match_sub = re.search(r'^(\s*subroutine\s+)',l.lower())
         if(match_sub):
             endline = 0
-            subname = l.split()[1].split('(')[0]
-            if(verbose): print(f"found subroutine {subname} at {ct}")
-            sub_start = ct
-            in_subroutine = True
-            #Match subroutines that require removal!
             
+            subname = l.split()[1].split('(')[0]
+            interface_list = get_interface_list()
+            if(subname in interface_list): 
+                ct += 1 
+                continue 
+            if(verbose): print(f"found subroutine {subname} at {ct+1}")
+            sub_start = ct+1
+            #if(subname not in ["Init","InitAllocate","InitHistory"]):
+             
+            fn1,startline,endline = find_file_for_subroutine(subname,fn)
+            # Consistency checks: 
+            if(startline != sub_start): 
+                sys.exit(f"Subroutine start line-numbers do not match for {subname}: {sub_start},{startline}")
+            #
+            # Instantiate Subroutine
+            #   
+            # sub.startline = startline; sub.endline = endline;
+            sub = Subroutine(subname,fn1,[''],start=startline,end=endline)
+            x = getLocalVariables(sub,verbose=False)
+            # sub.printSubroutineInfo()
+
             # rm_sub_string = '|'.join(remove_subs); rm_sub_string = f'({rm_sub_string})'
             # match_remove = re.search(f'[\s]+(call)[\s]+{rm_sub_string}',l.lower())
             match_remove = bool(subname.lower() in remove_subs)
@@ -311,50 +329,18 @@ def process_for_unit_test(fname,casename,mods=None,overwrite=False,verbose=False
         print("========================================")
         print("Modules to be removed list\n", bad_modules)
     
-    for mod_files in mods:
-        if (mod_files in initial_mods): continue
-        file = open(elm_files+mod_files,'r')
+    for mod_file in mods:
+        if (mod_file in initial_mods): continue
+        file = open(elm_files+mod_file,'r')
         lines = file.readlines()
         file.close()
-        if(verbose): print(f"Processing {mod_files}")
-        modify_file(lines,casename,verbose=verbose,overwrite=overwrite)
+        if(verbose): print(f"Processing {mod_file}")
+        modify_file(lines,casename,mod_file,verbose=verbose,overwrite=overwrite)
         if(overwrite):
-            out_fn = elm_files+mod_files
+            out_fn = elm_files+mod_file
             if(verbose): print("Writing to file:",out_fn)
             with open(out_fn,'w') as ofile:
                 ofile.writelines(lines)
-
-        # ##check fates
-        # fates_mod_string = '|'.join(fates_mod); fates_mod_string = f'({fates_mod_string})'
-        # match_fates_mod = re.search(f'[\s]+(use)[\s]+{fates_mod_string}',l.lower())
-        # if(match_fates_mod):
-        #     remove_fates = True
-        #     lines, ct = comment_line(lines=lines,ct=ct,mode='fates')
-
-        # ##check betr
-        # betr_mod_string = '|'.join(betr_mods); betr_mod_string = f'({betr_mod_string})'
-        # match_betr_mod = re.search(f'[\s]+(use)[\s]+{betr_mod_string}',l.lower())
-        # if(match_betr_mod):
-        #     remove_betr = True
-        #     lines, ct = comment_line(lines=lines,ct=ct,mode='betr')
-
-            # remove = parse_local_mods(lines=lines,start=sub_start)
-            # if(remove):
-            #     if(sub_start == 0): sys.exit("Error start of subroutine not detected!")
-            #     if(verbose): print(f'Removing subroutine {subname}')
-            #     lines, endline = remove_subroutine(lines=lines,start=sub_start)
-            #     if(endline == 0): sys.exit('Error: subroutine has no end!')
-            #     ct = endline
-            #     if(subname not in subs_removed): subs_removed.append(subname)
-            #     in_subroutine = False
-    
-    # if(remove_fates):
-    #     if(verbose): print("Need to remove Fates")
-    #     lines = process_fates_or_betr(lines,mode='fates')
-    
-    # if(remove_betr):
-    #     if(verbose): print("Need to remove BetR")
-    #     lines = process_fates_or_betr(lines,mode='betr')
 
 
 def remove_reference_to_subroutine(lines, subnames):

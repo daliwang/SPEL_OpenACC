@@ -17,6 +17,7 @@ module fileio_mod
         interface fio_read
                 module procedure fio_read_int
                 module procedure fio_read_real8
+                module procedure fio_read_logical
                 module procedure fio_read_logical_array
                 module procedure fio_read_int_array
     module procedure fio_read_int_2Darray
@@ -114,17 +115,17 @@ contains
         subroutine fio_read_int(unitid, fieldname, vardata, errcode)
                 implicit none
                 ! input
-                integer,                        intent(in)              :: unitid
-                character(len=*),       intent(in)              :: fieldname
-                integer,                        intent(inout)   :: vardata
-                integer, optional,      intent(inout)   :: errcode
+                integer,   intent(in)              :: unitid
+                character(len=*), intent(in)       :: fieldname
+                integer,           intent(inout)   :: vardata
+                integer, optional, intent(inout)   :: errcode
 
                 ! local var
                 integer                         :: ct
                 integer                         :: error
                 character(len=256)      :: line
 
-          !rewind(unit=funit_id(unitid))
+          rewind(unit=funit_id(unitid))
 
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
@@ -132,7 +133,6 @@ contains
 
         do while(.true.)
                         read(unit=funit_id(unitid), fmt="(A)", iostat=error) line
-      if(trim(fieldname) .eq. 'npcropmin') print *, line
                         if (error/=0) then
                                 ! field not found
                                 write(*, "(A)") "not found"
@@ -171,7 +171,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -214,7 +214,7 @@ contains
     integer                     :: error
     character(len=256)  :: line
 
-      !rewind(unit=funit_id(unitid))
+      rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
     write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -246,9 +246,9 @@ contains
         subroutine fio_read_real8(unitid, fieldname, vardata, errcode)
                 implicit none
                 ! input
-                integer,                        intent(in)              :: unitid
-                character(len=*),       intent(in)              :: fieldname
-                real(r8),                       intent(inout)   :: vardata
+                integer,          intent(in)              :: unitid
+                character(len=*), intent(in)              :: fieldname
+                real(r8),         intent(inout)   :: vardata
                 integer, optional,      intent(inout)   :: errcode
 
                 ! local var
@@ -256,7 +256,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -272,7 +272,8 @@ contains
                         if (line(:) .eq. fieldname) then
                                 read(unit=funit_id(unitid), fmt=*, iostat=error) vardata
 #if defined(DEBUG)
-                                write (*, "(F12.8)") vardata
+                                !write (*, "(F12.8)") vardata
+                                write(*,*) vardata
 #endif
                                 error = 0
                                 exit
@@ -298,7 +299,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -340,7 +341,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -382,7 +383,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -424,7 +425,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif
@@ -456,6 +457,50 @@ contains
         subroutine fio_write()
         end subroutine fio_write
 
+        subroutine fio_read_logical(unitid, fieldname, vardata, errcode)
+                implicit none
+                ! input
+                integer,   intent(in)              :: unitid
+                character(len=*), intent(in)       :: fieldname
+                logical,           intent(inout)   :: vardata
+                integer, optional, intent(inout)   :: errcode
+
+                ! local var
+                integer                         :: ct
+                integer                         :: error
+                character(len=256)      :: line
+
+          rewind(unit=funit_id(unitid))
+
+#if defined(DEBUG)
+                write(*, "(A,A)") "fieldname: ", fieldname
+#endif
+
+        do while(.true.)
+                        read(unit=funit_id(unitid), fmt="(A)", iostat=error) line
+                        if (error/=0) then
+                                ! field not found
+                                write(*, "(A)") "not found"
+                                error = 2
+                                exit
+                        end if
+            ! found
+                        if (trim(line(:)) .eq. trim(fieldname)) then
+                                read(unit=funit_id(unitid), fmt=*, iostat=error) vardata
+
+#if defined(DEBUG)
+                                write (*, "(L3)") vardata
+#endif
+                                error = 0
+                                exit
+                        end if
+                end do
+
+                if (present(errcode)) then
+                        errcode = error
+                end if
+
+        end subroutine fio_read_logical
         ! read logical array
         subroutine fio_read_logical_array(unitid, fieldname, vardata, errcode)
                 implicit none
@@ -470,7 +515,7 @@ contains
                 integer                         :: error
                 character(len=256)      :: line
 
-            !rewind(unit=funit_id(unitid))
+            rewind(unit=funit_id(unitid))
 #if defined(DEBUG)
                 write(*, "(A,A)") "fieldname: ", fieldname
 #endif

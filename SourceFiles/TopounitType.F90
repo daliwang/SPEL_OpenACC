@@ -7,13 +7,13 @@ module TopounitType
   ! --------------------------------------------------------
   ! 3 Aug 2015, PET
   use shr_kind_mod   , only : r8 => shr_kind_r8
-  !#py !#py use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
-  !#py !#py use shr_log_mod    , only : errMsg => shr_log_errMsg
+  !#py use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
+  !#py use shr_log_mod    , only : errMsg => shr_log_errMsg
   use landunit_varcon, only : max_lunit
   use elm_varcon     , only : ispval, spval
   use elm_varpar     , only : numrad
   use decompMod      , only : bounds_type
-
+  #define nan spval 
   implicit none
   save
   private

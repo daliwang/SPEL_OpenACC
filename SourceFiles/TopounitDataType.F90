@@ -5,6 +5,7 @@ module TopounitDataType
   ! Topounit data type allocation and initialization
   ! --------------------------------------------------------
   !
+  #define nan spval 
   use shr_kind_mod   , only : r8 => shr_kind_r8
   !#py use shr_infnan_mod , only : nan => shr_infnan_nan, assignment(=)
   !#py use shr_log_mod    , only : errMsg => shr_log_errMsg

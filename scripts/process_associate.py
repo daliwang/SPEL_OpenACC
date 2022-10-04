@@ -1,4 +1,4 @@
-def get_rid_of_associate(sub, overwrite=False):
+def getAssociateClauseVars(sub, overwrite=False):
     """
     this function preprocesses the subroutine to get rid of the associate clauses
     in order to more easily find out the written to variables of the subroutine
@@ -23,7 +23,6 @@ def get_rid_of_associate(sub, overwrite=False):
 
     associate_start = 0
     associate_end = 0
-    print("file has %i number of lines" %len(lines))
     ct = subroutine_start_line
     while (ct < subroutine_end_line):
         line = lines[ct]
@@ -48,8 +47,24 @@ def get_rid_of_associate(sub, overwrite=False):
 
         continue
 
+    # Make sure associate_end is the end
+    search = True
+    ct = associate_end
+    while(search):
+        line = lines[ct]; line = line.split('!')[0];
+        line = line.strip()
+        if(not line):
+            ct +=1
+        else:
+            line = line.rstrip('\n'); line = line.strip();
+            if(line.endswith('&')):
+                ct += 1
+            else: # a line w/ code that is not continued, must be the end
+                search = False 
+                associate_end = ct
+
     if(associate_start == 0):
-        print("no derived types found")
+        # print("no derived types found")
         status = True  ## means no more analysis is needed
 
     return associate_vars, status, associate_start, associate_end

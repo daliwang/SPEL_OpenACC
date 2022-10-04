@@ -1,17 +1,18 @@
 module VegetationDataType
-  !-----------------------------------------------------
-    ! !DESCRIPTION:                                      !
-  ! Vegetation data type allocation and initialization !
-  ! ---------------------------------------------------!
+
+  !-----------------------------------------------------------------------
+  ! !DESCRIPTION:
+  ! Vegetation data type allocation and initialization
+  ! --------------------------------------------------------
   !
   #define nan spval
   use shr_kind_mod    , only : r8 => shr_kind_r8
-  use shr_infnan_mod  , only : nan => shr_infnan_nan, assignment(=),isnan => shr_infnan_isnan
+  !#py use shr_infnan_mod  , only : nan => shr_infnan_nan, assignment(=),isnan => shr_infnan_isnan
   use shr_const_mod   , only : SHR_CONST_PDB
-  use shr_log_mod     , only : errMsg => shr_log_errMsg
-  use spmdMod         , only : masterproc
-  use abortutils      , only : endrun
-  use clm_time_manager, only : is_restart, get_nstep
+  !#py use shr_log_mod     , only : errMsg => shr_log_errMsg
+  !#py use spmdMod         , only : masterproc
+  !#py use abortutils      , only : endrun
+  !#py use clm_time_manager, only : is_restart, get_nstep
   use elm_varpar      , only : nlevsno, nlevgrnd, nlevlak, nlevurb, nlevcan, crop_prog
   use elm_varpar      , only : nlevdecomp, nlevdecomp_full
   use elm_varcon      , only : spval, ispval, sb
@@ -21,11 +22,11 @@ module VegetationDataType
   use elm_varctl      , only : iulog, use_cn, spinup_state, spinup_mortality_factor, use_fates
   use elm_varctl      , only : nu_com, use_crop, use_c13
   use elm_varctl      , only : use_lch4, use_betr
-  use histFileMod     , only : hist_addfld1d, hist_addfld2d, no_snow_normal
-  use ncdio_pio       , only : file_desc_t, ncd_io, ncd_double, ncd_int, ncd_inqvdlen
+  !#py use histFileMod     , only : hist_addfld1d, hist_addfld2d, no_snow_normal
+  !#py use ncdio_pio       , only : file_desc_t, ncd_io, ncd_double, ncd_int, ncd_inqvdlen
   use decompMod       , only : bounds_type, get_proc_global
   use subgridAveMod   , only : p2c, p2c_1d_filter
-  use restUtilMod
+  !#py use restUtilMod
   use CNStateType     , only: cnstate_type
   use SpeciesMod              , only : species_from_string
   use VegetationType            , only : veg_pp
@@ -88,11 +89,11 @@ module VegetationDataType
 
     contains
     procedure, public :: Init    => veg_es_init
-    procedure, public :: Restart => veg_es_restart
+    !#py procedure, public :: Restart => veg_es_restart
     procedure, public :: Clean   => veg_es_clean
     procedure, public :: InitAccBuffer => init_acc_buffer_veg_es
     procedure, public :: InitAccVars   => init_acc_vars_veg_es
-    procedure, public :: UpdateAccVars => update_acc_vars_veg_es
+    !#py procedure, public :: UpdateAccVars => update_acc_vars_veg_es
   end type vegetation_energy_state
   !-----------------------------------------------------------------------
   ! Define the data structure that holds water state information at the vegetation level.
@@ -112,7 +113,7 @@ module VegetationDataType
     real(r8), pointer :: errh2o       (:) => null() ! water conservation error (mm H2O)
   contains
     procedure, public :: Init    => veg_ws_init
-    procedure, public :: Restart => veg_ws_restart
+    !#py procedure, public :: Restart => veg_ws_restart
     procedure, public :: Clean   => veg_ws_clean
   end type vegetation_water_state
 
@@ -161,7 +162,7 @@ module VegetationDataType
     real(r8), pointer :: errcb              (:) => null() ! patch carbon balance error for the timestep (gC/m**2)
   contains
     procedure, public :: Init     => veg_cs_init
-    procedure, public :: Restart  => veg_cs_restart
+    !#py procedure, public :: Restart  => veg_cs_restart
     !procedure, public :: Summary  => veg_cs_summary
     procedure, public :: ZeroDwt  => veg_cs_zerodwt
     procedure, public :: Clean    => veg_cs_clean
@@ -246,7 +247,7 @@ module VegetationDataType
 
   contains
     procedure, public :: Init      => veg_ns_init
-    procedure, public :: Restart   => veg_ns_restart
+    !#py procedure, public :: Restart   => veg_ns_restart
     !procedure, public :: Summary   => veg_ns_summary
     procedure, public :: SetValues => veg_ns_setvalues
     procedure, public :: ZeroDwt   => veg_ns_zerodwt
@@ -292,7 +293,7 @@ module VegetationDataType
     real(r8), pointer :: errpb                  (:)     ! phosphorus balance error for the timestep (gP/m**2)
   contains
     procedure, public :: Init      => veg_ps_init
-    procedure, public :: Restart   => veg_ps_restart
+    !#py procedure, public :: Restart   => veg_ps_restart
     procedure, public :: SetValues => veg_ps_setvalues
     procedure, public :: ZeroDWT   => veg_ps_zerodwt
     !procedure, public :: Summary   => veg_ps_summary
@@ -351,7 +352,7 @@ module VegetationDataType
 
   contains
     procedure, public :: Init    => veg_ef_init
-    procedure, public :: Restart => veg_ef_restart
+    !#py procedure, public :: Restart => veg_ef_restart
     procedure, public :: Clean   => veg_ef_clean
   end type vegetation_energy_flux
 
@@ -393,7 +394,7 @@ module VegetationDataType
 
   contains
     procedure, public :: Init    => veg_wf_init
-    procedure, public :: Restart => veg_wf_restart
+    !#py procedure, public :: Restart => veg_wf_restart
     procedure, public :: Clean   => veg_wf_clean
   end type vegetation_water_flux
 
@@ -662,7 +663,7 @@ module VegetationDataType
 
   contains
     procedure, public :: Init       => veg_cf_init
-    procedure, public :: Restart    => veg_cf_restart
+    !#py procedure, public :: Restart    => veg_cf_restart
     !procedure, public :: Summary    => veg_cf_summary
     !procedure, public :: SummaryRR  => veg_cf_summary_rr      ! Root respiration summary
     !procedure, public :: SummaryCH4 => veg_cf_summary_for_ch4 ! Summary for CH4 model
@@ -847,7 +848,7 @@ module VegetationDataType
     real(r8), pointer :: sen_nloss_litter                    (:)   => null()  ! total nloss from veg to litter pool due to senescence
   contains
     procedure, public :: Init      => veg_nf_init
-    procedure, public :: Restart   => veg_nf_restart
+    !#py procedure, public :: Restart   => veg_nf_restart
     !procedure, public :: SetValues => veg_nf_setvalues
     !procedure, public :: Summary   => veg_nf_summary
     procedure, public :: Clean     => veg_nf_clean
@@ -1012,7 +1013,7 @@ module VegetationDataType
     real(r8), pointer :: sen_ploss_litter                    (:)     ! total ploss from veg to litter pool due to senescence
   contains
     procedure, public :: Init      => veg_pf_init
-    procedure, public :: Restart   => veg_pf_restart
+    !#py procedure, public :: Restart   => veg_pf_restart
     !procedure, public :: SetValues => veg_pf_setvalues
     !procedure, public :: Summary   => veg_pf_summary
     procedure, public :: Clean     => veg_pf_clean
@@ -1109,121 +1110,121 @@ module VegetationDataType
     ! initialize history fields for select members of veg_es
     !-----------------------------------------------------------------------
     this%t_veg(begp:endp) = spval
-    call hist_addfld1d (fname='TV', units='K',  &
-         avgflag='A', long_name='vegetation temperature', &
-         ptr_patch=this%t_veg)
+    !#py call hist_addfld1d (fname='TV', units='K',  &
+         !#py avgflag='A', long_name='vegetation temperature', &
+         !#py !#py ptr_patch=this%t_veg)
 
     this%t_ref2m(begp:endp) = spval
-    call hist_addfld1d (fname='TSA', units='K',  &
-         avgflag='A', long_name='2m air temperature', &
-         ptr_patch=this%t_ref2m)
+    !#py call hist_addfld1d (fname='TSA', units='K',  &
+         !#py avgflag='A', long_name='2m air temperature', &
+         !#py !#py ptr_patch=this%t_ref2m)
 
     this%t_ref2m_r(begp:endp) = spval
-    call hist_addfld1d (fname='TSA_R', units='K',  &
-         avgflag='A', long_name='Rural 2m air temperature', &
-         ptr_patch=this%t_ref2m_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='TSA_R', units='K',  &
+         !#py avgflag='A', long_name='Rural 2m air temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_r, set_spec=spval)
 
     this%t_ref2m_u(begp:endp) = spval
-    call hist_addfld1d (fname='TSA_U', units='K',  &
-         avgflag='A', long_name='Urban 2m air temperature', &
-         ptr_patch=this%t_ref2m_u, set_nourb=spval)
+    !#py call hist_addfld1d (fname='TSA_U', units='K',  &
+         !#py avgflag='A', long_name='Urban 2m air temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_u, set_nourb=spval)
 
     this%t_a10(begp:endp) = spval
-    call hist_addfld1d (fname='T10', units='K',  &
-         avgflag='A', long_name='10-day running mean of 2-m temperature', &
-         ptr_patch=this%t_a10, default='inactive')
+    !#py call hist_addfld1d (fname='T10', units='K',  &
+         !#py avgflag='A', long_name='10-day running mean of 2-m temperature', &
+         !#py !#py ptr_patch=this%t_a10, default='inactive')
 
     if (use_cn .and. crop_prog )then
        this%t_a10min(begp:endp) = spval
-       call hist_addfld1d (fname='A10TMIN', units='K',  &
-            avgflag='A', long_name='10-day running mean of min 2-m temperature', &
-            ptr_patch=this%t_a10min, default='inactive')
+       !#py call hist_addfld1d (fname='A10TMIN', units='K',  &
+            !#py avgflag='A', long_name='10-day running mean of min 2-m temperature', &
+            !#py !#py ptr_patch=this%t_a10min, default='inactive')
     end if
 
     if (use_cn .and.  crop_prog )then
        this%t_a5min(begp:endp) = spval
-       call hist_addfld1d (fname='A5TMIN', units='K',  &
-            avgflag='A', long_name='5-day running mean of min 2-m temperature', &
-            ptr_patch=this%t_a5min, default='inactive')
+       !#py call hist_addfld1d (fname='A5TMIN', units='K',  &
+            !#py avgflag='A', long_name='5-day running mean of min 2-m temperature', &
+            !#py !#py ptr_patch=this%t_a5min, default='inactive')
     end if
 
     this%t_ref2m_min(begp:endp) = spval
-    call hist_addfld1d (fname='TREFMNAV', units='K',  &
-         avgflag='A', long_name='daily minimum of average 2-m temperature', &
-         ptr_patch=this%t_ref2m_min)
+    !#py call hist_addfld1d (fname='TREFMNAV', units='K',  &
+         !#py avgflag='A', long_name='daily minimum of average 2-m temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_min)
 
     this%t_ref2m_max(begp:endp) = spval
-    call hist_addfld1d (fname='TREFMXAV', units='K',  &
-         avgflag='A', long_name='daily maximum of average 2-m temperature', &
-         ptr_patch=this%t_ref2m_max)
+    !#py call hist_addfld1d (fname='TREFMXAV', units='K',  &
+         !#py avgflag='A', long_name='daily maximum of average 2-m temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_max)
 
     this%t_ref2m_min_r(begp:endp) = spval
-    call hist_addfld1d (fname='TREFMNAV_R', units='K',  &
-         avgflag='A', long_name='Rural daily minimum of average 2-m temperature', &
-         ptr_patch=this%t_ref2m_min_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='TREFMNAV_R', units='K',  &
+         !#py avgflag='A', long_name='Rural daily minimum of average 2-m temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_min_r, set_spec=spval)
 
     this%t_ref2m_max_r(begp:endp) = spval
-    call hist_addfld1d (fname='TREFMXAV_R', units='K',  &
-         avgflag='A', long_name='Rural daily maximum of average 2-m temperature', &
-         ptr_patch=this%t_ref2m_max_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='TREFMXAV_R', units='K',  &
+         !#py avgflag='A', long_name='Rural daily maximum of average 2-m temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_max_r, set_spec=spval)
 
     this%t_ref2m_min_u(begp:endp) = spval
-    call hist_addfld1d (fname='TREFMNAV_U', units='K',  &
-         avgflag='A', long_name='Urban daily minimum of average 2-m temperature', &
-         ptr_patch=this%t_ref2m_min_u, set_nourb=spval)
+    !#py call hist_addfld1d (fname='TREFMNAV_U', units='K',  &
+         !#py avgflag='A', long_name='Urban daily minimum of average 2-m temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_min_u, set_nourb=spval)
 
     this%t_ref2m_max_u(begp:endp) = spval
-    call hist_addfld1d (fname='TREFMXAV_U', units='K',  &
-         avgflag='A', long_name='Urban daily maximum of average 2-m temperature', &
-         ptr_patch=this%t_ref2m_max_u, set_nourb=spval)
+    !#py call hist_addfld1d (fname='TREFMXAV_U', units='K',  &
+         !#py avgflag='A', long_name='Urban daily maximum of average 2-m temperature', &
+         !#py !#py ptr_patch=this%t_ref2m_max_u, set_nourb=spval)
 
     this%t_veg24(begp:endp) = spval
-    call hist_addfld1d (fname='TV24', units='K',  &
-         avgflag='A', long_name='vegetation temperature (last 24hrs)', &
-         ptr_patch=this%t_veg24, default='inactive')
+    !#py call hist_addfld1d (fname='TV24', units='K',  &
+         !#py avgflag='A', long_name='vegetation temperature (last 24hrs)', &
+         !#py !#py ptr_patch=this%t_veg24, default='inactive')
 
     this%t_veg240(begp:endp)  = spval
-    call hist_addfld1d (fname='TV240', units='K',  &
-         avgflag='A', long_name='vegetation temperature (last 240hrs)', &
-         ptr_patch=this%t_veg240, default='inactive')
+    !#py call hist_addfld1d (fname='TV240', units='K',  &
+         !#py avgflag='A', long_name='vegetation temperature (last 240hrs)', &
+         !#py !#py ptr_patch=this%t_veg240, default='inactive')
 
     if (crop_prog) then
        this%gdd0(begp:endp) = spval
-       call hist_addfld1d (fname='GDD0', units='ddays', &
-            avgflag='A', long_name='Growing degree days base  0C from planting', &
-            ptr_patch=this%gdd0, default='inactive')
+       !#py call hist_addfld1d (fname='GDD0', units='ddays', &
+            !#py avgflag='A', long_name='Growing degree days base  0C from planting', &
+            !#py !#py ptr_patch=this%gdd0, default='inactive')
 
        this%gdd8(begp:endp) = spval
-       call hist_addfld1d (fname='GDD8', units='ddays', &
-            avgflag='A', long_name='Growing degree days base  8C from planting', &
-            ptr_patch=this%gdd8, default='inactive')
+       !#py call hist_addfld1d (fname='GDD8', units='ddays', &
+            !#py avgflag='A', long_name='Growing degree days base  8C from planting', &
+            !#py !#py ptr_patch=this%gdd8, default='inactive')
 
        this%gdd10(begp:endp) = spval
-       call hist_addfld1d (fname='GDD10', units='ddays', &
-            avgflag='A', long_name='Growing degree days base 10C from planting', &
-            ptr_patch=this%gdd10, default='inactive')
+       !#py call hist_addfld1d (fname='GDD10', units='ddays', &
+            !#py avgflag='A', long_name='Growing degree days base 10C from planting', &
+            !#py !#py ptr_patch=this%gdd10, default='inactive')
 
        this%gdd020(begp:endp) = spval
-       call hist_addfld1d (fname='GDD020', units='ddays', &
-            avgflag='A', long_name='Twenty year average of growing degree days base  0C from planting', &
-            ptr_patch=this%gdd020, default='inactive')
+       !#py call hist_addfld1d (fname='GDD020', units='ddays', &
+            !#py avgflag='A', long_name='Twenty year average of growing degree days base  0C from planting', &
+            !#py !#py ptr_patch=this%gdd020, default='inactive')
 
        this%gdd820(begp:endp) = spval
-       call hist_addfld1d (fname='GDD820', units='ddays', &
-            avgflag='A', long_name='Twenty year average of growing degree days base  8C from planting', &
-            ptr_patch=this%gdd820, default='inactive')
+       !#py call hist_addfld1d (fname='GDD820', units='ddays', &
+            !#py avgflag='A', long_name='Twenty year average of growing degree days base  8C from planting', &
+            !#py !#py ptr_patch=this%gdd820, default='inactive')
 
        this%gdd1020(begp:endp) = spval
-       call hist_addfld1d (fname='GDD1020', units='ddays', &
-            avgflag='A', long_name='Twenty year average of growing degree days base 10C from planting', &
-            ptr_patch=this%gdd1020, default='inactive')
+       !#py call hist_addfld1d (fname='GDD1020', units='ddays', &
+            !#py avgflag='A', long_name='Twenty year average of growing degree days base 10C from planting', &
+            !#py !#py ptr_patch=this%gdd1020, default='inactive')
     end if
 
     if (use_cn ) then
        this%emv(begp:endp) = spval
-       call hist_addfld1d (fname='EMV', units='proportion', &
-            avgflag='A', long_name='vegetation emissivity', &
-            ptr_patch=this%emv, default='inactive')
+       !#py call hist_addfld1d (fname='EMV', units='proportion', &
+            !#py avgflag='A', long_name='vegetation emissivity', &
+            !#py !#py ptr_patch=this%emv, default='inactive')
     end if
 
     !-----------------------------------------------------------------------
@@ -1279,114 +1280,114 @@ module VegetationDataType
   end subroutine veg_es_init
 
   !------------------------------------------------------------------------
-  subroutine veg_es_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write vegetation energy state information to/from restart file.
-    !
-    ! !USES:
-    !
-    ! !ARGUMENTS:
-    class(vegetation_energy_state) :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar   ! determine if variable is on initial file
-    !-----------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_VEG', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='vegetation temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_veg)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='2m height surface air temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_R', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='Rural 2m height surface air temperature', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_r)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_U', xtype=ncd_double, dim1name='pft',                      &
-         long_name='Urban 2m height surface air temperature', units='K',                                              &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_u)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='daily minimum of average 2 m height surface air temperature (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_R', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='rural daily minimum of average 2 m height surface air temperature (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_r)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_U', xtype=ncd_double, dim1name='pft',                  &
-         long_name='urban daily minimum of average 2 m height surface air temperature (K)', units='K',                &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_u)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='daily maximum of average 2 m height surface air temperature (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_R', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='rural daily maximum of average 2 m height surface air temperature (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_r)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_U', xtype=ncd_double, dim1name='pft',                  &
-         long_name='urban daily maximum of average 2 m height surface air temperature (K)', units='K',                &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_u)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_INST', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='instantaneous daily min of average 2 m height surface air temp (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_inst)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_INST_R', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='rural instantaneous daily min of average 2 m height surface air temp (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_inst_r)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_INST_U', xtype=ncd_double, dim1name='pft',             &
-         long_name='urban instantaneous daily min of average 2 m height surface air temp (K)', units='K',             &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_inst_u)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_INST', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='instantaneous daily max of average 2 m height surface air temp (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_inst)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_INST_R', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='rural instantaneous daily max of average 2 m height surface air temp (K)', units='K', &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_inst_r)
-
-    call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_INST_U', xtype=ncd_double,  dim1name='pft',            &
-         long_name='urban instantaneous daily max of average 2 m height surface air temp (K)', units='K',             &
-         interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_inst_u)
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='gdd1020', xtype=ncd_double,  &
-            dim1name='pft', long_name='20 year average of growing degree-days base 10C from planting', units='ddays', &
-            interpinic_flag='interp', readvar=readvar, data=this%gdd1020)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='gdd820', xtype=ncd_double,  &
-            dim1name='pft', long_name='20 year average of growing degree-days base 8C from planting', units='ddays', &
-            interpinic_flag='interp', readvar=readvar, data=this%gdd820)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='gdd020', xtype=ncd_double,  &
-            dim1name='pft', long_name='20 year average of growing degree-days base 0C from planting', units='ddays', &
-            interpinic_flag='interp', readvar=readvar, data=this%gdd020)
-    end if
-
-
-  end subroutine veg_es_restart
+!#py   subroutine veg_es_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write vegetation energy state information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(vegetation_energy_state) :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar   ! determine if variable is on initial file
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_VEG', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='vegetation temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_veg)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='2m height surface air temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_R', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='Rural 2m height surface air temperature', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_r)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_U', xtype=ncd_double, dim1name='pft',                      &
+!#py          long_name='Urban 2m height surface air temperature', units='K',                                              &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_u)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='daily minimum of average 2 m height surface air temperature (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_R', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='rural daily minimum of average 2 m height surface air temperature (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_r)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_U', xtype=ncd_double, dim1name='pft',                  &
+!#py          long_name='urban daily minimum of average 2 m height surface air temperature (K)', units='K',                &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_u)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='daily maximum of average 2 m height surface air temperature (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_R', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='rural daily maximum of average 2 m height surface air temperature (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_r)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_U', xtype=ncd_double, dim1name='pft',                  &
+!#py          long_name='urban daily maximum of average 2 m height surface air temperature (K)', units='K',                &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_u)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_INST', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='instantaneous daily min of average 2 m height surface air temp (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_inst)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_INST_R', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='rural instantaneous daily min of average 2 m height surface air temp (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_inst_r)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MIN_INST_U', xtype=ncd_double, dim1name='pft',             &
+!#py          long_name='urban instantaneous daily min of average 2 m height surface air temp (K)', units='K',             &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_min_inst_u)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_INST', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='instantaneous daily max of average 2 m height surface air temp (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_inst)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_INST_R', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='rural instantaneous daily max of average 2 m height surface air temp (K)', units='K', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_inst_r)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='T_REF2M_MAX_INST_U', xtype=ncd_double,  dim1name='pft',            &
+!#py          long_name='urban instantaneous daily max of average 2 m height surface air temp (K)', units='K',             &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%t_ref2m_max_inst_u)
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='gdd1020', xtype=ncd_double,  &
+!#py             dim1name='pft', long_name='20 year average of growing degree-days base 10C from planting', units='ddays', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%gdd1020)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='gdd820', xtype=ncd_double,  &
+!#py             dim1name='pft', long_name='20 year average of growing degree-days base 8C from planting', units='ddays', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%gdd820)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='gdd020', xtype=ncd_double,  &
+!#py             dim1name='pft', long_name='20 year average of growing degree-days base 0C from planting', units='ddays', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%gdd020)
+!#py     end if
+!#py
+!#py
+!#py !#py !#py   end subroutine veg_es_restart
 
   !------------------------------------------------------------------------
   subroutine veg_es_clean(this)
@@ -1404,8 +1405,8 @@ module VegetationDataType
     ! restart file for restart or branch runs
     !
     ! !USES
-    use accumulMod       , only : init_accum_field
-    use clm_time_manager , only : get_step_size
+    !#py use accumulMod       , only : init_accum_field
+    !#py use clm_time_manager , only : get_step_size
     use shr_const_mod    , only : SHR_CONST_CDAY, SHR_CONST_TKFRZ
     !
     ! !ARGUMENTS:
@@ -1417,56 +1418,56 @@ module VegetationDataType
     integer, parameter :: not_used = huge(1)
     !---------------------------------------------------------------------
 
-    dtime = get_step_size()
+    !#py dtime = get_step_size()
 
     ! The following is a running mean. The accumulation period is set to -10 for a 10-day running mean.
-    call init_accum_field (name='T10', units='K', &
-         desc='10-day running mean of 2-m temperature', accum_type='runmean', accum_period=-10, &
-         subgrid_type='pft', numlev=1,init_value=SHR_CONST_TKFRZ+20._r8)
+    !#py call init_accum_field (name='T10', units='K', &
+         !#py desc='10-day running mean of 2-m temperature', accum_type='runmean', accum_period=-10, &
+         !#py !#py subgrid_type='pft', numlev=1,init_value=SHR_CONST_TKFRZ+20._r8)
 
-    call init_accum_field(name='TREFAV', units='K', &
-         desc='average over an hour of 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
-         subgrid_type='pft', numlev=1, init_value=0._r8)
+    !#py call init_accum_field(name='TREFAV', units='K', &
+         !#py desc='average over an hour of 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
+         !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
-    call init_accum_field(name='TREFAV_U', units='K', &
-         desc='average over an hour of urban 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
-         subgrid_type='pft', numlev=1, init_value=0._r8)
+    !#py call init_accum_field(name='TREFAV_U', units='K', &
+         !#py desc='average over an hour of urban 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
+         !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
-    call init_accum_field(name='TREFAV_R', units='K', &
-         desc='average over an hour of rural 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
-         subgrid_type='pft', numlev=1, init_value=0._r8)
+    !#py call init_accum_field(name='TREFAV_R', units='K', &
+         !#py desc='average over an hour of rural 2-m temperature', accum_type='timeavg', accum_period=nint(3600._r8/dtime), &
+         !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
     this%t_veg24(bounds%begp:bounds%endp) = spval
-    call init_accum_field (name='T_VEG24', units='K',                                              &
-         desc='24hr average of vegetation temperature',  accum_type='runmean', accum_period=-1,    &
-         subgrid_type='pft', numlev=1, init_value=0._r8)
+    !#py call init_accum_field (name='T_VEG24', units='K',                                              &
+         !#py desc='24hr average of vegetation temperature',  accum_type='runmean', accum_period=-1,    &
+         !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
     this%t_veg240(bounds%begp:bounds%endp) = spval
-    call init_accum_field (name='T_VEG240', units='K',                                             &
-         desc='240hr average of vegetation temperature',  accum_type='runmean', accum_period=-10,  &
-         subgrid_type='pft', numlev=1, init_value=0._r8)
+    !#py call init_accum_field (name='T_VEG240', units='K',                                             &
+         !#py desc='240hr average of vegetation temperature',  accum_type='runmean', accum_period=-10,  &
+         !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
     if ( crop_prog )then
-       call init_accum_field (name='TDM10', units='K', &
-            desc='10-day running mean of min 2-m temperature', accum_type='runmean', accum_period=-10, &
-            subgrid_type='pft', numlev=1, init_value=SHR_CONST_TKFRZ)
+       !#py call init_accum_field (name='TDM10', units='K', &
+            !#py desc='10-day running mean of min 2-m temperature', accum_type='runmean', accum_period=-10, &
+            !#py !#py subgrid_type='pft', numlev=1, init_value=SHR_CONST_TKFRZ)
 
-       call init_accum_field (name='TDM5', units='K', &
-            desc='5-day running mean of min 2-m temperature', accum_type='runmean', accum_period=-5, &
-            subgrid_type='pft', numlev=1, init_value=SHR_CONST_TKFRZ)
+       !#py call init_accum_field (name='TDM5', units='K', &
+            !#py desc='5-day running mean of min 2-m temperature', accum_type='runmean', accum_period=-5, &
+            !#py !#py subgrid_type='pft', numlev=1, init_value=SHR_CONST_TKFRZ)
 
        ! All GDD summations are relative to the planting date (Kucharik & Brye 2003)
-       call init_accum_field (name='GDD0', units='K', &
-            desc='growing degree-days base 0C from planting', accum_type='runaccum', accum_period=not_used, &
-            subgrid_type='pft', numlev=1, init_value=0._r8)
+       !#py call init_accum_field (name='GDD0', units='K', &
+            !#py desc='growing degree-days base 0C from planting', accum_type='runaccum', accum_period=not_used, &
+            !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
-       call init_accum_field (name='GDD8', units='K', &
-            desc='growing degree-days base 8C from planting', accum_type='runaccum', accum_period=not_used, &
-            subgrid_type='pft', numlev=1, init_value=0._r8)
+       !#py call init_accum_field (name='GDD8', units='K', &
+            !#py desc='growing degree-days base 8C from planting', accum_type='runaccum', accum_period=not_used, &
+            !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
 
-       call init_accum_field (name='GDD10', units='K', &
-            desc='growing degree-days base 10C from planting', accum_type='runaccum', accum_period=not_used,  &
-            subgrid_type='pft', numlev=1, init_value=0._r8)
+       !#py call init_accum_field (name='GDD10', units='K', &
+            !#py desc='growing degree-days base 10C from planting', accum_type='runaccum', accum_period=not_used,  &
+            !#py !#py subgrid_type='pft', numlev=1, init_value=0._r8)
     end if
 
   end subroutine init_acc_buffer_veg_es
@@ -1480,10 +1481,10 @@ module VegetationDataType
     ! is read in and the accumulation buffer is obtained)
     !
     ! !USES
-    use accumulMod       , only : extract_accum_field
-    use clm_time_manager , only : get_nstep
+    !#py use accumulMod       , only : extract_accum_field
+    !#py use clm_time_manager , only : get_nstep
     use elm_varctl       , only : nsrest, nsrStartup
-    use abortutils       , only : endrun
+    !#py use abortutils       , only : endrun
     !
     ! !ARGUMENTS:
     class(vegetation_energy_state) :: this
@@ -1501,37 +1502,37 @@ module VegetationDataType
     ! Allocate needed dynamic memory for single level pft field
     allocate(rbufslp(begp:endp), stat=ier)
     if (ier/=0) then
-       write(iulog,*)' in '
-       call endrun(msg="extract_accum_hist allocation error for rbufslp"//&
-            errMsg(__FILE__, __LINE__))
+       !#py write(iulog,*)' in '
+       !#py call endrun(msg="extract_accum_hist allocation error for rbufslp"//&
+            !#py !#py errMsg(__FILE__, __LINE__))
     endif
 
     ! Determine time step
-    nstep = get_nstep()
+    !#py nstep = get_nstep()
 
-    call extract_accum_field ('T10', rbufslp, nstep)
+    !#py call extract_accum_field ('T10', rbufslp, nstep)
     this%t_a10(begp:endp) = rbufslp(begp:endp)
 
-    call extract_accum_field ('T_VEG24', rbufslp, nstep)
+    !#py call extract_accum_field ('T_VEG24', rbufslp, nstep)
     this%t_veg24(begp:endp) = rbufslp(begp:endp)
 
-    call extract_accum_field ('T_VEG240', rbufslp, nstep)
+    !#py call extract_accum_field ('T_VEG240', rbufslp, nstep)
     this%t_veg240(begp:endp) = rbufslp(begp:endp)
 
     if (crop_prog) then
-       call extract_accum_field ('TDM10', rbufslp, nstep)
+       !#py call extract_accum_field ('TDM10', rbufslp, nstep)
        this%t_a10min(begp:endp)= rbufslp(begp:endp)
 
-       call extract_accum_field ('TDM5', rbufslp, nstep)
+       !#py call extract_accum_field ('TDM5', rbufslp, nstep)
        this%t_a5min(begp:endp) = rbufslp(begp:endp)
 
-       call extract_accum_field ('GDD0', rbufslp, nstep)
+       !#py call extract_accum_field ('GDD0', rbufslp, nstep)
        this%gdd0(begp:endp) = rbufslp(begp:endp)
 
-       call extract_accum_field ('GDD8', rbufslp, nstep) ;
+       !#py call extract_accum_field ('GDD8', rbufslp, nstep) ;
        this%gdd8(begp:endp) = rbufslp(begp:endp)
 
-       call extract_accum_field ('GDD10', rbufslp, nstep)
+       !#py call extract_accum_field ('GDD10', rbufslp, nstep)
        this%gdd10(begp:endp) = rbufslp(begp:endp)
 
     end if
@@ -1562,213 +1563,213 @@ module VegetationDataType
   end subroutine init_acc_vars_veg_es
 
   !-----------------------------------------------------------------------
-  subroutine update_acc_vars_veg_es (this, bounds)
-    !
-    ! USES
-    use shr_const_mod    , only : SHR_CONST_CDAY, SHR_CONST_TKFRZ
-    use clm_time_manager , only : get_step_size, get_nstep, is_end_curr_day, get_curr_date
-    use accumulMod       , only : update_accum_field, extract_accum_field, accumResetVal
-    !
-    ! !ARGUMENTS:
-    class(vegetation_energy_state)    :: this
-    type(bounds_type)      , intent(in) :: bounds
-    !
-    ! !LOCAL VARIABLES:
-    integer :: m,g,l,c,p                 ! indices
-    integer :: ier                       ! error status
-    integer :: dtime                     ! timestep size [seconds]
-    integer :: nstep                     ! timestep number
-    integer :: year                      ! year (0, ...) for nstep
-    integer :: month                     ! month (1, ..., 12) for nstep
-    integer :: day                       ! day of month (1, ..., 31) for nstep
-    integer :: secs                      ! seconds into current date for nstep
-    logical :: end_cd                    ! temporary for is_end_curr_day() value
-    integer :: begp, endp
-    real(r8), pointer :: rbufslp(:)      ! temporary single level - pft level
-    !---------------------------------------------------------------------
-
-    begp = bounds%begp; endp = bounds%endp
-
-    dtime = get_step_size()
-    nstep = get_nstep()
-    call get_curr_date (year, month, day, secs)
-
-    ! Allocate needed dynamic memory for single level pft field
-
-    allocate(rbufslp(begp:endp), stat=ier)
-    if (ier/=0) then
-       write(iulog,*)'update_accum_hist allocation error for rbuf1dp'
-       call endrun(msg=errMsg(__FILE__, __LINE__))
-    endif
-
-    ! fill the temporary variable
-    do p = begp,endp
-       rbufslp(p) = this%t_veg(p)
-    end do
-
-    call update_accum_field  ('T10', this%t_ref2m, nstep)
-    call extract_accum_field ('T10', this%t_a10  , nstep)
-    call update_accum_field  ('T_VEG24' , rbufslp       , nstep)
-    call extract_accum_field ('T_VEG24' , this%t_veg24  , nstep)
-    call update_accum_field  ('T_VEG240', rbufslp       , nstep)
-    call extract_accum_field ('T_VEG240', this%t_veg240 , nstep)
-
-
-    ! Accumulate and extract TREFAV - hourly average 2m air temperature
-    ! Used to compute maximum and minimum of hourly averaged 2m reference
-    ! temperature over a day. Note that "spval" is returned by the call to
-    ! accext if the time step does not correspond to the end of an
-    ! accumulation interval. First, initialize the necessary values for
-    ! an initial run at the first time step the accumulator is called
-
-    call update_accum_field  ('TREFAV', this%t_ref2m, nstep)
-    call extract_accum_field ('TREFAV', rbufslp, nstep)
-    end_cd = is_end_curr_day()
-    do p = begp,endp
-       if (rbufslp(p) /= spval) then
-          this%t_ref2m_max_inst(p) = max(rbufslp(p), this%t_ref2m_max_inst(p))
-          this%t_ref2m_min_inst(p) = min(rbufslp(p), this%t_ref2m_min_inst(p))
-       endif
-       if (end_cd) then
-          this%t_ref2m_max(p) = this%t_ref2m_max_inst(p)
-          this%t_ref2m_min(p) = this%t_ref2m_min_inst(p)
-          this%t_ref2m_max_inst(p) = -spval
-          this%t_ref2m_min_inst(p) =  spval
-       else if (secs == int(dtime)) then
-          this%t_ref2m_max(p) = spval
-          this%t_ref2m_min(p) = spval
-       endif
-    end do
-
-    ! Accumulate and extract TREFAV_U - hourly average urban 2m air temperature
-    ! Used to compute maximum and minimum of hourly averaged 2m reference
-    ! temperature over a day. Note that "spval" is returned by the call to
-    ! accext if the time step does not correspond to the end of an
-    ! accumulation interval. First, initialize the necessary values for
-    ! an initial run at the first time step the accumulator is called
-
-    call update_accum_field  ('TREFAV_U', this%t_ref2m_u, nstep)
-    call extract_accum_field ('TREFAV_U', rbufslp, nstep)
-    do p = begp,endp
-       l = veg_pp%landunit(p)
-       if (rbufslp(p) /= spval) then
-          this%t_ref2m_max_inst_u(p) = max(rbufslp(p), this%t_ref2m_max_inst_u(p))
-          this%t_ref2m_min_inst_u(p) = min(rbufslp(p), this%t_ref2m_min_inst_u(p))
-       endif
-       if (end_cd) then
-         if (lun_pp%urbpoi(l)) then
-          this%t_ref2m_max_u(p) = this%t_ref2m_max_inst_u(p)
-          this%t_ref2m_min_u(p) = this%t_ref2m_min_inst_u(p)
-          this%t_ref2m_max_inst_u(p) = -spval
-          this%t_ref2m_min_inst_u(p) =  spval
-         end if
-       else if (secs == int(dtime)) then
-          this%t_ref2m_max_u(p) = spval
-          this%t_ref2m_min_u(p) = spval
-       endif
-    end do
-
-    ! Accumulate and extract TREFAV_R - hourly average rural 2m air temperature
-    ! Used to compute maximum and minimum of hourly averaged 2m reference
-    ! temperature over a day. Note that "spval" is returned by the call to
-    ! accext if the time step does not correspond to the end of an
-    ! accumulation interval. First, initialize the necessary values for
-    ! an initial run at the first time step the accumulator is called
-
-    call update_accum_field  ('TREFAV_R', this%t_ref2m_r, nstep)
-    call extract_accum_field ('TREFAV_R', rbufslp, nstep)
-    do p = begp,endp
-       l = veg_pp%landunit(p)
-       if (rbufslp(p) /= spval) then
-          this%t_ref2m_max_inst_r(p) = max(rbufslp(p), this%t_ref2m_max_inst_r(p))
-          this%t_ref2m_min_inst_r(p) = min(rbufslp(p), this%t_ref2m_min_inst_r(p))
-       endif
-       if (end_cd) then
-         if (.not.(lun_pp%ifspecial(l))) then
-          this%t_ref2m_max_r(p) = this%t_ref2m_max_inst_r(p)
-          this%t_ref2m_min_r(p) = this%t_ref2m_min_inst_r(p)
-          this%t_ref2m_max_inst_r(p) = -spval
-          this%t_ref2m_min_inst_r(p) =  spval
-         end if
-       else if (secs == int(dtime)) then
-          this%t_ref2m_max_r(p) = spval
-          this%t_ref2m_min_r(p) = spval
-       endif
-    end do
-
-    if ( crop_prog )then
-       ! Accumulate and extract TDM10
-
-       do p = begp,endp
-          rbufslp(p) = min(this%t_ref2m_min(p),this%t_ref2m_min_inst(p))
-          if (rbufslp(p) > 1.e30_r8) rbufslp(p) = SHR_CONST_TKFRZ !and were 'min'&
-       end do                                                     !'min_inst' not initialized?
-       call update_accum_field  ('TDM10', rbufslp, nstep)
-       call extract_accum_field ('TDM10', this%t_a10min, nstep)
-
-       ! Accumulate and extract TDM5
-
-       do p = begp,endp
-          rbufslp(p) = min(this%t_ref2m_min(p),this%t_ref2m_min_inst(p))
-          if (rbufslp(p) > 1.e30_r8) rbufslp(p) = SHR_CONST_TKFRZ !and were 'min'&
-       end do                                         !'min_inst' not initialized?
-       call update_accum_field  ('TDM5', rbufslp, nstep)
-       call extract_accum_field ('TDM5', this%t_a5min, nstep)
-
-       ! Accumulate and extract GDD0
-
-       do p = begp,endp
-          g = veg_pp%gridcell(p)
-          if (month==1 .and. day==1 .and. secs==int(dtime)) then
-             rbufslp(p) = accumResetVal ! reset gdd
-          else if (( month > 3 .and. month < 10 .and. grc_pp%latdeg(g) >= 0._r8) .or. &
-                   ((month > 9 .or.  month < 4) .and. grc_pp%latdeg(g) <  0._r8)     ) then
-             rbufslp(p) = max(0._r8, min(26._r8, this%t_ref2m(p)-SHR_CONST_TKFRZ)) * dtime/SHR_CONST_CDAY
-          else
-             rbufslp(p) = 0._r8      ! keeps gdd unchanged at other times (eg, through Dec in NH)
-          end if
-       end do
-       call update_accum_field  ('GDD0', rbufslp, nstep)
-       call extract_accum_field ('GDD0', this%gdd0, nstep)
-
-       ! Accumulate and extract GDD8
-
-       do p = begp,endp
-          g = veg_pp%gridcell(p)
-          if (month==1 .and. day==1 .and. secs==int(dtime)) then
-             rbufslp(p) = accumResetVal ! reset gdd
-          else if (( month > 3 .and. month < 10 .and. grc_pp%latdeg(g) >= 0._r8) .or. &
-                   ((month > 9 .or.  month < 4) .and. grc_pp%latdeg(g) <  0._r8)     ) then
-             rbufslp(p) = max(0._r8, min(30._r8, &
-                  this%t_ref2m(p)-(SHR_CONST_TKFRZ + 8._r8))) * dtime/SHR_CONST_CDAY
-          else
-             rbufslp(p) = 0._r8      ! keeps gdd unchanged at other times (eg, through Dec in NH)
-          end if
-       end do
-       call update_accum_field  ('GDD8', rbufslp, nstep)
-       call extract_accum_field ('GDD8', this%gdd8, nstep)
-
-       ! Accumulate and extract GDD10
-
-       do p = begp,endp
-          g = veg_pp%gridcell(p)
-          if (month==1 .and. day==1 .and. secs==int(dtime)) then
-             rbufslp(p) = accumResetVal ! reset gdd
-          else if (( month > 3 .and. month < 10 .and. grc_pp%latdeg(g) >= 0._r8) .or. &
-                   ((month > 9 .or.  month < 4) .and. grc_pp%latdeg(g) <  0._r8)     ) then
-             rbufslp(p) = max(0._r8, min(30._r8, &
-                  this%t_ref2m(p)-(SHR_CONST_TKFRZ + 10._r8))) * dtime/SHR_CONST_CDAY
-          else
-             rbufslp(p) = 0._r8      ! keeps gdd unchanged at other times (eg, through Dec in NH)
-          end if
-       end do
-       call update_accum_field  ('GDD10', rbufslp, nstep)
-       call extract_accum_field ('GDD10', this%gdd10, nstep)
-    end if
-
-    deallocate(rbufslp)
-
-  end subroutine update_acc_vars_veg_es
+!#py   subroutine update_acc_vars_veg_es (this, bounds)
+!#py     !
+!#py     ! USES
+!#py     use shr_const_mod    , only : SHR_CONST_CDAY, SHR_CONST_TKFRZ
+!#py     !#py use clm_time_manager , only : get_step_size, get_nstep, is_end_curr_day, get_curr_date
+!#py     !#py use accumulMod       , only : update_accum_field, extract_accum_field, accumResetVal
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(vegetation_energy_state)    :: this
+!#py     type(bounds_type)      , intent(in) :: bounds
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer :: m,g,l,c,p                 ! indices
+!#py     integer :: ier                       ! error status
+!#py     integer :: dtime                     ! timestep size [seconds]
+!#py     integer :: nstep                     ! timestep number
+!#py     integer :: year                      ! year (0, ...) for nstep
+!#py     integer :: month                     ! month (1, ..., 12) for nstep
+!#py     integer :: day                       ! day of month (1, ..., 31) for nstep
+!#py     integer :: secs                      ! seconds into current date for nstep
+!#py     logical :: end_cd                    ! temporary for is_end_curr_day() value
+!#py     integer :: begp, endp
+!#py     real(r8), pointer :: rbufslp(:)      ! temporary single level - pft level
+!#py     !---------------------------------------------------------------------
+!#py
+!#py     begp = bounds%begp; endp = bounds%endp
+!#py
+!#py     !#py dtime = get_step_size()
+!#py     !#py nstep = get_nstep()
+!#py     call get_curr_date (year, month, day, secs)
+!#py
+!#py     ! Allocate needed dynamic memory for single level pft field
+!#py
+!#py     allocate(rbufslp(begp:endp), stat=ier)
+!#py     if (ier/=0) then
+!#py        !#py write(iulog,*)'update_accum_hist allocation error for rbuf1dp'
+!#py        !#py !#py call endrun(msg=errMsg(__FILE__, __LINE__))
+!#py     endif
+!#py
+!#py     ! fill the temporary variable
+!#py     do p = begp,endp
+!#py        rbufslp(p) = this%t_veg(p)
+!#py     end do
+!#py
+!#py     call update_accum_field  ('T10', this%t_ref2m, nstep)
+!#py     call extract_accum_field ('T10', this%t_a10  , nstep)
+!#py     call update_accum_field  ('T_VEG24' , rbufslp       , nstep)
+!#py     call extract_accum_field ('T_VEG24' , this%t_veg24  , nstep)
+!#py     call update_accum_field  ('T_VEG240', rbufslp       , nstep)
+!#py     call extract_accum_field ('T_VEG240', this%t_veg240 , nstep)
+!#py
+!#py
+!#py     ! Accumulate and extract TREFAV - hourly average 2m air temperature
+!#py     ! Used to compute maximum and minimum of hourly averaged 2m reference
+!#py     ! temperature over a day. Note that "spval" is returned by the call to
+!#py     ! accext if the time step does not correspond to the end of an
+!#py     ! accumulation interval. First, initialize the necessary values for
+!#py     ! an initial run at the first time step the accumulator is called
+!#py
+!#py     call update_accum_field  ('TREFAV', this%t_ref2m, nstep)
+!#py     call extract_accum_field ('TREFAV', rbufslp, nstep)
+!#py     end_cd = is_end_curr_day()
+!#py     do p = begp,endp
+!#py        if (rbufslp(p) /= spval) then
+!#py           this%t_ref2m_max_inst(p) = max(rbufslp(p), this%t_ref2m_max_inst(p))
+!#py           this%t_ref2m_min_inst(p) = min(rbufslp(p), this%t_ref2m_min_inst(p))
+!#py        endif
+!#py        if (end_cd) then
+!#py           this%t_ref2m_max(p) = this%t_ref2m_max_inst(p)
+!#py           this%t_ref2m_min(p) = this%t_ref2m_min_inst(p)
+!#py           this%t_ref2m_max_inst(p) = -spval
+!#py           this%t_ref2m_min_inst(p) =  spval
+!#py        else if (secs == int(dtime)) then
+!#py           this%t_ref2m_max(p) = spval
+!#py           this%t_ref2m_min(p) = spval
+!#py        endif
+!#py     end do
+!#py
+!#py     ! Accumulate and extract TREFAV_U - hourly average urban 2m air temperature
+!#py     ! Used to compute maximum and minimum of hourly averaged 2m reference
+!#py     ! temperature over a day. Note that "spval" is returned by the call to
+!#py     ! accext if the time step does not correspond to the end of an
+!#py     ! accumulation interval. First, initialize the necessary values for
+!#py     ! an initial run at the first time step the accumulator is called
+!#py
+!#py     call update_accum_field  ('TREFAV_U', this%t_ref2m_u, nstep)
+!#py     call extract_accum_field ('TREFAV_U', rbufslp, nstep)
+!#py     do p = begp,endp
+!#py        l = veg_pp%landunit(p)
+!#py        if (rbufslp(p) /= spval) then
+!#py           this%t_ref2m_max_inst_u(p) = max(rbufslp(p), this%t_ref2m_max_inst_u(p))
+!#py           this%t_ref2m_min_inst_u(p) = min(rbufslp(p), this%t_ref2m_min_inst_u(p))
+!#py        endif
+!#py        if (end_cd) then
+!#py          if (lun_pp%urbpoi(l)) then
+!#py           this%t_ref2m_max_u(p) = this%t_ref2m_max_inst_u(p)
+!#py           this%t_ref2m_min_u(p) = this%t_ref2m_min_inst_u(p)
+!#py           this%t_ref2m_max_inst_u(p) = -spval
+!#py           this%t_ref2m_min_inst_u(p) =  spval
+!#py          end if
+!#py        else if (secs == int(dtime)) then
+!#py           this%t_ref2m_max_u(p) = spval
+!#py           this%t_ref2m_min_u(p) = spval
+!#py        endif
+!#py     end do
+!#py
+!#py     ! Accumulate and extract TREFAV_R - hourly average rural 2m air temperature
+!#py     ! Used to compute maximum and minimum of hourly averaged 2m reference
+!#py     ! temperature over a day. Note that "spval" is returned by the call to
+!#py     ! accext if the time step does not correspond to the end of an
+!#py     ! accumulation interval. First, initialize the necessary values for
+!#py     ! an initial run at the first time step the accumulator is called
+!#py
+!#py     call update_accum_field  ('TREFAV_R', this%t_ref2m_r, nstep)
+!#py     call extract_accum_field ('TREFAV_R', rbufslp, nstep)
+!#py     do p = begp,endp
+!#py        l = veg_pp%landunit(p)
+!#py        if (rbufslp(p) /= spval) then
+!#py           this%t_ref2m_max_inst_r(p) = max(rbufslp(p), this%t_ref2m_max_inst_r(p))
+!#py           this%t_ref2m_min_inst_r(p) = min(rbufslp(p), this%t_ref2m_min_inst_r(p))
+!#py        endif
+!#py        if (end_cd) then
+!#py          if (.not.(lun_pp%ifspecial(l))) then
+!#py           this%t_ref2m_max_r(p) = this%t_ref2m_max_inst_r(p)
+!#py           this%t_ref2m_min_r(p) = this%t_ref2m_min_inst_r(p)
+!#py           this%t_ref2m_max_inst_r(p) = -spval
+!#py           this%t_ref2m_min_inst_r(p) =  spval
+!#py          end if
+!#py        else if (secs == int(dtime)) then
+!#py           this%t_ref2m_max_r(p) = spval
+!#py           this%t_ref2m_min_r(p) = spval
+!#py        endif
+!#py     end do
+!#py
+!#py     if ( crop_prog )then
+!#py        ! Accumulate and extract TDM10
+!#py
+!#py        do p = begp,endp
+!#py           rbufslp(p) = min(this%t_ref2m_min(p),this%t_ref2m_min_inst(p))
+!#py           if (rbufslp(p) > 1.e30_r8) rbufslp(p) = SHR_CONST_TKFRZ !and were 'min'&
+!#py        end do                                                     !'min_inst' not initialized?
+!#py        call update_accum_field  ('TDM10', rbufslp, nstep)
+!#py        call extract_accum_field ('TDM10', this%t_a10min, nstep)
+!#py
+!#py        ! Accumulate and extract TDM5
+!#py
+!#py        do p = begp,endp
+!#py           rbufslp(p) = min(this%t_ref2m_min(p),this%t_ref2m_min_inst(p))
+!#py           if (rbufslp(p) > 1.e30_r8) rbufslp(p) = SHR_CONST_TKFRZ !and were 'min'&
+!#py        end do                                         !'min_inst' not initialized?
+!#py        call update_accum_field  ('TDM5', rbufslp, nstep)
+!#py        call extract_accum_field ('TDM5', this%t_a5min, nstep)
+!#py
+!#py        ! Accumulate and extract GDD0
+!#py
+!#py        do p = begp,endp
+!#py           g = veg_pp%gridcell(p)
+!#py           if (month==1 .and. day==1 .and. secs==int(dtime)) then
+!#py              rbufslp(p) = accumResetVal ! reset gdd
+!#py           else if (( month > 3 .and. month < 10 .and. grc_pp%latdeg(g) >= 0._r8) .or. &
+!#py                    ((month > 9 .or.  month < 4) .and. grc_pp%latdeg(g) <  0._r8)     ) then
+!#py              rbufslp(p) = max(0._r8, min(26._r8, this%t_ref2m(p)-SHR_CONST_TKFRZ)) * dtime/SHR_CONST_CDAY
+!#py           else
+!#py              rbufslp(p) = 0._r8      ! keeps gdd unchanged at other times (eg, through Dec in NH)
+!#py           end if
+!#py        end do
+!#py        call update_accum_field  ('GDD0', rbufslp, nstep)
+!#py        call extract_accum_field ('GDD0', this%gdd0, nstep)
+!#py
+!#py        ! Accumulate and extract GDD8
+!#py
+!#py        do p = begp,endp
+!#py           g = veg_pp%gridcell(p)
+!#py           if (month==1 .and. day==1 .and. secs==int(dtime)) then
+!#py              rbufslp(p) = accumResetVal ! reset gdd
+!#py           else if (( month > 3 .and. month < 10 .and. grc_pp%latdeg(g) >= 0._r8) .or. &
+!#py                    ((month > 9 .or.  month < 4) .and. grc_pp%latdeg(g) <  0._r8)     ) then
+!#py              rbufslp(p) = max(0._r8, min(30._r8, &
+!#py                   this%t_ref2m(p)-(SHR_CONST_TKFRZ + 8._r8))) * dtime/SHR_CONST_CDAY
+!#py           else
+!#py              rbufslp(p) = 0._r8      ! keeps gdd unchanged at other times (eg, through Dec in NH)
+!#py           end if
+!#py        end do
+!#py        call update_accum_field  ('GDD8', rbufslp, nstep)
+!#py        call extract_accum_field ('GDD8', this%gdd8, nstep)
+!#py
+!#py        ! Accumulate and extract GDD10
+!#py
+!#py        do p = begp,endp
+!#py           g = veg_pp%gridcell(p)
+!#py           if (month==1 .and. day==1 .and. secs==int(dtime)) then
+!#py              rbufslp(p) = accumResetVal ! reset gdd
+!#py           else if (( month > 3 .and. month < 10 .and. grc_pp%latdeg(g) >= 0._r8) .or. &
+!#py                    ((month > 9 .or.  month < 4) .and. grc_pp%latdeg(g) <  0._r8)     ) then
+!#py              rbufslp(p) = max(0._r8, min(30._r8, &
+!#py                   this%t_ref2m(p)-(SHR_CONST_TKFRZ + 10._r8))) * dtime/SHR_CONST_CDAY
+!#py           else
+!#py              rbufslp(p) = 0._r8      ! keeps gdd unchanged at other times (eg, through Dec in NH)
+!#py           end if
+!#py        end do
+!#py        call update_accum_field  ('GDD10', rbufslp, nstep)
+!#py        call extract_accum_field ('GDD10', this%gdd10, nstep)
+!#py     end if
+!#py
+!#py     deallocate(rbufslp)
+!#py
+!#py !#py   end subroutine update_acc_vars_veg_es
 
   !------------------------------------------------------------------------
   ! Subroutines to initialize and clean vegetation water state data structure
@@ -1802,47 +1803,47 @@ module VegetationDataType
     ! initialize history fields for select members of veg_ws
     !-----------------------------------------------------------------------
     this%h2ocan(begp:endp) = spval
-    call hist_addfld1d (fname='H2OCAN', units='mm',  &
-         avgflag='A', long_name='intercepted water', &
-         ptr_patch=this%h2ocan, set_lake=0._r8)
+    !#py call hist_addfld1d (fname='H2OCAN', units='mm',  &
+         !#py avgflag='A', long_name='intercepted water', &
+         !#py !#py ptr_patch=this%h2ocan, set_lake=0._r8)
 
     this%q_ref2m(begp:endp) = spval
-    call hist_addfld1d (fname='Q2M', units='kg/kg',  &
-         avgflag='A', long_name='2m specific humidity', &
-         ptr_patch=this%q_ref2m)
+    !#py call hist_addfld1d (fname='Q2M', units='kg/kg',  &
+         !#py avgflag='A', long_name='2m specific humidity', &
+         !#py !#py ptr_patch=this%q_ref2m)
 
     this%rh_ref2m(begp:endp) = spval
-    call hist_addfld1d (fname='RH2M', units='%',  &
-         avgflag='A', long_name='2m relative humidity', &
-         ptr_patch=this%rh_ref2m)
+    !#py call hist_addfld1d (fname='RH2M', units='%',  &
+         !#py avgflag='A', long_name='2m relative humidity', &
+         !#py !#py ptr_patch=this%rh_ref2m)
 
     this%rh_ref2m_r(begp:endp) = spval
-    call hist_addfld1d (fname='RH2M_R', units='%',  &
-         avgflag='A', long_name='Rural 2m specific humidity', &
-         ptr_patch=this%rh_ref2m_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='RH2M_R', units='%',  &
+         !#py avgflag='A', long_name='Rural 2m specific humidity', &
+         !#py !#py ptr_patch=this%rh_ref2m_r, set_spec=spval)
 
     this%rh_ref2m_u(begp:endp) = spval
-    call hist_addfld1d (fname='RH2M_U', units='%',  &
-         avgflag='A', long_name='Urban 2m relative humidity', &
-         ptr_patch=this%rh_ref2m_u, set_nourb=spval)
+    !#py call hist_addfld1d (fname='RH2M_U', units='%',  &
+         !#py avgflag='A', long_name='Urban 2m relative humidity', &
+         !#py !#py ptr_patch=this%rh_ref2m_u, set_nourb=spval)
 
     this%rh_af(begp:endp) = spval
-    call hist_addfld1d (fname='RHAF', units='fraction', &
-         avgflag='A', long_name='fractional humidity of canopy air', &
-         ptr_patch=this%rh_af, set_spec=spval, default='inactive')
+    !#py call hist_addfld1d (fname='RHAF', units='fraction', &
+         !#py avgflag='A', long_name='fractional humidity of canopy air', &
+         !#py !#py ptr_patch=this%rh_af, set_spec=spval, default='inactive')
 
     if (use_cn) then
        this%fwet(begp:endp) = spval
-       call hist_addfld1d (fname='FWET', units='proportion', &
-            avgflag='A', long_name='fraction of canopy that is wet', &
-            ptr_patch=this%fwet, default='inactive')
+       !#py call hist_addfld1d (fname='FWET', units='proportion', &
+            !#py avgflag='A', long_name='fraction of canopy that is wet', &
+            !#py !#py ptr_patch=this%fwet, default='inactive')
     end if
 
     if (use_cn) then
        this%fdry(begp:endp) = spval
-       call hist_addfld1d (fname='FDRY', units='proportion', &
-            avgflag='A', long_name='fraction of foliage that is green and dry', &
-            ptr_patch=this%fdry, default='inactive')
+       !#py call hist_addfld1d (fname='FDRY', units='proportion', &
+            !#py avgflag='A', long_name='fraction of foliage that is green and dry', &
+            !#py !#py ptr_patch=this%fdry, default='inactive')
     end if
 
     !-----------------------------------------------------------------------
@@ -1857,34 +1858,34 @@ module VegetationDataType
   end subroutine veg_ws_init
 
   !------------------------------------------------------------------------
-  subroutine veg_ws_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write vegetation water state information to/from restart file.
-    !
-    ! !USES:
-    !
-    ! !ARGUMENTS:
-    class(vegetation_water_state)    :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar      ! determine if variable is on initial file
-    !------------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='H2OCAN', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='canopy water', units='kg/m2', &
-         interpinic_flag='interp', readvar=readvar, data=this%h2ocan)
-
-    call restartvar(ncid=ncid, flag=flag, varname='FWET', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='fraction of canopy that is wet (0 to 1)', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%fwet)
-
-  end subroutine veg_ws_restart
+!#py   subroutine veg_ws_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write vegetation water state information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(vegetation_water_state)    :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='H2OCAN', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='canopy water', units='kg/m2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%h2ocan)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='FWET', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='fraction of canopy that is wet (0 to 1)', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%fwet)
+!#py
+!#py !#py !#py   end subroutine veg_ws_restart
 
   !------------------------------------------------------------------------
   subroutine veg_ws_clean(this)
@@ -1967,460 +1968,460 @@ module VegetationDataType
 
     else if (carbon_type == 'c12') then
        this%leafc(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC', units='gC/m^2', &
-             avgflag='A', long_name='leaf C', &
-             ptr_patch=this%leafc)
+       !#py call hist_addfld1d (fname='LEAFC', units='gC/m^2', &
+             !#py avgflag='A', long_name='leaf C', &
+             !#py !#py ptr_patch=this%leafc)
 
        this%leafc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='leaf C storage', &
-             ptr_patch=this%leafc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='LEAFC_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='leaf C storage', &
+             !#py !#py ptr_patch=this%leafc_storage, default='inactive')
 
        this%leafc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_XFER', units='gC/m^2', &
-             avgflag='A', long_name='leaf C transfer', &
-             ptr_patch=this%leafc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='LEAFC_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='leaf C transfer', &
+             !#py !#py ptr_patch=this%leafc_xfer, default='inactive')
 
        this%frootc(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC', units='gC/m^2', &
-             avgflag='A', long_name='fine root C', &
-             ptr_patch=this%frootc)
+       !#py call hist_addfld1d (fname='FROOTC', units='gC/m^2', &
+             !#py avgflag='A', long_name='fine root C', &
+             !#py !#py ptr_patch=this%frootc)
 
        this%frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='fine root C storage', &
-             ptr_patch=this%frootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='FROOTC_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='fine root C storage', &
+             !#py !#py ptr_patch=this%frootc_storage, default='inactive')
 
        this%frootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_XFER', units='gC/m^2', &
-             avgflag='A', long_name='fine root C transfer', &
-             ptr_patch=this%frootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='FROOTC_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='fine root C transfer', &
+             !#py !#py ptr_patch=this%frootc_xfer, default='inactive')
 
        this%livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEMC', units='gC/m^2', &
-             avgflag='A', long_name='live stem C', &
-             ptr_patch=this%livestemc)
+       !#py call hist_addfld1d (fname='LIVESTEMC', units='gC/m^2', &
+             !#py avgflag='A', long_name='live stem C', &
+             !#py !#py ptr_patch=this%livestemc)
 
        this%livestemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEMC_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='live stem C storage', &
-             ptr_patch=this%livestemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='LIVESTEMC_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='live stem C storage', &
+             !#py !#py ptr_patch=this%livestemc_storage, default='inactive')
 
        this%livestemc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEMC_XFER', units='gC/m^2', &
-             avgflag='A', long_name='live stem C transfer', &
-             ptr_patch=this%livestemc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='LIVESTEMC_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='live stem C transfer', &
+             !#py !#py ptr_patch=this%livestemc_xfer, default='inactive')
 
        this%deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='DEADSTEMC', units='gC/m^2', &
-             avgflag='A', long_name='dead stem C', &
-             ptr_patch=this%deadstemc)
+       !#py call hist_addfld1d (fname='DEADSTEMC', units='gC/m^2', &
+             !#py avgflag='A', long_name='dead stem C', &
+             !#py !#py ptr_patch=this%deadstemc)
 
        this%deadstemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='DEADSTEMC_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='dead stem C storage', &
-             ptr_patch=this%deadstemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='DEADSTEMC_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='dead stem C storage', &
+             !#py !#py ptr_patch=this%deadstemc_storage, default='inactive')
 
        this%deadstemc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='DEADSTEMC_XFER', units='gC/m^2', &
-             avgflag='A', long_name='dead stem C transfer', &
-             ptr_patch=this%deadstemc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='DEADSTEMC_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='dead stem C transfer', &
+             !#py !#py ptr_patch=this%deadstemc_xfer, default='inactive')
 
        this%livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOTC', units='gC/m^2', &
-             avgflag='A', long_name='live coarse root C', &
-             ptr_patch=this%livecrootc)
+       !#py call hist_addfld1d (fname='LIVECROOTC', units='gC/m^2', &
+             !#py avgflag='A', long_name='live coarse root C', &
+             !#py !#py ptr_patch=this%livecrootc)
 
        this%livecrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOTC_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='live coarse root C storage', &
-             ptr_patch=this%livecrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='LIVECROOTC_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='live coarse root C storage', &
+             !#py !#py ptr_patch=this%livecrootc_storage, default='inactive')
 
        this%livecrootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOTC_XFER', units='gC/m^2', &
-             avgflag='A', long_name='live coarse root C transfer', &
-             ptr_patch=this%livecrootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='LIVECROOTC_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='live coarse root C transfer', &
+             !#py !#py ptr_patch=this%livecrootc_xfer, default='inactive')
 
        this%deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='DEADCROOTC', units='gC/m^2', &
-             avgflag='A', long_name='dead coarse root C', &
-             ptr_patch=this%deadcrootc)
+       !#py call hist_addfld1d (fname='DEADCROOTC', units='gC/m^2', &
+             !#py avgflag='A', long_name='dead coarse root C', &
+             !#py !#py ptr_patch=this%deadcrootc)
 
        this%deadcrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='DEADCROOTC_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='dead coarse root C storage', &
-             ptr_patch=this%deadcrootc_storage,  default='inactive')
+       !#py call hist_addfld1d (fname='DEADCROOTC_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='dead coarse root C storage', &
+             !#py !#py ptr_patch=this%deadcrootc_storage,  default='inactive')
 
        this%deadcrootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='DEADCROOTC_XFER', units='gC/m^2', &
-             avgflag='A', long_name='dead coarse root C transfer', &
-             ptr_patch=this%deadcrootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='DEADCROOTC_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='dead coarse root C transfer', &
+             !#py !#py ptr_patch=this%deadcrootc_xfer, default='inactive')
 
        this%gresp_storage(begp:endp) = spval
-       call hist_addfld1d (fname='GRESP_STORAGE', units='gC/m^2', &
-             avgflag='A', long_name='growth respiration storage', &
-             ptr_patch=this%gresp_storage, default='inactive')
+       !#py call hist_addfld1d (fname='GRESP_STORAGE', units='gC/m^2', &
+             !#py avgflag='A', long_name='growth respiration storage', &
+             !#py !#py ptr_patch=this%gresp_storage, default='inactive')
 
        this%gresp_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='GRESP_XFER', units='gC/m^2', &
-             avgflag='A', long_name='growth respiration transfer', &
-             ptr_patch=this%gresp_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='GRESP_XFER', units='gC/m^2', &
+             !#py avgflag='A', long_name='growth respiration transfer', &
+             !#py !#py ptr_patch=this%gresp_xfer, default='inactive')
 
        this%cpool(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL', units='gC/m^2', &
-             avgflag='A', long_name='temporary photosynthate C pool', &
-             ptr_patch=this%cpool)
+       !#py call hist_addfld1d (fname='CPOOL', units='gC/m^2', &
+             !#py avgflag='A', long_name='temporary photosynthate C pool', &
+             !#py !#py ptr_patch=this%cpool)
 
        this%xsmrpool(begp:endp) = spval
-       call hist_addfld1d (fname='XSMRPOOL', units='gC/m^2', &
-             avgflag='A', long_name='temporary photosynthate C pool', &
-             ptr_patch=this%xsmrpool, default='active')
+       !#py call hist_addfld1d (fname='XSMRPOOL', units='gC/m^2', &
+             !#py avgflag='A', long_name='temporary photosynthate C pool', &
+             !#py !#py ptr_patch=this%xsmrpool, default='active')
 
        if (crop_prog) then
           this%grainc(begp:endp) = spval
-          call hist_addfld1d (fname='GRAINC', units='gC/m^2', &
-                avgflag='A', long_name='grain C', &
-                ptr_patch=this%grainc, default='inactive')
+          !#py call hist_addfld1d (fname='GRAINC', units='gC/m^2', &
+                !#py avgflag='A', long_name='grain C', &
+                !#py !#py ptr_patch=this%grainc, default='inactive')
 
           this%cropseedc_deficit(begp:endp) = spval
-          call hist_addfld1d (fname='CROPSEEDC_DEFICIT', units='gC/m^2', &
-               avgflag='A', long_name='C used for crop seed that needs to be repaid', &
-               ptr_patch=this%cropseedc_deficit)
+          !#py call hist_addfld1d (fname='CROPSEEDC_DEFICIT', units='gC/m^2', &
+               !#py avgflag='A', long_name='C used for crop seed that needs to be repaid', &
+               !#py !#py ptr_patch=this%cropseedc_deficit)
        end if
 
        this%ctrunc(begp:endp) = spval
-       call hist_addfld1d (fname='PFT_CTRUNC', units='gC/m^2', &
-             avgflag='A', long_name='patch-level sink for C truncation', &
-             ptr_patch=this%ctrunc, default='inactive')
+       !#py call hist_addfld1d (fname='PFT_CTRUNC', units='gC/m^2', &
+             !#py avgflag='A', long_name='patch-level sink for C truncation', &
+             !#py !#py ptr_patch=this%ctrunc, default='inactive')
 
        this%woodc(begp:endp) = spval
-       call hist_addfld1d (fname='WOODC', units='gC/m^2', &
-             avgflag='A', long_name='wood C', &
-             ptr_patch=this%woodc)
+       !#py call hist_addfld1d (fname='WOODC', units='gC/m^2', &
+             !#py avgflag='A', long_name='wood C', &
+             !#py !#py ptr_patch=this%woodc)
 
        this%dispvegc(begp:endp) = spval
-       call hist_addfld1d (fname='DISPVEGC', units='gC/m^2', &
-             avgflag='A', long_name='displayed veg carbon, excluding storage and cpool', &
-             ptr_patch=this%dispvegc)
+       !#py call hist_addfld1d (fname='DISPVEGC', units='gC/m^2', &
+             !#py avgflag='A', long_name='displayed veg carbon, excluding storage and cpool', &
+             !#py !#py ptr_patch=this%dispvegc)
 
        this%storvegc(begp:endp) = spval
-       call hist_addfld1d (fname='STORVEGC', units='gC/m^2', &
-             avgflag='A', long_name='stored vegetation carbon, excluding cpool', &
-             ptr_patch=this%storvegc)
+       !#py call hist_addfld1d (fname='STORVEGC', units='gC/m^2', &
+             !#py avgflag='A', long_name='stored vegetation carbon, excluding cpool', &
+             !#py !#py ptr_patch=this%storvegc)
 
        this%totvegc(begp:endp) = spval
-       call hist_addfld1d (fname='TOTVEGC', units='gC/m^2', &
-             avgflag='A', long_name='total vegetation carbon, excluding cpool', &
-             ptr_patch=this%totvegc)
+       !#py call hist_addfld1d (fname='TOTVEGC', units='gC/m^2', &
+             !#py avgflag='A', long_name='total vegetation carbon, excluding cpool', &
+             !#py !#py ptr_patch=this%totvegc)
 
        this%totpftc(begp:endp) = spval
-       call hist_addfld1d (fname='TOTPFTC', units='gC/m^2', &
-             avgflag='A', long_name='total patch-level carbon, including cpool', &
-             ptr_patch=this%totpftc)
+       !#py call hist_addfld1d (fname='TOTPFTC', units='gC/m^2', &
+             !#py avgflag='A', long_name='total patch-level carbon, including cpool', &
+             !#py !#py ptr_patch=this%totpftc)
 
        this%totvegc_abg(begp:endp) = spval
-       call hist_addfld1d (fname='TOTVEGC_ABG', units='gC/m^2', &
-            avgflag='A', long_name='total aboveground vegetation carbon, excluding cpool', &
-            ptr_patch=this%totvegc_abg)
+       !#py call hist_addfld1d (fname='TOTVEGC_ABG', units='gC/m^2', &
+            !#py avgflag='A', long_name='total aboveground vegetation carbon, excluding cpool', &
+            !#py !#py ptr_patch=this%totvegc_abg)
 
        ! end of c12 block
 
     else if ( carbon_type == 'c13' ) then
        this%leafc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAFC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 leaf C', &
-             ptr_patch=this%leafc)
+       !#py call hist_addfld1d (fname='C13_LEAFC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 leaf C', &
+             !#py !#py ptr_patch=this%leafc)
 
        this%leafc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAFC_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 leaf C storage', &
-             ptr_patch=this%leafc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LEAFC_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 leaf C storage', &
+             !#py !#py ptr_patch=this%leafc_storage, default='inactive')
 
        this%leafc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAFC_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 leaf C transfer', &
-             ptr_patch=this%leafc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LEAFC_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 leaf C transfer', &
+             !#py !#py ptr_patch=this%leafc_xfer, default='inactive')
 
        this%frootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOTC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 fine root C', &
-             ptr_patch=this%frootc)
+       !#py call hist_addfld1d (fname='C13_FROOTC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 fine root C', &
+             !#py !#py ptr_patch=this%frootc)
 
        this%frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOTC_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 fine root C storage', &
-             ptr_patch=this%frootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_FROOTC_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 fine root C storage', &
+             !#py !#py ptr_patch=this%frootc_storage, default='inactive')
 
        this%frootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOTC_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 fine root C transfer', &
-             ptr_patch=this%frootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_FROOTC_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 fine root C transfer', &
+             !#py !#py ptr_patch=this%frootc_xfer, default='inactive')
 
        this%livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEMC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 live stem C', &
-             ptr_patch=this%livestemc)
+       !#py call hist_addfld1d (fname='C13_LIVESTEMC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 live stem C', &
+             !#py !#py ptr_patch=this%livestemc)
 
        this%livestemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEMC_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 live stem C storage', &
-             ptr_patch=this%livestemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVESTEMC_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 live stem C storage', &
+             !#py !#py ptr_patch=this%livestemc_storage, default='inactive')
 
        this%livestemc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEMC_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 live stem C transfer', &
-             ptr_patch=this%livestemc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVESTEMC_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 live stem C transfer', &
+             !#py !#py ptr_patch=this%livestemc_xfer, default='inactive')
 
        this%deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADSTEMC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 dead stem C', &
-             ptr_patch=this%deadstemc)
+       !#py call hist_addfld1d (fname='C13_DEADSTEMC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 dead stem C', &
+             !#py !#py ptr_patch=this%deadstemc)
 
        this%deadstemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADSTEMC_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 dead stem C storage', &
-             ptr_patch=this%deadstemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADSTEMC_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 dead stem C storage', &
+             !#py !#py ptr_patch=this%deadstemc_storage, default='inactive')
 
        this%deadstemc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADSTEMC_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 dead stem C transfer', &
-             ptr_patch=this%deadstemc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADSTEMC_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 dead stem C transfer', &
+             !#py !#py ptr_patch=this%deadstemc_xfer, default='inactive')
 
        this%livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOTC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 live coarse root C', &
-             ptr_patch=this%livecrootc)
+       !#py call hist_addfld1d (fname='C13_LIVECROOTC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 live coarse root C', &
+             !#py !#py ptr_patch=this%livecrootc)
 
        this%livecrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOTC_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 live coarse root C storage', &
-             ptr_patch=this%livecrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVECROOTC_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 live coarse root C storage', &
+             !#py !#py ptr_patch=this%livecrootc_storage, default='inactive')
 
        this%livecrootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOTC_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 live coarse root C transfer', &
-             ptr_patch=this%livecrootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVECROOTC_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 live coarse root C transfer', &
+             !#py !#py ptr_patch=this%livecrootc_xfer, default='inactive')
 
        this%deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADCROOTC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 dead coarse root C', &
-             ptr_patch=this%deadcrootc)
+       !#py call hist_addfld1d (fname='C13_DEADCROOTC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 dead coarse root C', &
+             !#py !#py ptr_patch=this%deadcrootc)
 
        this%deadcrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADCROOTC_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 dead coarse root C storage', &
-             ptr_patch=this%deadcrootc_storage,  default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADCROOTC_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 dead coarse root C storage', &
+             !#py !#py ptr_patch=this%deadcrootc_storage,  default='inactive')
 
        this%deadcrootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADCROOTC_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 dead coarse root C transfer', &
-             ptr_patch=this%deadcrootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADCROOTC_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 dead coarse root C transfer', &
+             !#py !#py ptr_patch=this%deadcrootc_xfer, default='inactive')
 
        this%gresp_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_GRESP_STORAGE', units='gC13/m^2', &
-             avgflag='A', long_name='C13 growth respiration storage', &
-             ptr_patch=this%gresp_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_GRESP_STORAGE', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 growth respiration storage', &
+             !#py !#py ptr_patch=this%gresp_storage, default='inactive')
 
        this%gresp_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_GRESP_XFER', units='gC13/m^2', &
-             avgflag='A', long_name='C13 growth respiration transfer', &
-             ptr_patch=this%gresp_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_GRESP_XFER', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 growth respiration transfer', &
+             !#py !#py ptr_patch=this%gresp_xfer, default='inactive')
 
        this%cpool(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL', units='gC13/m^2', &
-             avgflag='A', long_name='C13 temporary photosynthate C pool', &
-             ptr_patch=this%cpool)
+       !#py call hist_addfld1d (fname='C13_CPOOL', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 temporary photosynthate C pool', &
+             !#py !#py ptr_patch=this%cpool)
 
        this%xsmrpool(begp:endp) = spval
-       call hist_addfld1d (fname='C13_XSMRPOOL', units='gC13/m^2', &
-             avgflag='A', long_name='C13 temporary photosynthate C pool', &
-             ptr_patch=this%xsmrpool)
+       !#py call hist_addfld1d (fname='C13_XSMRPOOL', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 temporary photosynthate C pool', &
+             !#py !#py ptr_patch=this%xsmrpool)
 
        this%ctrunc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_PFT_CTRUNC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 patch-level sink for C truncation', &
-             ptr_patch=this%ctrunc)
+       !#py call hist_addfld1d (fname='C13_PFT_CTRUNC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 patch-level sink for C truncation', &
+             !#py !#py ptr_patch=this%ctrunc)
 
        this%dispvegc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DISPVEGC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 displayed veg carbon, excluding storage and cpool', &
-             ptr_patch=this%dispvegc)
+       !#py call hist_addfld1d (fname='C13_DISPVEGC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 displayed veg carbon, excluding storage and cpool', &
+             !#py !#py ptr_patch=this%dispvegc)
 
        this%storvegc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_STORVEGC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 stored vegetation carbon, excluding cpool', &
-             ptr_patch=this%storvegc)
+       !#py call hist_addfld1d (fname='C13_STORVEGC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 stored vegetation carbon, excluding cpool', &
+             !#py !#py ptr_patch=this%storvegc)
 
        this%totvegc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TOTVEGC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 total vegetation carbon, excluding cpool', &
-             ptr_patch=this%totvegc)
+       !#py call hist_addfld1d (fname='C13_TOTVEGC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 total vegetation carbon, excluding cpool', &
+             !#py !#py ptr_patch=this%totvegc)
 
        this%totpftc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TOTPFTC', units='gC13/m^2', &
-             avgflag='A', long_name='C13 total patch-level carbon, including cpool', &
-             ptr_patch=this%totpftc)
+       !#py call hist_addfld1d (fname='C13_TOTPFTC', units='gC13/m^2', &
+             !#py avgflag='A', long_name='C13 total patch-level carbon, including cpool', &
+             !#py !#py ptr_patch=this%totpftc)
 
        if (use_crop) then
           this%grainc(begp:endp) = spval
-          call hist_addfld1d (fname='C13_GRAINC', units='gC/m^2', &
-               avgflag='A', long_name='C13 grain C (does not equal yield)', &
-               ptr_patch=this%grainc)
+          !#py call hist_addfld1d (fname='C13_GRAINC', units='gC/m^2', &
+               !#py avgflag='A', long_name='C13 grain C (does not equal yield)', &
+               !#py !#py ptr_patch=this%grainc)
 
           this%cropseedc_deficit(begp:endp) = spval
-          call hist_addfld1d (fname='C13_CROPSEEDC_DEFICIT', units='gC/m^2', &
-               avgflag='A', long_name='C13 C used for crop seed that needs to be repaid', &
-               ptr_patch=this%cropseedc_deficit)
+          !#py call hist_addfld1d (fname='C13_CROPSEEDC_DEFICIT', units='gC/m^2', &
+               !#py avgflag='A', long_name='C13 C used for crop seed that needs to be repaid', &
+               !#py !#py ptr_patch=this%cropseedc_deficit)
        end if
        ! end of c13 block
 
     else if ( carbon_type == 'c14' ) then
 
        this%leafc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAFC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 leaf C', &
-             ptr_patch=this%leafc)
+       !#py call hist_addfld1d (fname='C14_LEAFC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 leaf C', &
+             !#py !#py ptr_patch=this%leafc)
 
        this%leafc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAFC_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 leaf C storage', &
-             ptr_patch=this%leafc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LEAFC_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 leaf C storage', &
+             !#py !#py ptr_patch=this%leafc_storage, default='inactive')
 
        this%leafc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAFC_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 leaf C transfer', &
-             ptr_patch=this%leafc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LEAFC_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 leaf C transfer', &
+             !#py !#py ptr_patch=this%leafc_xfer, default='inactive')
 
        this%frootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOTC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 fine root C', &
-             ptr_patch=this%frootc)
+       !#py call hist_addfld1d (fname='C14_FROOTC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 fine root C', &
+             !#py !#py ptr_patch=this%frootc)
 
        this%frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOTC_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 fine root C storage', &
-             ptr_patch=this%frootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_FROOTC_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 fine root C storage', &
+             !#py !#py ptr_patch=this%frootc_storage, default='inactive')
 
        this%frootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOTC_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 fine root C transfer', &
-             ptr_patch=this%frootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_FROOTC_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 fine root C transfer', &
+             !#py !#py ptr_patch=this%frootc_xfer, default='inactive')
 
        this%livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEMC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 live stem C', &
-             ptr_patch=this%livestemc)
+       !#py call hist_addfld1d (fname='C14_LIVESTEMC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 live stem C', &
+             !#py !#py ptr_patch=this%livestemc)
 
        this%livestemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEMC_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 live stem C storage', &
-             ptr_patch=this%livestemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVESTEMC_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 live stem C storage', &
+             !#py !#py ptr_patch=this%livestemc_storage, default='inactive')
 
        this%livestemc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEMC_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 live stem C transfer', &
-             ptr_patch=this%livestemc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVESTEMC_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 live stem C transfer', &
+             !#py !#py ptr_patch=this%livestemc_xfer, default='inactive')
 
        this%deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADSTEMC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 dead stem C', &
-             ptr_patch=this%deadstemc)
+       !#py call hist_addfld1d (fname='C14_DEADSTEMC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 dead stem C', &
+             !#py !#py ptr_patch=this%deadstemc)
 
        this%deadstemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADSTEMC_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 dead stem C storage', &
-             ptr_patch=this%deadstemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADSTEMC_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 dead stem C storage', &
+             !#py !#py ptr_patch=this%deadstemc_storage, default='inactive')
 
        this%deadstemc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADSTEMC_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 dead stem C transfer', &
-             ptr_patch=this%deadstemc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADSTEMC_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 dead stem C transfer', &
+             !#py !#py ptr_patch=this%deadstemc_xfer, default='inactive')
 
        this%livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOTC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 live coarse root C', &
-             ptr_patch=this%livecrootc)
+       !#py call hist_addfld1d (fname='C14_LIVECROOTC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 live coarse root C', &
+             !#py !#py ptr_patch=this%livecrootc)
 
        this%livecrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOTC_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 live coarse root C storage', &
-             ptr_patch=this%livecrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVECROOTC_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 live coarse root C storage', &
+             !#py !#py ptr_patch=this%livecrootc_storage, default='inactive')
 
        this%livecrootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOTC_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 live coarse root C transfer', &
-             ptr_patch=this%livecrootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVECROOTC_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 live coarse root C transfer', &
+             !#py !#py ptr_patch=this%livecrootc_xfer, default='inactive')
 
        this%deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADCROOTC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 dead coarse root C', &
-             ptr_patch=this%deadcrootc)
+       !#py call hist_addfld1d (fname='C14_DEADCROOTC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 dead coarse root C', &
+             !#py !#py ptr_patch=this%deadcrootc)
 
        this%deadcrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADCROOTC_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 dead coarse root C storage', &
-             ptr_patch=this%deadcrootc_storage,  default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADCROOTC_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 dead coarse root C storage', &
+             !#py !#py ptr_patch=this%deadcrootc_storage,  default='inactive')
 
        this%deadcrootc_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADCROOTC_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 dead coarse root C transfer', &
-             ptr_patch=this%deadcrootc_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADCROOTC_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 dead coarse root C transfer', &
+             !#py !#py ptr_patch=this%deadcrootc_xfer, default='inactive')
 
        this%gresp_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_GRESP_STORAGE', units='gC14/m^2', &
-             avgflag='A', long_name='C14 growth respiration storage', &
-             ptr_patch=this%gresp_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_GRESP_STORAGE', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 growth respiration storage', &
+             !#py !#py ptr_patch=this%gresp_storage, default='inactive')
 
        this%gresp_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_GRESP_XFER', units='gC14/m^2', &
-             avgflag='A', long_name='C14 growth respiration transfer', &
-             ptr_patch=this%gresp_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_GRESP_XFER', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 growth respiration transfer', &
+             !#py !#py ptr_patch=this%gresp_xfer, default='inactive')
 
        this%cpool(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL', units='gC14/m^2', &
-             avgflag='A', long_name='C14 temporary photosynthate C pool', &
-             ptr_patch=this%cpool)
+       !#py call hist_addfld1d (fname='C14_CPOOL', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 temporary photosynthate C pool', &
+             !#py !#py ptr_patch=this%cpool)
 
        this%xsmrpool(begp:endp) = spval
-       call hist_addfld1d (fname='C14_XSMRPOOL', units='gC14/m^2', &
-             avgflag='A', long_name='C14 temporary photosynthate C pool', &
-             ptr_patch=this%xsmrpool)
+       !#py call hist_addfld1d (fname='C14_XSMRPOOL', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 temporary photosynthate C pool', &
+             !#py !#py ptr_patch=this%xsmrpool)
 
        this%ctrunc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_PFT_CTRUNC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 patch-level sink for C truncation', &
-             ptr_patch=this%ctrunc)
+       !#py call hist_addfld1d (fname='C14_PFT_CTRUNC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 patch-level sink for C truncation', &
+             !#py !#py ptr_patch=this%ctrunc)
 
        this%dispvegc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DISPVEGC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 displayed veg carbon, excluding storage and cpool', &
-             ptr_patch=this%dispvegc)
+       !#py call hist_addfld1d (fname='C14_DISPVEGC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 displayed veg carbon, excluding storage and cpool', &
+             !#py !#py ptr_patch=this%dispvegc)
 
        this%storvegc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_STORVEGC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 stored vegetation carbon, excluding cpool', &
-             ptr_patch=this%storvegc)
+       !#py call hist_addfld1d (fname='C14_STORVEGC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 stored vegetation carbon, excluding cpool', &
+             !#py !#py ptr_patch=this%storvegc)
 
        this%totvegc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TOTVEGC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 total vegetation carbon, excluding cpool', &
-             ptr_patch=this%totvegc)
+       !#py call hist_addfld1d (fname='C14_TOTVEGC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 total vegetation carbon, excluding cpool', &
+             !#py !#py ptr_patch=this%totvegc)
 
        this%totpftc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TOTPFTC', units='gC14/m^2', &
-             avgflag='A', long_name='C14 total patch-level carbon, including cpool', &
-             ptr_patch=this%totpftc)
+       !#py call hist_addfld1d (fname='C14_TOTPFTC', units='gC14/m^2', &
+             !#py avgflag='A', long_name='C14 total patch-level carbon, including cpool', &
+             !#py !#py ptr_patch=this%totpftc)
 
        if (use_crop) then
           this%grainc(begp:endp) = spval
-          call hist_addfld1d (fname='C14_GRAINC', units='gC/m^2', &
-               avgflag='A', long_name='C14 grain C (does not equal yield)', &
-               ptr_patch=this%grainc)
+          !#py call hist_addfld1d (fname='C14_GRAINC', units='gC/m^2', &
+               !#py avgflag='A', long_name='C14 grain C (does not equal yield)', &
+               !#py !#py ptr_patch=this%grainc)
 
           this%cropseedc_deficit(begp:endp) = spval
-          call hist_addfld1d (fname='C14_CROPSEEDC_DEFICIT', units='gC/m^2', &
-               avgflag='A', long_name='C14 C used for crop seed that needs to be repaid', &
-               ptr_patch=this%cropseedc_deficit)
+          !#py call hist_addfld1d (fname='C14_CROPSEEDC_DEFICIT', units='gC/m^2', &
+               !#py avgflag='A', long_name='C14 C used for crop seed that needs to be repaid', &
+               !#py !#py ptr_patch=this%cropseedc_deficit)
        end if
        ! end of c14 block
 
@@ -2608,907 +2609,907 @@ module VegetationDataType
     end subroutine veg_cs_init
 
   !------------------------------------------------------------------------
-  subroutine veg_cs_restart ( this,  bounds, ncid, flag, carbon_type, c12_veg_cs, cnstate_vars)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write vegetation carbon state information to/from restart file.
-    !
-    ! !ARGUMENTS:
-    class(vegetation_carbon_state)   :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    character(len=3) , intent(in)    :: carbon_type ! 'c12' or 'c13' or 'c14'
-    type (vegetation_carbon_state) , intent(in), optional :: c12_veg_cs
-    type (cnstate_type)            , intent(in)           :: cnstate_vars
-    !
-    ! !LOCAL VARIABLES:
-    logical            :: readvar    ! determine if variable is on initial file
-    character(len=128) :: varname    ! temporary
-    integer            :: i,l,c,p      ! indices
-    real(r8)           :: c3_del13c  ! typical del13C for C3 photosynthesis (permil, relative to PDB)
-    real(r8)           :: c4_del13c  ! typical del13C for C4 photosynthesis (permil, relative to PDB)
-    real(r8)           :: c3_r1      ! isotope ratio (13c/12c) for C3 photosynthesis
-    real(r8)           :: c4_r1      ! isotope ratio (13c/12c) for C4 photosynthesis
-    real(r8)           :: c3_r2      ! isotope ratio (13c/[12c+13c]) for C3 photosynthesis
-    real(r8)           :: c4_r2      ! isotope ratio (13c/[12c+13c]) for C4 photosynthesis
-    real(r8)           :: m_veg      ! multiplier for the exit_spinup code
-    integer            :: idata
-    logical            :: exit_spinup  = .false.
-    logical            :: enter_spinup = .false.
-    ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
-    integer            :: restart_file_spinup_state
-    ! flags for comparing the model and restart decomposition cascades
-    integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
-    !-----------------------------------------------------------------------
-
-    if (carbon_type == 'c13' .or. carbon_type == 'c14') then
-       if (.not. present(c12_veg_cs)) then
-          call endrun(msg=' ERROR: for C14 must pass in c12_veg_cs as argument' //&
-               errMsg(__FILE__, __LINE__))
-       end if
-    end if
-
-    if ( .not. use_fates ) then
-       !--------------------------------
-       ! C12 vegetation carbon state variables
-       !--------------------------------
-       if (carbon_type == 'c12') then
-          call restartvar(ncid=ncid, flag=flag, varname='leafc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='gresp_storage', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%gresp_storage)
-
-          call restartvar(ncid=ncid, flag=flag, varname='gresp_xfer', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%gresp_xfer)
-
-          call restartvar(ncid=ncid, flag=flag, varname='cpool', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%cpool)
-
-          call restartvar(ncid=ncid, flag=flag, varname='xsmrpool', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%xsmrpool)
-
-          call restartvar(ncid=ncid, flag=flag, varname='pft_ctrunc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%ctrunc)
-
-          call restartvar(ncid=ncid, flag=flag, varname='totvegc', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%totvegc)
-
-          if (crop_prog) then
-             call restartvar(ncid=ncid, flag=flag,  varname='grainc', xtype=ncd_double,  &
-                  dim1name='pft', long_name='grain C', units='gC/m2', &
-                  interpinic_flag='interp', readvar=readvar, data=this%grainc)
-
-             call restartvar(ncid=ncid, flag=flag,  varname='grainc_storage', xtype=ncd_double,  &
-                  dim1name='pft', long_name='grain C storage', units='gC/m2', &
-                  interpinic_flag='interp', readvar=readvar, data=this%grainc_storage)
-
-             call restartvar(ncid=ncid, flag=flag,  varname='grainc_xfer', xtype=ncd_double,  &
-                  dim1name='pft', long_name='grain C transfer', units='gC/m2', &
-                  interpinic_flag='interp', readvar=readvar, data=this%grainc_xfer)
-
-             call restartvar(ncid=ncid, flag=flag, varname='cropseedc_deficit', xtype=ncd_double,  &
-                  dim1name='pft', long_name='pool for seeding new crop growth', units='gC/m2', &
-                  interpinic_flag='interp', readvar=readvar, data=this%cropseedc_deficit)
-          end if ! crop_prog
-
-       end if  ! c12
-
-       !--------------------------------
-       ! C13 vegetation carbon state variables
-       !--------------------------------
-       if ( carbon_type == 'c13')  then
-          if ( .not. is_restart() .and. get_nstep() == 1 ) then
-             c3_del13c = -28._r8
-             c4_del13c = -13._r8
-             c3_r1 = SHR_CONST_PDB + ((c3_del13c*SHR_CONST_PDB)/1000._r8)
-             c3_r2 = c3_r1/(1._r8 + c3_r1)
-             c4_r1 = SHR_CONST_PDB + ((c4_del13c*SHR_CONST_PDB)/1000._r8)
-             c4_r2 = c4_r1/(1._r8 + c4_r1)
-
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%grainc(i)            = c12_veg_cs%grainc(i)         * c3_r2
-                   this%grainc_storage(i)    = c12_veg_cs%grainc_storage(i) * c3_r2
-                   this%grainc_xfer(i)       = c12_veg_cs%grainc_xfer(i)    * c3_r2
-                   this%dispvegc(i)          = c12_veg_cs%dispvegc(i)       * c3_r2
-                   this%storvegc(i)          = c12_veg_cs%storvegc(i)       * c3_r2
-                   this%totvegc(i)           = c12_veg_cs%totvegc(i)        * c3_r2
-                   this%totpftc(i)           = c12_veg_cs%totpftc(i)        * c3_r2
-                   this%woodc(i)             = c12_veg_cs%woodc(i)          * c3_r2
-                else
-                   this%grainc(i)            = c12_veg_cs%grainc(i)         * c4_r2
-                   this%grainc_storage(i)    = c12_veg_cs%grainc_storage(i) * c4_r2
-                   this%grainc_xfer(i)       = c12_veg_cs%grainc_xfer(i)    * c4_r2
-                   this%dispvegc(i)          = c12_veg_cs%dispvegc(i)       * c4_r2
-                   this%storvegc(i)          = c12_veg_cs%storvegc(i)       * c4_r2
-                   this%totvegc(i)           = c12_veg_cs%totvegc(i)        * c4_r2
-                   this%totpftc(i)           = c12_veg_cs%totpftc(i)        * c4_r2
-                   this%woodc(i)             = c12_veg_cs%woodc(i)          * c4_r2
-                end if
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%leafc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%leafc(i) = c12_veg_cs%leafc(i) * c3_r2
-                else
-                   this%leafc(i) = c12_veg_cs%leafc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%leafc_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%leafc_storage(i) = c12_veg_cs%leafc_storage(i) * c3_r2
-                else
-                   this%leafc_storage(i) = c12_veg_cs%leafc_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%leafc_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%leafc_xfer(i) = c12_veg_cs%leafc_xfer(i) * c3_r2
-                else
-                   this%leafc_xfer(i) = c12_veg_cs%leafc_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%frootc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%frootc(i) = c12_veg_cs%frootc(i) * c3_r2
-                else
-                   this%frootc(i) = c12_veg_cs%frootc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%frootc_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%frootc_storage(i) = c12_veg_cs%frootc_storage(i) * c3_r2
-                else
-                   this%frootc_storage(i) = c12_veg_cs%frootc_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%frootc_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%frootc_xfer(i) = c12_veg_cs%frootc_xfer(i) * c3_r2
-                else
-                   this%frootc_xfer(i) = c12_veg_cs%frootc_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livestemc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%livestemc(i) = c12_veg_cs%livestemc(i) * c3_r2
-                else
-                   this%livestemc(i) = c12_veg_cs%livestemc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livestemc_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%livestemc_storage(i) = c12_veg_cs%livestemc_storage(i) * c3_r2
-                else
-                   this%livestemc_storage(i) = c12_veg_cs%livestemc_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livestemc_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%livestemc_xfer(i) = c12_veg_cs%livestemc_xfer(i) * c3_r2
-                else
-                   this%livestemc_xfer(i) = c12_veg_cs%livestemc_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadstemc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%deadstemc(i) = c12_veg_cs%deadstemc(i) * c3_r2
-                else
-                   this%deadstemc(i) = c12_veg_cs%deadstemc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadstemc_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%deadstemc_storage(i) = c12_veg_cs%deadstemc_storage(i) * c3_r2
-                else
-                   this%deadstemc_storage(i) = c12_veg_cs%deadstemc_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadstemc_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%deadstemc_xfer(i) = c12_veg_cs%deadstemc_xfer(i) * c3_r2
-                else
-                   this%deadstemc_xfer(i) = c12_veg_cs%deadstemc_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livecrootc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%livecrootc(i) = c12_veg_cs%livecrootc(i) * c3_r2
-                else
-                   this%livecrootc(i) = c12_veg_cs%livecrootc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livecrootc_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%livecrootc_storage(i) = c12_veg_cs%livecrootc_storage(i) * c3_r2
-                else
-                   this%livecrootc_storage(i) = c12_veg_cs%livecrootc_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livecrootc_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%livecrootc_xfer(i) = c12_veg_cs%livecrootc_xfer(i) * c3_r2
-                else
-                   this%livecrootc_xfer(i) = c12_veg_cs%livecrootc_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadcrootc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%deadcrootc(i) = c12_veg_cs%deadcrootc(i) * c3_r2
-                else
-                   this%deadcrootc(i) = c12_veg_cs%deadcrootc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadcrootc_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%deadcrootc_storage(i) = c12_veg_cs%deadcrootc_storage(i) * c3_r2
-                else
-                   this%deadcrootc_storage(i) = c12_veg_cs%deadcrootc_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadcrootc_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%deadcrootc_xfer(i) = c12_veg_cs%deadcrootc_xfer(i) * c3_r2
-                else
-                   this%deadcrootc_xfer(i) = c12_veg_cs%deadcrootc_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='gresp_storage_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%gresp_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%gresp_storage with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%gresp_storage(i) = c12_veg_cs%gresp_storage(i) * c3_r2
-                else
-                   this%gresp_storage(i) = c12_veg_cs%gresp_storage(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='gresp_xfer_13', xtype=ncd_double,  &
-               dim1name='pft', &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%gresp_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%gresp_xfer with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%gresp_xfer(i) = c12_veg_cs%gresp_xfer(i) * c3_r2
-                else
-                   this%gresp_xfer(i) = c12_veg_cs%gresp_xfer(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='cpool_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%cpool)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%cpool with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%cpool(i) = c12_veg_cs%cpool(i) * c3_r2
-                else
-                   this%cpool(i) = c12_veg_cs%cpool(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='xsmrpool_13', xtype=ncd_double,  &
-               dim1name='pft', &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%xsmrpool)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%xsmrpool with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%xsmrpool(i) = c12_veg_cs%xsmrpool(i) * c3_r2
-                else
-                   this%xsmrpool(i) = c12_veg_cs%xsmrpool(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='pft_ctrunc_13', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%ctrunc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%ctrunc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%ctrunc(i) = c12_veg_cs%ctrunc(i) * c3_r2
-                else
-                   this%ctrunc(i) = c12_veg_cs%ctrunc(i) * c4_r2
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='totvegc_13', xtype=ncd_double,  &
-               dim1name='pft', &
-               long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%totvegc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing carbonstate_vars %totvegc with atmospheric c13 value'
-             do i = bounds%begp,bounds%endp
-                if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
-                   this%totvegc(i) = c12_veg_cs%totvegc(i) * c3_r2
-                else
-                   this%totvegc(i) = c12_veg_cs%totvegc(i) * c4_r2
-                endif
-             end do
-          end if
-
-       endif ! C13 block
-
-       !--------------------------------
-       ! C14 pft carbon state variables
-       !--------------------------------
-       if ( carbon_type == 'c14')  then
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%leafc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%leafc(i) /= spval .and. &
-                     .not. isnan(this%leafc(i)) ) then
-                   this%leafc(i) = c12_veg_cs%leafc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%leafc_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%leafc_storage(i) /= spval .and. &
-                     .not. isnan(this%leafc_storage(i)) ) then
-                   this%leafc_storage(i) = c12_veg_cs%leafc_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='leafc_xfer_14', xtype=ncd_double,  &
-               dim1name='pft',    long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%leafc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%leafc_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%leafc_xfer(i) /= spval .and. .not. isnan(this%leafc_xfer(i)) ) then
-                   this%leafc_xfer(i) = c12_veg_cs%leafc_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%frootc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%frootc(i) /= spval .and. &
-                     .not. isnan(this%frootc(i)) ) then
-                   this%frootc(i) = c12_veg_cs%frootc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%frootc_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%frootc_storage(i) /= spval .and. &
-                     .not. isnan(this%frootc_storage(i)) ) then
-                   this%frootc_storage(i) = c12_veg_cs%frootc_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%frootc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%frootc_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%frootc_xfer(i) /= spval .and. &
-                     .not. isnan(this%frootc_xfer(i)) ) then
-                   this%frootc_xfer(i) = c12_veg_cs%frootc_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livestemc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%livestemc(i) /= spval .and. .not. isnan(this%livestemc(i)) ) then
-                   this%livestemc(i) = c12_veg_cs%livestemc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livestemc_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%livestemc_storage(i) /= spval .and. .not. isnan(this%livestemc_storage(i)) ) then
-                   this%livestemc_storage(i) = c12_veg_cs%livestemc_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livestemc_xfer_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livestemc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livestemc_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%livestemc_xfer(i) /= spval .and. .not. isnan(this%livestemc_xfer(i)) ) then
-                   this%livestemc_xfer(i) = c12_veg_cs%livestemc_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadstemc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%deadstemc(i) /= spval .and. .not. isnan(this%deadstemc(i)) ) then
-                   this%deadstemc(i) = c12_veg_cs%deadstemc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadstemc_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%deadstemc_storage(i) /= spval .and. .not. isnan(this%deadstemc_storage(i)) ) then
-                   this%deadstemc_storage(i) = c12_veg_cs%deadstemc_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadstemc_xfer_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadstemc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadstemc_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%deadstemc_xfer(i) /= spval .and. .not. isnan(this%deadstemc_xfer(i)) ) then
-                   this%deadstemc_xfer(i) = c12_veg_cs%deadstemc_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livecrootc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%livecrootc(i) /= spval .and. .not. isnan(this%livecrootc(i)) ) then
-                   this%livecrootc(i) = c12_veg_cs%livecrootc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livecrootc_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%livecrootc_storage(i) /= spval .and. .not. isnan(this%livecrootc_storage(i)) ) then
-                   this%livecrootc_storage(i) = c12_veg_cs%livecrootc_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%livecrootc_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%livecrootc_xfer(i) /= spval .and. .not. isnan(this%livecrootc_xfer(i)) ) then
-                   this%livecrootc_xfer(i) = c12_veg_cs%livecrootc_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadcrootc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%deadcrootc(i) /= spval .and. .not. isnan(this%deadcrootc(i)) ) then
-                   this%deadcrootc(i) = c12_veg_cs%deadcrootc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%deadcrootc_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%deadcrootc_storage(i) /= spval .and. .not. isnan(this%deadcrootc_storage(i)) ) then
-                   this%deadcrootc_storage(i) = c12_veg_cs%deadcrootc_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog) 'initializing this%deadcrootc_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%deadcrootc_xfer(i) /= spval .and. .not. isnan(this%deadcrootc_xfer(i)) ) then
-                   this%deadcrootc_xfer(i) = c12_veg_cs%deadcrootc_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='gresp_storage_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%gresp_storage)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%gresp_storage with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%gresp_storage(i) /= spval .and. .not. isnan(this%gresp_storage(i)) ) then
-                   this%gresp_storage(i) = c12_veg_cs%gresp_storage(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='gresp_xfer_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%gresp_xfer)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%gresp_xfer with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%gresp_xfer(i) /= spval .and. .not. isnan(this%gresp_xfer(i)) ) then
-                   this%gresp_xfer(i) = c12_veg_cs%gresp_xfer(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='cpool_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%cpool)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%cpool with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%cpool(i) /= spval .and. .not. isnan(this%cpool(i)) ) then
-                   this%cpool(i) = c12_veg_cs%cpool(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='xsmrpool_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%xsmrpool)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%xsmrpool with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%xsmrpool(i) /= spval .and. .not. isnan(this%xsmrpool(i)) ) then
-                   this%xsmrpool(i) = c12_veg_cs%xsmrpool(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='pft_ctrunc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%ctrunc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%ctrunc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%ctrunc(i) /= spval .and. .not. isnan(this%ctrunc(i)) ) then
-                   this%ctrunc(i) = c12_veg_cs%ctrunc(i) * c14ratio
-                endif
-             end do
-          end if
-
-          call restartvar(ncid=ncid, flag=flag, varname='totvegc_14', xtype=ncd_double,  &
-               dim1name='pft', long_name='', units='', &
-               interpinic_flag='interp', readvar=readvar, data=this%totvegc)
-          if (flag=='read' .and. .not. readvar) then
-             write(iulog,*) 'initializing this%totvegc with atmospheric c14 value'
-             do i = bounds%begp,bounds%endp
-                if (this%totvegc(i) /= spval .and. .not. isnan(this%totvegc(i)) ) then
-                   this%totvegc(i) = c12_veg_cs%totvegc(i) * c14ratio
-                endif
-             end do
-          end if
-
-       endif  ! C14 block
-
-    endif  ! .not. use_fates
-
-    !--------------------------------
-    ! Spinup state operations happen on restart write/read
-    !--------------------------------
-    ! the spinup_state variable is being written by the column-level carbon state restart
-    ! routine, so only need to handle the reading part here
-    if (carbon_type == 'c12'  .or. carbon_type == 'c14') then
-        if (flag == 'read') then
-           call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
-                long_name='Spinup state of the model that wrote this restart file: ' &
-                // ' 0 = normal model mode, 1 = AD spinup', units='', &
-                interpinic_flag='copy', readvar=readvar,  data=idata)
-           if (readvar) then
-              restart_file_spinup_state = idata
-           else
-              ! assume, for sake of backwards compatibility, that if spinup_state is not in
-              ! the restart file then current model state is the same as prior model state
-              restart_file_spinup_state = spinup_state
-              if ( masterproc ) then
-                 write(iulog,*) ' CNRest: WARNING!  Restart file does not contain info ' &
-                      // ' on spinup state used to generate the restart file. '
-                 write(iulog,*) '   Assuming the same as current setting: ', spinup_state
-              end if
-           end if
-        end if
-
-        ! now compare the model and restart file spinup states, and either take the
-        ! model into spinup mode or out of it if they are not identical
-        ! taking model out of spinup mode requires multiplying each pool
-        ! by the associated AD factor.
-        ! putting model into spinup mode requires dividing each pool
-        ! by the associated AD factor.
-        ! only allow this to occur on first timestep of model run.
-
-        if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
-           if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
-              if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools out of AD spinup mode'
-              exit_spinup = .true.
-           else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
-              if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools into AD spinup mode'
-              enter_spinup = .true.
-           else
-              call endrun(msg=' veg_cs_restart: error in entering/exiting spinup.  spinup_state ' &
-                   // ' != restart_file_spinup_state, but do not know what to do'//&
-                   errMsg(__FILE__, __LINE__))
-           end if
-           if (get_nstep() >= 2) then
-              call endrun(msg=' veg_cs_restart: error in entering/exiting spinup - should occur only when nstep = 1'//&
-                   errMsg(__FILE__, __LINE__))
-           endif
-           do i = bounds%begp, bounds%endp
-              if (exit_spinup) then
-                 m_veg = spinup_mortality_factor
-              else if (enter_spinup) then
-                 m_veg = 1._r8 / spinup_mortality_factor
-              end if
-              this%deadstemc(i)  = this%deadstemc(i) * m_veg
-              this%deadcrootc(i) = this%deadcrootc(i) * m_veg
-           end do
-        end if ! read
-     end if ! c12 or c14 (PET: why not c13?)
-
-  end subroutine veg_cs_restart
+!#py   subroutine veg_cs_restart ( this,  bounds, ncid, flag, carbon_type, c12_veg_cs, cnstate_vars)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write vegetation carbon state information to/from restart file.
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(vegetation_carbon_state)   :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     character(len=3) , intent(in)    :: carbon_type ! 'c12' or 'c13' or 'c14'
+!#py     type (vegetation_carbon_state) , intent(in), optional :: c12_veg_cs
+!#py     type (cnstate_type)            , intent(in)           :: cnstate_vars
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical            :: readvar    ! determine if variable is on initial file
+!#py     character(len=128) :: varname    ! temporary
+!#py     integer            :: i,l,c,p      ! indices
+!#py     real(r8)           :: c3_del13c  ! typical del13C for C3 photosynthesis (permil, relative to PDB)
+!#py     real(r8)           :: c4_del13c  ! typical del13C for C4 photosynthesis (permil, relative to PDB)
+!#py     real(r8)           :: c3_r1      ! isotope ratio (13c/12c) for C3 photosynthesis
+!#py     real(r8)           :: c4_r1      ! isotope ratio (13c/12c) for C4 photosynthesis
+!#py     real(r8)           :: c3_r2      ! isotope ratio (13c/[12c+13c]) for C3 photosynthesis
+!#py     real(r8)           :: c4_r2      ! isotope ratio (13c/[12c+13c]) for C4 photosynthesis
+!#py     real(r8)           :: m_veg      ! multiplier for the exit_spinup code
+!#py     integer            :: idata
+!#py     logical            :: exit_spinup  = .false.
+!#py     logical            :: enter_spinup = .false.
+!#py     ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
+!#py     integer            :: restart_file_spinup_state
+!#py     ! flags for comparing the model and restart decomposition cascades
+!#py     integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     if (carbon_type == 'c13' .or. carbon_type == 'c14') then
+!#py        if (.not. present(c12_veg_cs)) then
+!#py           !#py call endrun(msg=' ERROR: for C14 must pass in c12_veg_cs as argument' //&
+!#py                !#py !#py errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py     end if
+!#py
+!#py     if ( .not. use_fates ) then
+!#py        !--------------------------------
+!#py        ! C12 vegetation carbon state variables
+!#py        !--------------------------------
+!#py        if (carbon_type == 'c12') then
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='gresp_storage', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%gresp_storage)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='gresp_xfer', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%gresp_xfer)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='cpool', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%cpool)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='xsmrpool', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%xsmrpool)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='pft_ctrunc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%ctrunc)
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='totvegc', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%totvegc)
+!#py
+!#py           if (crop_prog) then
+!#py              call restartvar(ncid=ncid, flag=flag,  varname='grainc', xtype=ncd_double,  &
+!#py                   dim1name='pft', long_name='grain C', units='gC/m2', &
+!#py                   interpinic_flag='interp', readvar=readvar, data=this%grainc)
+!#py
+!#py              call restartvar(ncid=ncid, flag=flag,  varname='grainc_storage', xtype=ncd_double,  &
+!#py                   dim1name='pft', long_name='grain C storage', units='gC/m2', &
+!#py                   interpinic_flag='interp', readvar=readvar, data=this%grainc_storage)
+!#py
+!#py              call restartvar(ncid=ncid, flag=flag,  varname='grainc_xfer', xtype=ncd_double,  &
+!#py                   dim1name='pft', long_name='grain C transfer', units='gC/m2', &
+!#py                   interpinic_flag='interp', readvar=readvar, data=this%grainc_xfer)
+!#py
+!#py              call restartvar(ncid=ncid, flag=flag, varname='cropseedc_deficit', xtype=ncd_double,  &
+!#py                   dim1name='pft', long_name='pool for seeding new crop growth', units='gC/m2', &
+!#py                   interpinic_flag='interp', readvar=readvar, data=this%cropseedc_deficit)
+!#py           end if ! crop_prog
+!#py
+!#py        end if  ! c12
+!#py
+!#py        !--------------------------------
+!#py        ! C13 vegetation carbon state variables
+!#py        !--------------------------------
+!#py        if ( carbon_type == 'c13')  then
+!#py           if ( .not. is_restart() .and. get_nstep() == 1 ) then
+!#py              c3_del13c = -28._r8
+!#py              c4_del13c = -13._r8
+!#py              c3_r1 = SHR_CONST_PDB + ((c3_del13c*SHR_CONST_PDB)/1000._r8)
+!#py              c3_r2 = c3_r1/(1._r8 + c3_r1)
+!#py              c4_r1 = SHR_CONST_PDB + ((c4_del13c*SHR_CONST_PDB)/1000._r8)
+!#py              c4_r2 = c4_r1/(1._r8 + c4_r1)
+!#py
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%grainc(i)            = c12_veg_cs%grainc(i)         * c3_r2
+!#py                    this%grainc_storage(i)    = c12_veg_cs%grainc_storage(i) * c3_r2
+!#py                    this%grainc_xfer(i)       = c12_veg_cs%grainc_xfer(i)    * c3_r2
+!#py                    this%dispvegc(i)          = c12_veg_cs%dispvegc(i)       * c3_r2
+!#py                    this%storvegc(i)          = c12_veg_cs%storvegc(i)       * c3_r2
+!#py                    this%totvegc(i)           = c12_veg_cs%totvegc(i)        * c3_r2
+!#py                    this%totpftc(i)           = c12_veg_cs%totpftc(i)        * c3_r2
+!#py                    this%woodc(i)             = c12_veg_cs%woodc(i)          * c3_r2
+!#py                 else
+!#py                    this%grainc(i)            = c12_veg_cs%grainc(i)         * c4_r2
+!#py                    this%grainc_storage(i)    = c12_veg_cs%grainc_storage(i) * c4_r2
+!#py                    this%grainc_xfer(i)       = c12_veg_cs%grainc_xfer(i)    * c4_r2
+!#py                    this%dispvegc(i)          = c12_veg_cs%dispvegc(i)       * c4_r2
+!#py                    this%storvegc(i)          = c12_veg_cs%storvegc(i)       * c4_r2
+!#py                    this%totvegc(i)           = c12_veg_cs%totvegc(i)        * c4_r2
+!#py                    this%totpftc(i)           = c12_veg_cs%totpftc(i)        * c4_r2
+!#py                    this%woodc(i)             = c12_veg_cs%woodc(i)          * c4_r2
+!#py                 end if
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%leafc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%leafc(i) = c12_veg_cs%leafc(i) * c3_r2
+!#py                 else
+!#py                    this%leafc(i) = c12_veg_cs%leafc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%leafc_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%leafc_storage(i) = c12_veg_cs%leafc_storage(i) * c3_r2
+!#py                 else
+!#py                    this%leafc_storage(i) = c12_veg_cs%leafc_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%leafc_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%leafc_xfer(i) = c12_veg_cs%leafc_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%leafc_xfer(i) = c12_veg_cs%leafc_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%frootc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%frootc(i) = c12_veg_cs%frootc(i) * c3_r2
+!#py                 else
+!#py                    this%frootc(i) = c12_veg_cs%frootc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%frootc_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%frootc_storage(i) = c12_veg_cs%frootc_storage(i) * c3_r2
+!#py                 else
+!#py                    this%frootc_storage(i) = c12_veg_cs%frootc_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%frootc_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%frootc_xfer(i) = c12_veg_cs%frootc_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%frootc_xfer(i) = c12_veg_cs%frootc_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livestemc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%livestemc(i) = c12_veg_cs%livestemc(i) * c3_r2
+!#py                 else
+!#py                    this%livestemc(i) = c12_veg_cs%livestemc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livestemc_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%livestemc_storage(i) = c12_veg_cs%livestemc_storage(i) * c3_r2
+!#py                 else
+!#py                    this%livestemc_storage(i) = c12_veg_cs%livestemc_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livestemc_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%livestemc_xfer(i) = c12_veg_cs%livestemc_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%livestemc_xfer(i) = c12_veg_cs%livestemc_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadstemc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%deadstemc(i) = c12_veg_cs%deadstemc(i) * c3_r2
+!#py                 else
+!#py                    this%deadstemc(i) = c12_veg_cs%deadstemc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadstemc_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%deadstemc_storage(i) = c12_veg_cs%deadstemc_storage(i) * c3_r2
+!#py                 else
+!#py                    this%deadstemc_storage(i) = c12_veg_cs%deadstemc_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadstemc_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%deadstemc_xfer(i) = c12_veg_cs%deadstemc_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%deadstemc_xfer(i) = c12_veg_cs%deadstemc_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livecrootc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%livecrootc(i) = c12_veg_cs%livecrootc(i) * c3_r2
+!#py                 else
+!#py                    this%livecrootc(i) = c12_veg_cs%livecrootc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livecrootc_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%livecrootc_storage(i) = c12_veg_cs%livecrootc_storage(i) * c3_r2
+!#py                 else
+!#py                    this%livecrootc_storage(i) = c12_veg_cs%livecrootc_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livecrootc_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%livecrootc_xfer(i) = c12_veg_cs%livecrootc_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%livecrootc_xfer(i) = c12_veg_cs%livecrootc_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadcrootc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%deadcrootc(i) = c12_veg_cs%deadcrootc(i) * c3_r2
+!#py                 else
+!#py                    this%deadcrootc(i) = c12_veg_cs%deadcrootc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadcrootc_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%deadcrootc_storage(i) = c12_veg_cs%deadcrootc_storage(i) * c3_r2
+!#py                 else
+!#py                    this%deadcrootc_storage(i) = c12_veg_cs%deadcrootc_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadcrootc_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%deadcrootc_xfer(i) = c12_veg_cs%deadcrootc_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%deadcrootc_xfer(i) = c12_veg_cs%deadcrootc_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='gresp_storage_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%gresp_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%gresp_storage with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%gresp_storage(i) = c12_veg_cs%gresp_storage(i) * c3_r2
+!#py                 else
+!#py                    this%gresp_storage(i) = c12_veg_cs%gresp_storage(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='gresp_xfer_13', xtype=ncd_double,  &
+!#py                dim1name='pft', &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%gresp_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%gresp_xfer with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%gresp_xfer(i) = c12_veg_cs%gresp_xfer(i) * c3_r2
+!#py                 else
+!#py                    this%gresp_xfer(i) = c12_veg_cs%gresp_xfer(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='cpool_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%cpool)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%cpool with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%cpool(i) = c12_veg_cs%cpool(i) * c3_r2
+!#py                 else
+!#py                    this%cpool(i) = c12_veg_cs%cpool(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='xsmrpool_13', xtype=ncd_double,  &
+!#py                dim1name='pft', &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%xsmrpool)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%xsmrpool with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%xsmrpool(i) = c12_veg_cs%xsmrpool(i) * c3_r2
+!#py                 else
+!#py                    this%xsmrpool(i) = c12_veg_cs%xsmrpool(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='pft_ctrunc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%ctrunc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%ctrunc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%ctrunc(i) = c12_veg_cs%ctrunc(i) * c3_r2
+!#py                 else
+!#py                    this%ctrunc(i) = c12_veg_cs%ctrunc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='totvegc_13', xtype=ncd_double,  &
+!#py                dim1name='pft', &
+!#py                long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%totvegc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing carbonstate_vars %totvegc with atmospheric c13 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (veg_vp%c3psn(veg_pp%itype(i)) == 1._r8) then
+!#py                    this%totvegc(i) = c12_veg_cs%totvegc(i) * c3_r2
+!#py                 else
+!#py                    this%totvegc(i) = c12_veg_cs%totvegc(i) * c4_r2
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py        endif ! C13 block
+!#py
+!#py        !--------------------------------
+!#py        ! C14 pft carbon state variables
+!#py        !--------------------------------
+!#py        if ( carbon_type == 'c14')  then
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%leafc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%leafc(i) /= spval .and. &
+!#py                      .not. isnan(this%leafc(i)) ) then
+!#py                    this%leafc(i) = c12_veg_cs%leafc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%leafc_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%leafc_storage(i) /= spval .and. &
+!#py                      .not. isnan(this%leafc_storage(i)) ) then
+!#py                    this%leafc_storage(i) = c12_veg_cs%leafc_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='leafc_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft',    long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%leafc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%leafc_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%leafc_xfer(i) /= spval .and. .not. isnan(this%leafc_xfer(i)) ) then
+!#py                    this%leafc_xfer(i) = c12_veg_cs%leafc_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%frootc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%frootc(i) /= spval .and. &
+!#py                      .not. isnan(this%frootc(i)) ) then
+!#py                    this%frootc(i) = c12_veg_cs%frootc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%frootc_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%frootc_storage(i) /= spval .and. &
+!#py                      .not. isnan(this%frootc_storage(i)) ) then
+!#py                    this%frootc_storage(i) = c12_veg_cs%frootc_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='frootc_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%frootc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%frootc_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%frootc_xfer(i) /= spval .and. &
+!#py                      .not. isnan(this%frootc_xfer(i)) ) then
+!#py                    this%frootc_xfer(i) = c12_veg_cs%frootc_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livestemc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%livestemc(i) /= spval .and. .not. isnan(this%livestemc(i)) ) then
+!#py                    this%livestemc(i) = c12_veg_cs%livestemc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livestemc_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%livestemc_storage(i) /= spval .and. .not. isnan(this%livestemc_storage(i)) ) then
+!#py                    this%livestemc_storage(i) = c12_veg_cs%livestemc_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livestemc_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livestemc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livestemc_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%livestemc_xfer(i) /= spval .and. .not. isnan(this%livestemc_xfer(i)) ) then
+!#py                    this%livestemc_xfer(i) = c12_veg_cs%livestemc_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadstemc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%deadstemc(i) /= spval .and. .not. isnan(this%deadstemc(i)) ) then
+!#py                    this%deadstemc(i) = c12_veg_cs%deadstemc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadstemc_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%deadstemc_storage(i) /= spval .and. .not. isnan(this%deadstemc_storage(i)) ) then
+!#py                    this%deadstemc_storage(i) = c12_veg_cs%deadstemc_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadstemc_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadstemc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadstemc_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%deadstemc_xfer(i) /= spval .and. .not. isnan(this%deadstemc_xfer(i)) ) then
+!#py                    this%deadstemc_xfer(i) = c12_veg_cs%deadstemc_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livecrootc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%livecrootc(i) /= spval .and. .not. isnan(this%livecrootc(i)) ) then
+!#py                    this%livecrootc(i) = c12_veg_cs%livecrootc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livecrootc_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%livecrootc_storage(i) /= spval .and. .not. isnan(this%livecrootc_storage(i)) ) then
+!#py                    this%livecrootc_storage(i) = c12_veg_cs%livecrootc_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='livecrootc_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%livecrootc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%livecrootc_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%livecrootc_xfer(i) /= spval .and. .not. isnan(this%livecrootc_xfer(i)) ) then
+!#py                    this%livecrootc_xfer(i) = c12_veg_cs%livecrootc_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadcrootc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%deadcrootc(i) /= spval .and. .not. isnan(this%deadcrootc(i)) ) then
+!#py                    this%deadcrootc(i) = c12_veg_cs%deadcrootc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%deadcrootc_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%deadcrootc_storage(i) /= spval .and. .not. isnan(this%deadcrootc_storage(i)) ) then
+!#py                    this%deadcrootc_storage(i) = c12_veg_cs%deadcrootc_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='deadcrootc_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%deadcrootc_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog) 'initializing this%deadcrootc_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%deadcrootc_xfer(i) /= spval .and. .not. isnan(this%deadcrootc_xfer(i)) ) then
+!#py                    this%deadcrootc_xfer(i) = c12_veg_cs%deadcrootc_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='gresp_storage_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%gresp_storage)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%gresp_storage with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%gresp_storage(i) /= spval .and. .not. isnan(this%gresp_storage(i)) ) then
+!#py                    this%gresp_storage(i) = c12_veg_cs%gresp_storage(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='gresp_xfer_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%gresp_xfer)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%gresp_xfer with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%gresp_xfer(i) /= spval .and. .not. isnan(this%gresp_xfer(i)) ) then
+!#py                    this%gresp_xfer(i) = c12_veg_cs%gresp_xfer(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='cpool_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%cpool)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%cpool with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%cpool(i) /= spval .and. .not. isnan(this%cpool(i)) ) then
+!#py                    this%cpool(i) = c12_veg_cs%cpool(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='xsmrpool_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%xsmrpool)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%xsmrpool with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%xsmrpool(i) /= spval .and. .not. isnan(this%xsmrpool(i)) ) then
+!#py                    this%xsmrpool(i) = c12_veg_cs%xsmrpool(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='pft_ctrunc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%ctrunc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%ctrunc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%ctrunc(i) /= spval .and. .not. isnan(this%ctrunc(i)) ) then
+!#py                    this%ctrunc(i) = c12_veg_cs%ctrunc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py           call restartvar(ncid=ncid, flag=flag, varname='totvegc_14', xtype=ncd_double,  &
+!#py                dim1name='pft', long_name='', units='', &
+!#py                interpinic_flag='interp', readvar=readvar, data=this%totvegc)
+!#py           if (flag=='read' .and. .not. readvar) then
+!#py              write(iulog,*) 'initializing this%totvegc with atmospheric c14 value'
+!#py              do i = bounds%begp,bounds%endp
+!#py                 if (this%totvegc(i) /= spval .and. .not. isnan(this%totvegc(i)) ) then
+!#py                    this%totvegc(i) = c12_veg_cs%totvegc(i) * c14ratio
+!#py                 endif
+!#py              end do
+!#py           end if
+!#py
+!#py        endif  ! C14 block
+!#py
+!#py     endif  ! .not. use_fates
+!#py
+!#py     !--------------------------------
+!#py     ! Spinup state operations happen on restart write/read
+!#py     !--------------------------------
+!#py     ! the spinup_state variable is being written by the column-level carbon state restart
+!#py     ! routine, so only need to handle the reading part here
+!#py     if (carbon_type == 'c12'  .or. carbon_type == 'c14') then
+!#py         if (flag == 'read') then
+!#py            call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
+!#py                 long_name='Spinup state of the model that wrote this restart file: ' &
+!#py                 // ' 0 = normal model mode, 1 = AD spinup', units='', &
+!#py                 interpinic_flag='copy', readvar=readvar,  data=idata)
+!#py            if (readvar) then
+!#py               restart_file_spinup_state = idata
+!#py            else
+!#py               ! assume, for sake of backwards compatibility, that if spinup_state is not in
+!#py               ! the restart file then current model state is the same as prior model state
+!#py               restart_file_spinup_state = spinup_state
+!#py               if ( masterproc ) then
+!#py                  write(iulog,*) ' CNRest: WARNING!  Restart file does not contain info ' &
+!#py                       // ' on spinup state used to generate the restart file. '
+!#py                  write(iulog,*) '   Assuming the same as current setting: ', spinup_state
+!#py               end if
+!#py            end if
+!#py         end if
+!#py
+!#py         ! now compare the model and restart file spinup states, and either take the
+!#py         ! model into spinup mode or out of it if they are not identical
+!#py         ! taking model out of spinup mode requires multiplying each pool
+!#py         ! by the associated AD factor.
+!#py         ! putting model into spinup mode requires dividing each pool
+!#py         ! by the associated AD factor.
+!#py         ! only allow this to occur on first timestep of model run.
+!#py
+!#py         if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
+!#py            if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
+!#py               if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools out of AD spinup mode'
+!#py               exit_spinup = .true.
+!#py            else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
+!#py               if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools into AD spinup mode'
+!#py               enter_spinup = .true.
+!#py            else
+!#py               call endrun(msg=' veg_cs_restart: error in entering/exiting spinup.  spinup_state ' &
+!#py                    // ' != restart_file_spinup_state, but do not know what to do'//&
+!#py                    errMsg(__FILE__, __LINE__))
+!#py            end if
+!#py            if (get_nstep() >= 2) then
+!#py               call endrun(msg=' veg_cs_restart: error in entering/exiting spinup - should occur only when nstep = 1'//&
+!#py                    errMsg(__FILE__, __LINE__))
+!#py            endif
+!#py            do i = bounds%begp, bounds%endp
+!#py               if (exit_spinup) then
+!#py                  m_veg = spinup_mortality_factor
+!#py               else if (enter_spinup) then
+!#py                  m_veg = 1._r8 / spinup_mortality_factor
+!#py               end if
+!#py               this%deadstemc(i)  = this%deadstemc(i) * m_veg
+!#py               this%deadcrootc(i) = this%deadcrootc(i) * m_veg
+!#py            end do
+!#py         end if ! read
+!#py      end if ! c12 or c14 (PET: why not c13?)
+!#py
+!#py !#py !#py   end subroutine veg_cs_restart
 
   !-----------------------------------------------------------------------
   subroutine veg_cs_summary(this, bounds, num_soilc, filter_soilc, num_soilp, filter_soilp, col_cs)
@@ -3758,151 +3759,151 @@ module VegetationDataType
     !-----------------------------------------------------------------------
     if (crop_prog) then
        this%grainn(begp:endp) = spval
-       call hist_addfld1d (fname='GRAINN', units='gN/m^2', &
-            avgflag='A', long_name='grain N', &
-            ptr_patch=this%grainn, default='inactive')
+       !#py call hist_addfld1d (fname='GRAINN', units='gN/m^2', &
+            !#py avgflag='A', long_name='grain N', &
+            !#py !#py ptr_patch=this%grainn, default='inactive')
 
        this%cropseedn_deficit(begp:endp) = spval
-       call hist_addfld1d (fname='CROPSEEDN_DEFICIT', units='gN/m^2', &
-            avgflag='A', long_name='N used for crop seed that needs to be repaid', &
-            ptr_patch=this%cropseedn_deficit)
+       !#py call hist_addfld1d (fname='CROPSEEDN_DEFICIT', units='gN/m^2', &
+            !#py avgflag='A', long_name='N used for crop seed that needs to be repaid', &
+            !#py !#py ptr_patch=this%cropseedn_deficit)
     end if
 
     this%leafn(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN', units='gN/m^2', &
-         avgflag='A', long_name='leaf N', &
-         ptr_patch=this%leafn)
+    !#py call hist_addfld1d (fname='LEAFN', units='gN/m^2', &
+         !#py avgflag='A', long_name='leaf N', &
+         !#py !#py ptr_patch=this%leafn)
 
     this%leafn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN_STORAGE', units='gN/m^2', &
-         avgflag='A', long_name='leaf N storage', &
-         ptr_patch=this%leafn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFN_STORAGE', units='gN/m^2', &
+         !#py avgflag='A', long_name='leaf N storage', &
+         !#py !#py ptr_patch=this%leafn_storage, default='inactive')
 
     this%leafn_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN_XFER', units='gN/m^2', &
-         avgflag='A', long_name='leaf N transfer', &
-         ptr_patch=this%leafn_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFN_XFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='leaf N transfer', &
+         !#py !#py ptr_patch=this%leafn_xfer, default='inactive')
 
     this%frootn(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTN', units='gN/m^2', &
-         avgflag='A', long_name='fine root N', &
-         ptr_patch=this%frootn)
+    !#py call hist_addfld1d (fname='FROOTN', units='gN/m^2', &
+         !#py avgflag='A', long_name='fine root N', &
+         !#py !#py ptr_patch=this%frootn)
 
     this%frootn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTN_STORAGE', units='gN/m^2', &
-         avgflag='A', long_name='fine root N storage', &
-         ptr_patch=this%frootn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTN_STORAGE', units='gN/m^2', &
+         !#py avgflag='A', long_name='fine root N storage', &
+         !#py !#py ptr_patch=this%frootn_storage, default='inactive')
 
     this%frootn_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTN_XFER', units='gN/m^2', &
-         avgflag='A', long_name='fine root N transfer', &
-         ptr_patch=this%frootn_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTN_XFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='fine root N transfer', &
+         !#py !#py ptr_patch=this%frootn_xfer, default='inactive')
 
     this%livestemn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN', units='gN/m^2', &
-         avgflag='A', long_name='live stem N', &
-         ptr_patch=this%livestemn)
+    !#py call hist_addfld1d (fname='LIVESTEMN', units='gN/m^2', &
+         !#py avgflag='A', long_name='live stem N', &
+         !#py !#py ptr_patch=this%livestemn)
 
     this%livestemn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN_STORAGE', units='gN/m^2', &
-         avgflag='A', long_name='live stem N storage', &
-         ptr_patch=this%livestemn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMN_STORAGE', units='gN/m^2', &
+         !#py avgflag='A', long_name='live stem N storage', &
+         !#py !#py ptr_patch=this%livestemn_storage, default='inactive')
 
     this%livestemn_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN_XFER', units='gN/m^2', &
-         avgflag='A', long_name='live stem N transfer', &
-         ptr_patch=this%livestemn_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMN_XFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='live stem N transfer', &
+         !#py !#py ptr_patch=this%livestemn_xfer, default='inactive')
 
     this%deadstemn(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMN', units='gN/m^2', &
-         avgflag='A', long_name='dead stem N', &
-         ptr_patch=this%deadstemn)
+    !#py call hist_addfld1d (fname='DEADSTEMN', units='gN/m^2', &
+         !#py avgflag='A', long_name='dead stem N', &
+         !#py !#py ptr_patch=this%deadstemn)
 
     this%deadstemn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMN_STORAGE', units='gN/m^2', &
-         avgflag='A', long_name='dead stem N storage', &
-         ptr_patch=this%deadstemn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMN_STORAGE', units='gN/m^2', &
+         !#py avgflag='A', long_name='dead stem N storage', &
+         !#py !#py ptr_patch=this%deadstemn_storage, default='inactive')
 
     this%deadstemn_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMN_XFER', units='gN/m^2', &
-         avgflag='A', long_name='dead stem N transfer', &
-         ptr_patch=this%deadstemn_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMN_XFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='dead stem N transfer', &
+         !#py !#py ptr_patch=this%deadstemn_xfer, default='inactive')
 
     this%livecrootn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN', units='gN/m^2', &
-         avgflag='A', long_name='live coarse root N', &
-         ptr_patch=this%livecrootn)
+    !#py call hist_addfld1d (fname='LIVECROOTN', units='gN/m^2', &
+         !#py avgflag='A', long_name='live coarse root N', &
+         !#py !#py ptr_patch=this%livecrootn)
 
     this%livecrootn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN_STORAGE', units='gN/m^2', &
-         avgflag='A', long_name='live coarse root N storage', &
-         ptr_patch=this%livecrootn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTN_STORAGE', units='gN/m^2', &
+         !#py avgflag='A', long_name='live coarse root N storage', &
+         !#py !#py ptr_patch=this%livecrootn_storage, default='inactive')
 
     this%livecrootn_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN_XFER', units='gN/m^2', &
-         avgflag='A', long_name='live coarse root N transfer', &
-         ptr_patch=this%livecrootn_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTN_XFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='live coarse root N transfer', &
+         !#py !#py ptr_patch=this%livecrootn_xfer, default='inactive')
 
     this%deadcrootn(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTN', units='gN/m^2', &
-         avgflag='A', long_name='dead coarse root N', &
-         ptr_patch=this%deadcrootn)
+    !#py call hist_addfld1d (fname='DEADCROOTN', units='gN/m^2', &
+         !#py avgflag='A', long_name='dead coarse root N', &
+         !#py !#py ptr_patch=this%deadcrootn)
 
     this%deadcrootn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTN_STORAGE', units='gN/m^2', &
-         avgflag='A', long_name='dead coarse root N storage', &
-         ptr_patch=this%deadcrootn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTN_STORAGE', units='gN/m^2', &
+         !#py avgflag='A', long_name='dead coarse root N storage', &
+         !#py !#py ptr_patch=this%deadcrootn_storage, default='inactive')
 
     this%deadcrootn_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTN_XFER', units='gN/m^2', &
-         avgflag='A', long_name='dead coarse root N transfer', &
-         ptr_patch=this%deadcrootn_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTN_XFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='dead coarse root N transfer', &
+         !#py !#py ptr_patch=this%deadcrootn_xfer, default='inactive')
 
     this%retransn(begp:endp) = spval
-    call hist_addfld1d (fname='RETRANSN', units='gN/m^2', &
-         avgflag='A', long_name='plant pool of retranslocated N', &
-         ptr_patch=this%retransn)
+    !#py call hist_addfld1d (fname='RETRANSN', units='gN/m^2', &
+         !#py avgflag='A', long_name='plant pool of retranslocated N', &
+         !#py !#py ptr_patch=this%retransn)
 
     this%npool(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL', units='gN/m^2', &
-         avgflag='A', long_name='temporary plant N pool', &
-         ptr_patch=this%npool, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL', units='gN/m^2', &
+         !#py avgflag='A', long_name='temporary plant N pool', &
+         !#py !#py ptr_patch=this%npool, default='inactive')
 
     this%ntrunc(begp:endp) = spval
-    call hist_addfld1d (fname='PFT_NTRUNC', units='gN/m^2', &
-         avgflag='A', long_name='pft-level sink for N truncation', &
-         ptr_patch=this%ntrunc, default='inactive')
+    !#py call hist_addfld1d (fname='PFT_NTRUNC', units='gN/m^2', &
+         !#py avgflag='A', long_name='pft-level sink for N truncation', &
+         !#py !#py ptr_patch=this%ntrunc, default='inactive')
 
     this%dispvegn(begp:endp) = spval
-    call hist_addfld1d (fname='DISPVEGN', units='gN/m^2', &
-         avgflag='A', long_name='displayed vegetation nitrogen', &
-         ptr_patch=this%dispvegn)
+    !#py call hist_addfld1d (fname='DISPVEGN', units='gN/m^2', &
+         !#py avgflag='A', long_name='displayed vegetation nitrogen', &
+         !#py !#py ptr_patch=this%dispvegn)
 
     this%storvegn(begp:endp) = spval
-    call hist_addfld1d (fname='STORVEGN', units='gN/m^2', &
-         avgflag='A', long_name='stored vegetation nitrogen', &
-         ptr_patch=this%storvegn)
+    !#py call hist_addfld1d (fname='STORVEGN', units='gN/m^2', &
+         !#py avgflag='A', long_name='stored vegetation nitrogen', &
+         !#py !#py ptr_patch=this%storvegn)
 
     this%totvegn(begp:endp) = spval
-    call hist_addfld1d (fname='TOTVEGN', units='gN/m^2', &
-         avgflag='A', long_name='total vegetation nitrogen', &
-         ptr_patch=this%totvegn)
+    !#py call hist_addfld1d (fname='TOTVEGN', units='gN/m^2', &
+         !#py avgflag='A', long_name='total vegetation nitrogen', &
+         !#py !#py ptr_patch=this%totvegn)
 
     this%totpftn(begp:endp) = spval
-    call hist_addfld1d (fname='TOTPFTN', units='gN/m^2', &
-         avgflag='A', long_name='total PFT-level nitrogen', &
-         ptr_patch=this%totpftn)
+    !#py call hist_addfld1d (fname='TOTPFTN', units='gN/m^2', &
+         !#py avgflag='A', long_name='total PFT-level nitrogen', &
+         !#py !#py ptr_patch=this%totpftn)
 
     this%npimbalance(begp:endp) = spval
-    call hist_addfld1d (fname='leaf_npimbalance', units='gN/gP', &
-         avgflag='A', long_name='leaf np imbalance partial C partial P/partial C partial N', &
-         ptr_patch=this%npimbalance)
+    !#py call hist_addfld1d (fname='leaf_npimbalance', units='gN/gP', &
+         !#py avgflag='A', long_name='leaf np imbalance partial C partial P/partial C partial N', &
+         !#py !#py ptr_patch=this%npimbalance)
 
     ! Note: this is a patch-level variable, reported to the column-level
     this%plant_n_buffer(begp:endp) = spval
-    call hist_addfld1d (fname='PLANTN_BUFFER', units='gN/m^2', &
-         avgflag='A', long_name='plant nitrogen stored as buffer', &
-         ptr_col=this%plant_n_buffer,default='inactive')
+    !#py call hist_addfld1d (fname='PLANTN_BUFFER', units='gN/m^2', &
+         !#py avgflag='A', long_name='plant nitrogen stored as buffer', &
+         !#py !#py ptr_col=this%plant_n_buffer,default='inactive')
 
 
     !-----------------------------------------------------------------------
@@ -3993,197 +3994,197 @@ module VegetationDataType
   end subroutine veg_ns_init
 
   !-----------------------------------------------------------------------
-  subroutine veg_ns_restart ( this,  bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/write CN restart data for vegetation nitrogen state variables
-    !
-    ! !ARGUMENTS:
-    class (vegetation_nitrogen_state)          :: this
-    type(bounds_type)          , intent(in)    :: bounds
-    type(file_desc_t)          , intent(inout) :: ncid
-    character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
-    !
-    ! !LOCAL VARIABLES:
-    integer            :: i
-    logical            :: readvar
-    integer            :: idata
-    logical            :: exit_spinup = .false.
-    logical            :: enter_spinup = .false.
-    real(r8)           :: m_veg          ! multiplier for the exit_spinup code
-    character(len=128) :: varname    ! temporary
-    ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
-    integer            :: restart_file_spinup_state
-    !------------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='leafn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%leafn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='leafn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%leafn_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='leafn_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%leafn_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frootn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frootn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frootn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frootn_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frootn_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frootn_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livestemn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livestemn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livestemn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livestemn_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livestemn_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livestemn_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadstemn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadstemn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadstemn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadstemn_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadstemn_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadstemn_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livecrootn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livecrootn_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootn_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livecrootn_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadcrootn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadcrootn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadcrootn_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadcrootn_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadcrootn_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadcrootn_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='retransn', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%retransn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='npool', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%npool)
-
-    call restartvar(ncid=ncid, flag=flag, varname='pft_ntrunc', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%ntrunc)
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='grainn', xtype=ncd_double,  &
-            dim1name='pft',    long_name='grain N', units='gN/m2', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainn)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainn_storage', xtype=ncd_double,  &
-            dim1name='pft',    long_name='grain N storage', units='gN/m2', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainn_storage)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainn_xfer', xtype=ncd_double,  &
-            dim1name='pft',    long_name='grain N transfer', units='gN/m2', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainn_xfer)
-    end if
-
-    call restartvar(ncid=ncid, flag=flag,  varname='npimbalance_patch', xtype=ncd_double,  &
-        dim1name='pft',    long_name='npimbalance_patch', units='-', &
-        interpinic_flag='interp', readvar=readvar, data=this%npimbalance)
-     call restartvar(ncid=ncid, flag=flag,  varname='pnup_pfrootc_patch', xtype=ncd_double,  &
-        dim1name='pft',    long_name='pnup_pfrootc_patch', units='-', &
-        interpinic_flag='interp', readvar=readvar, data=this%pnup_pfrootc)
-    call restartvar(ncid=ncid, flag=flag,  varname='benefit_pgpp_pleafc_patch', xtype=ncd_double,  &
-        dim1name='pft',    long_name='benefit_pgpp_pleafc_patch', units='-', &
-        interpinic_flag='interp', readvar=readvar, data=this%benefit_pgpp_pleafc)
-
-    !--------------------------------
-    ! Spinup state operations happen on restart write/read
-    !--------------------------------
-    ! the spinup_state variable is being written by the column-level carbon state restart
-    ! routine, so only need to handle the reading part here
-     if (flag == 'read') then
-        call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
-             long_name='Spinup state of the model that wrote this restart file: ' &
-             // ' 0 = normal model mode, 1 = AD spinup', units='', &
-             interpinic_flag='copy', readvar=readvar,  data=idata)
-        if (readvar) then
-           restart_file_spinup_state = idata
-        else
-           ! assume, for sake of backwards compatibility, that if spinup_state is not in
-           ! the restart file then current model state is the same as prior model state
-           restart_file_spinup_state = spinup_state
-           if ( masterproc ) then
-              write(iulog,*) ' CNRest: WARNING!  Restart file does not contain info ' &
-                   // ' on spinup state used to generate the restart file. '
-              write(iulog,*) '   Assuming the same as current setting: ', spinup_state
-           end if
-        end if
-     end if ! read
-
-     ! now compare the model and restart file spinup states, and either take the
-     ! model into spinup mode or out of it if they are not identical.
-     ! taking model out of spinup mode requires multiplying each pool
-     ! by the associated AD factor.
-     ! putting model into spinup mode requires dividing each pool
-     ! by the associated AD factor.
-     ! only allow this to occur on first timestep of model run.
-
-     if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
-        if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
-           if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools out of AD spinup mode'
-           exit_spinup = .true.
-        else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
-           if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools into AD spinup mode'
-           enter_spinup = .true.
-        else
-           call endrun(msg=' veg_ns_restart: error in entering/exiting spinup.  spinup_state ' &
-                // ' != restart_file_spinup_state, but do not know what to do'//&
-                errMsg(__FILE__, __LINE__))
-        end if
-        if (get_nstep() >= 2) then
-           call endrun(msg=' veg_ns_restart: error in entering/exiting spinup - should occur only when nstep = 1'//&
-                errMsg(__FILE__, __LINE__))
-        endif
-        do i = bounds%begp, bounds%endp
-           if (exit_spinup) then
-              m_veg = spinup_mortality_factor
-           else if (enter_spinup) then
-              m_veg = 1._r8 / spinup_mortality_factor
-           end if
-           this%deadstemn(i)  = this%deadstemn(i) * m_veg
-           this%deadcrootn(i) = this%deadcrootn(i) * m_veg
-        end do
-     end if ! read
-
-  end subroutine veg_ns_restart
+!#py   subroutine veg_ns_restart ( this,  bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write CN restart data for vegetation nitrogen state variables
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class (vegetation_nitrogen_state)          :: this
+!#py     type(bounds_type)          , intent(in)    :: bounds
+!#py     type(file_desc_t)          , intent(inout) :: ncid
+!#py     character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer            :: i
+!#py     logical            :: readvar
+!#py     integer            :: idata
+!#py     logical            :: exit_spinup = .false.
+!#py     logical            :: enter_spinup = .false.
+!#py     real(r8)           :: m_veg          ! multiplier for the exit_spinup code
+!#py     character(len=128) :: varname    ! temporary
+!#py     ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
+!#py     integer            :: restart_file_spinup_state
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='leafn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%leafn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='leafn_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%leafn_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='leafn_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%leafn_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frootn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frootn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frootn_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frootn_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frootn_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frootn_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livestemn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livestemn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livestemn_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livestemn_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livestemn_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livestemn_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadstemn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadstemn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadstemn_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadstemn_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadstemn_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadstemn_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livecrootn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livecrootn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livecrootn_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livecrootn_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livecrootn_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livecrootn_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadcrootn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadcrootn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadcrootn_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadcrootn_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadcrootn_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadcrootn_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='retransn', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%retransn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='npool', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%npool)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='pft_ntrunc', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%ntrunc)
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainn', xtype=ncd_double,  &
+!#py             dim1name='pft',    long_name='grain N', units='gN/m2', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainn)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainn_storage', xtype=ncd_double,  &
+!#py             dim1name='pft',    long_name='grain N storage', units='gN/m2', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainn_storage)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainn_xfer', xtype=ncd_double,  &
+!#py             dim1name='pft',    long_name='grain N transfer', units='gN/m2', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainn_xfer)
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag,  varname='npimbalance_patch', xtype=ncd_double,  &
+!#py         dim1name='pft',    long_name='npimbalance_patch', units='-', &
+!#py         interpinic_flag='interp', readvar=readvar, data=this%npimbalance)
+!#py      call restartvar(ncid=ncid, flag=flag,  varname='pnup_pfrootc_patch', xtype=ncd_double,  &
+!#py         dim1name='pft',    long_name='pnup_pfrootc_patch', units='-', &
+!#py         interpinic_flag='interp', readvar=readvar, data=this%pnup_pfrootc)
+!#py     call restartvar(ncid=ncid, flag=flag,  varname='benefit_pgpp_pleafc_patch', xtype=ncd_double,  &
+!#py         dim1name='pft',    long_name='benefit_pgpp_pleafc_patch', units='-', &
+!#py         interpinic_flag='interp', readvar=readvar, data=this%benefit_pgpp_pleafc)
+!#py
+!#py     !--------------------------------
+!#py     ! Spinup state operations happen on restart write/read
+!#py     !--------------------------------
+!#py     ! the spinup_state variable is being written by the column-level carbon state restart
+!#py     ! routine, so only need to handle the reading part here
+!#py      if (flag == 'read') then
+!#py         call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
+!#py              long_name='Spinup state of the model that wrote this restart file: ' &
+!#py              // ' 0 = normal model mode, 1 = AD spinup', units='', &
+!#py              interpinic_flag='copy', readvar=readvar,  data=idata)
+!#py         if (readvar) then
+!#py            restart_file_spinup_state = idata
+!#py         else
+!#py            ! assume, for sake of backwards compatibility, that if spinup_state is not in
+!#py            ! the restart file then current model state is the same as prior model state
+!#py            restart_file_spinup_state = spinup_state
+!#py            if ( masterproc ) then
+!#py               write(iulog,*) ' CNRest: WARNING!  Restart file does not contain info ' &
+!#py                    // ' on spinup state used to generate the restart file. '
+!#py               write(iulog,*) '   Assuming the same as current setting: ', spinup_state
+!#py            end if
+!#py         end if
+!#py      end if ! read
+!#py
+!#py      ! now compare the model and restart file spinup states, and either take the
+!#py      ! model into spinup mode or out of it if they are not identical.
+!#py      ! taking model out of spinup mode requires multiplying each pool
+!#py      ! by the associated AD factor.
+!#py      ! putting model into spinup mode requires dividing each pool
+!#py      ! by the associated AD factor.
+!#py      ! only allow this to occur on first timestep of model run.
+!#py
+!#py      if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
+!#py         if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
+!#py            if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools out of AD spinup mode'
+!#py            exit_spinup = .true.
+!#py         else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
+!#py            if ( masterproc ) write(iulog,*) ' veg_cs_restart: taking deadwood pools into AD spinup mode'
+!#py            enter_spinup = .true.
+!#py         else
+!#py            call endrun(msg=' veg_ns_restart: error in entering/exiting spinup.  spinup_state ' &
+!#py                 // ' != restart_file_spinup_state, but do not know what to do'//&
+!#py                 errMsg(__FILE__, __LINE__))
+!#py         end if
+!#py         if (get_nstep() >= 2) then
+!#py            call endrun(msg=' veg_ns_restart: error in entering/exiting spinup - should occur only when nstep = 1'//&
+!#py                 errMsg(__FILE__, __LINE__))
+!#py         endif
+!#py         do i = bounds%begp, bounds%endp
+!#py            if (exit_spinup) then
+!#py               m_veg = spinup_mortality_factor
+!#py            else if (enter_spinup) then
+!#py               m_veg = 1._r8 / spinup_mortality_factor
+!#py            end if
+!#py            this%deadstemn(i)  = this%deadstemn(i) * m_veg
+!#py            this%deadcrootn(i) = this%deadcrootn(i) * m_veg
+!#py         end do
+!#py      end if ! read
+!#py
+!#py !#py !#py   end subroutine veg_ns_restart
 
 
   !-----------------------------------------------------------------------
@@ -4437,145 +4438,145 @@ module VegetationDataType
     !-----------------------------------------------------------------------
     if (crop_prog) then
        this%grainp(begp:endp) = spval
-       call hist_addfld1d (fname='GRAINP', units='gP/m^2', &
-            avgflag='A', long_name='grain P', &
-            ptr_patch=this%grainp, default='inactive')
+       !#py call hist_addfld1d (fname='GRAINP', units='gP/m^2', &
+            !#py avgflag='A', long_name='grain P', &
+            !#py !#py ptr_patch=this%grainp, default='inactive')
 
        this%cropseedp_deficit(begp:endp) = spval
-       call hist_addfld1d (fname='CROPSEEDP_DEFICIT', units='gP/m^2', &
-            avgflag='A', long_name='P used for crop seed that needs to be repaid', &
-            ptr_patch=this%cropseedp_deficit)
+       !#py call hist_addfld1d (fname='CROPSEEDP_DEFICIT', units='gP/m^2', &
+            !#py avgflag='A', long_name='P used for crop seed that needs to be repaid', &
+            !#py !#py ptr_patch=this%cropseedp_deficit)
     end if
 
     this%leafp(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP', units='gP/m^2', &
-         avgflag='A', long_name='leaf P', &
-         ptr_patch=this%leafp)
+    !#py call hist_addfld1d (fname='LEAFP', units='gP/m^2', &
+         !#py avgflag='A', long_name='leaf P', &
+         !#py !#py ptr_patch=this%leafp)
 
     this%leafp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP_STORAGE', units='gP/m^2', &
-         avgflag='A', long_name='leaf P storage', &
-         ptr_patch=this%leafp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFP_STORAGE', units='gP/m^2', &
+         !#py avgflag='A', long_name='leaf P storage', &
+         !#py !#py ptr_patch=this%leafp_storage, default='inactive')
 
     this%leafp_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP_XFER', units='gP/m^2', &
-         avgflag='A', long_name='leaf P transfer', &
-         ptr_patch=this%leafp_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFP_XFER', units='gP/m^2', &
+         !#py avgflag='A', long_name='leaf P transfer', &
+         !#py !#py ptr_patch=this%leafp_xfer, default='inactive')
 
     this%frootp(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTP', units='gP/m^2', &
-         avgflag='A', long_name='fine root P', &
-         ptr_patch=this%frootp)
+    !#py call hist_addfld1d (fname='FROOTP', units='gP/m^2', &
+         !#py avgflag='A', long_name='fine root P', &
+         !#py !#py ptr_patch=this%frootp)
 
     this%frootp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTP_STORAGE', units='gP/m^2', &
-         avgflag='A', long_name='fine root P storage', &
-         ptr_patch=this%frootp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTP_STORAGE', units='gP/m^2', &
+         !#py avgflag='A', long_name='fine root P storage', &
+         !#py !#py ptr_patch=this%frootp_storage, default='inactive')
 
     this%frootp_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTP_XFER', units='gP/m^2', &
-         avgflag='A', long_name='fine root P transfer', &
-         ptr_patch=this%frootp_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTP_XFER', units='gP/m^2', &
+         !#py avgflag='A', long_name='fine root P transfer', &
+         !#py !#py ptr_patch=this%frootp_xfer, default='inactive')
 
     this%livestemp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP', units='gP/m^2', &
-         avgflag='A', long_name='live stem P', &
-         ptr_patch=this%livestemp)
+    !#py call hist_addfld1d (fname='LIVESTEMP', units='gP/m^2', &
+         !#py avgflag='A', long_name='live stem P', &
+         !#py !#py ptr_patch=this%livestemp)
 
     this%livestemp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP_STORAGE', units='gP/m^2', &
-         avgflag='A', long_name='live stem P storage', &
-         ptr_patch=this%livestemp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMP_STORAGE', units='gP/m^2', &
+         !#py avgflag='A', long_name='live stem P storage', &
+         !#py !#py ptr_patch=this%livestemp_storage, default='inactive')
 
     this%livestemp_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP_XFER', units='gP/m^2', &
-         avgflag='A', long_name='live stem P transfer', &
-         ptr_patch=this%livestemp_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMP_XFER', units='gP/m^2', &
+         !#py avgflag='A', long_name='live stem P transfer', &
+         !#py !#py ptr_patch=this%livestemp_xfer, default='inactive')
 
     this%deadstemp(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMP', units='gP/m^2', &
-         avgflag='A', long_name='dead stem P', &
-         ptr_patch=this%deadstemp)
+    !#py call hist_addfld1d (fname='DEADSTEMP', units='gP/m^2', &
+         !#py avgflag='A', long_name='dead stem P', &
+         !#py !#py ptr_patch=this%deadstemp)
 
     this%deadstemp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMP_STORAGE', units='gP/m^2', &
-         avgflag='A', long_name='dead stem P storage', &
-         ptr_patch=this%deadstemp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMP_STORAGE', units='gP/m^2', &
+         !#py avgflag='A', long_name='dead stem P storage', &
+         !#py !#py ptr_patch=this%deadstemp_storage, default='inactive')
 
     this%deadstemp_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMP_XFER', units='gP/m^2', &
-         avgflag='A', long_name='dead stem P transfer', &
-         ptr_patch=this%deadstemp_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMP_XFER', units='gP/m^2', &
+         !#py avgflag='A', long_name='dead stem P transfer', &
+         !#py !#py ptr_patch=this%deadstemp_xfer, default='inactive')
 
     this%livecrootp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP', units='gP/m^2', &
-         avgflag='A', long_name='live coarse root P', &
-         ptr_patch=this%livecrootp)
+    !#py call hist_addfld1d (fname='LIVECROOTP', units='gP/m^2', &
+         !#py avgflag='A', long_name='live coarse root P', &
+         !#py !#py ptr_patch=this%livecrootp)
 
     this%livecrootp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP_STORAGE', units='gP/m^2', &
-         avgflag='A', long_name='live coarse root P storage', &
-         ptr_patch=this%livecrootp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTP_STORAGE', units='gP/m^2', &
+         !#py avgflag='A', long_name='live coarse root P storage', &
+         !#py !#py ptr_patch=this%livecrootp_storage, default='inactive')
 
     this%livecrootp_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP_XFER', units='gP/m^2', &
-         avgflag='A', long_name='live coarse root P transfer', &
-         ptr_patch=this%livecrootp_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTP_XFER', units='gP/m^2', &
+         !#py avgflag='A', long_name='live coarse root P transfer', &
+         !#py !#py ptr_patch=this%livecrootp_xfer, default='inactive')
 
     this%deadcrootp(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTP', units='gP/m^2', &
-         avgflag='A', long_name='dead coarse root P', &
-         ptr_patch=this%deadcrootp)
+    !#py call hist_addfld1d (fname='DEADCROOTP', units='gP/m^2', &
+         !#py avgflag='A', long_name='dead coarse root P', &
+         !#py !#py ptr_patch=this%deadcrootp)
 
     this%deadcrootp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTP_STORAGE', units='gP/m^2', &
-         avgflag='A', long_name='dead coarse root P storage', &
-         ptr_patch=this%deadcrootp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTP_STORAGE', units='gP/m^2', &
+         !#py avgflag='A', long_name='dead coarse root P storage', &
+         !#py !#py ptr_patch=this%deadcrootp_storage, default='inactive')
 
     this%deadcrootp_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTP_XFER', units='gP/m^2', &
-         avgflag='A', long_name='dead coarse root P transfer', &
-         ptr_patch=this%deadcrootp_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTP_XFER', units='gP/m^2', &
+         !#py avgflag='A', long_name='dead coarse root P transfer', &
+         !#py !#py ptr_patch=this%deadcrootp_xfer, default='inactive')
 
     this%retransp(begp:endp) = spval
-    call hist_addfld1d (fname='RETRANSP', units='gP/m^2', &
-         avgflag='A', long_name='plant pool of retranslocated P', &
-         ptr_patch=this%retransp)
+    !#py call hist_addfld1d (fname='RETRANSP', units='gP/m^2', &
+         !#py avgflag='A', long_name='plant pool of retranslocated P', &
+         !#py !#py ptr_patch=this%retransp)
 
     this%ppool(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL', units='gP/m^2', &
-         avgflag='A', long_name='temporary plant P pool', &
-         ptr_patch=this%ppool, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL', units='gP/m^2', &
+         !#py avgflag='A', long_name='temporary plant P pool', &
+         !#py !#py ptr_patch=this%ppool, default='inactive')
 
     this%ptrunc(begp:endp) = spval
-    call hist_addfld1d (fname='PFT_PTRUNC', units='gP/m^2', &
-         avgflag='A', long_name='pft-level sink for P truncation', &
-         ptr_patch=this%ptrunc, default='inactive')
+    !#py call hist_addfld1d (fname='PFT_PTRUNC', units='gP/m^2', &
+         !#py avgflag='A', long_name='pft-level sink for P truncation', &
+         !#py !#py ptr_patch=this%ptrunc, default='inactive')
 
     this%dispvegp(begp:endp) = spval
-    call hist_addfld1d (fname='DISPVEGP', units='gP/m^2', &
-         avgflag='A', long_name='displayed vegetation phosphorus', &
-         ptr_patch=this%dispvegp)
+    !#py call hist_addfld1d (fname='DISPVEGP', units='gP/m^2', &
+         !#py avgflag='A', long_name='displayed vegetation phosphorus', &
+         !#py !#py ptr_patch=this%dispvegp)
 
     this%storvegp(begp:endp) = spval
-    call hist_addfld1d (fname='STORVEGP', units='gP/m^2', &
-         avgflag='A', long_name='stored vegetation phosphorus', &
-         ptr_patch=this%storvegp)
+    !#py call hist_addfld1d (fname='STORVEGP', units='gP/m^2', &
+         !#py avgflag='A', long_name='stored vegetation phosphorus', &
+         !#py !#py ptr_patch=this%storvegp)
 
     this%totvegp(begp:endp) = spval
-    call hist_addfld1d (fname='TOTVEGP', units='gP/m^2', &
-         avgflag='A', long_name='total vegetation phosphorus', &
-         ptr_patch=this%totvegp)
+    !#py call hist_addfld1d (fname='TOTVEGP', units='gP/m^2', &
+         !#py avgflag='A', long_name='total vegetation phosphorus', &
+         !#py !#py ptr_patch=this%totvegp)
 
     this%totpftp(begp:endp) = spval
-    call hist_addfld1d (fname='TOTPFTP', units='gP/m^2', &
-         avgflag='A', long_name='total PFT-level phosphorus', &
-         ptr_patch=this%totpftp)
+    !#py call hist_addfld1d (fname='TOTPFTP', units='gP/m^2', &
+         !#py avgflag='A', long_name='total PFT-level phosphorus', &
+         !#py !#py ptr_patch=this%totpftp)
 
     this%plant_p_buffer(begp:endp) = spval
-    call hist_addfld1d (fname='PLANTP_BUFFER', units='gP/m^2', &
-            avgflag='A', long_name='plant phosphorus stored as buffer', &
-            ptr_col=this%plant_p_buffer,default='inactive')
+    !#py call hist_addfld1d (fname='PLANTP_BUFFER', units='gP/m^2', &
+            !#py avgflag='A', long_name='plant phosphorus stored as buffer', &
+            !#py !#py ptr_col=this%plant_p_buffer,default='inactive')
 
 
     !-----------------------------------------------------------------------
@@ -4661,201 +4662,201 @@ module VegetationDataType
   end subroutine veg_ps_init
 
   !-----------------------------------------------------------------------
-  subroutine veg_ps_restart ( this,  bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/write vegetation-level phosphorus state restart data
-    !
-    ! !ARGUMENTS:
-    class (vegetation_phosphorus_state)        :: this
-    type(bounds_type)          , intent(in)    :: bounds
-    type(file_desc_t)          , intent(inout) :: ncid
-    character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
-    !
-    ! !LOCAL VARIABLES:
-    integer            :: i,j,k,l,c,a,b,d
-    logical            :: readvar
-    integer            :: idata
-    logical            :: exit_spinup = .false.
-    logical            :: enter_spinup = .false.
-    real(r8)           :: m, m_veg         ! multiplier for the exit_spinup code
-    real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
-    real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
-    character(len=128) :: varname    ! temporary
-    integer            :: itemp      ! temporary
-    integer , pointer  :: iptemp(:)  ! pointer to memory to be allocated
-    ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
-    integer            :: restart_file_spinup_state
-    ! flags for comparing the model and restart decomposition cascades
-    integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
-    real(r8)           :: smax_c, ks_sorption_c
-    real(r8)           :: rootfr(1:nlevdecomp)
-    real(r8)           :: pinit_prof(1:nlevdecomp)
-    real(r8)           :: rootfr_tot
-    !------------------------------------------------------------------------
-    call restartvar(ncid=ncid, flag=flag, varname='leafp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%leafp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='leafp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%leafp_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='leafp_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%leafp_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frootp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frootp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frootp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frootp_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='frootp_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%frootp_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livestemp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livestemp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livestemp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livestemp_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livestemp_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livestemp_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadstemp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadstemp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadstemp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadstemp_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadstemp_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadstemp_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livecrootp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livecrootp_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='livecrootp_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%livecrootp_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadcrootp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadcrootp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadcrootp_storage', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadcrootp_storage)
-
-    call restartvar(ncid=ncid, flag=flag, varname='deadcrootp_xfer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%deadcrootp_xfer)
-
-    call restartvar(ncid=ncid, flag=flag, varname='retransp', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%retransp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='ppool', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%ppool)
-
-    call restartvar(ncid=ncid, flag=flag, varname='pft_ptrunc', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%ptrunc)
-
-    call restartvar(ncid=ncid, flag=flag, varname='plant_p_buffer', xtype=ncd_double,  &
-         dim1name='pft', long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%plant_p_buffer)
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='grainp', xtype=ncd_double,  &
-            dim1name='pft',    long_name='grain P', units='gP/m2', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainp)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainp_storage', xtype=ncd_double,  &
-            dim1name='pft',    long_name='grain P storage', units='gP/m2', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainp_storage)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainp_xfer', xtype=ncd_double,  &
-            dim1name='pft',    long_name='grain P transfer', units='gP/m2', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainp_xfer)
-    end if
-
-    !--------------------------------
-    ! Spinup state
-    !--------------------------------
-    ! Do nothing for write
-    ! Note that the call to write spinup_state out was done in CNCarbonStateType and
-    ! cannot be called again because it will try to define the variable twice
-    ! when the flag below is set to define
-    if (flag == 'read') then
-       call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
-            long_name='Spinup state of the model that wrote this restart file: ' &
-            // ' 0 = normal model mode, 1 = AD spinup', units='', &
-            interpinic_flag='copy', readvar=readvar,  data=idata)
-       if (readvar) then
-          restart_file_spinup_state = idata
-       else
-          ! assume, for sake of backwards compatibility, that if spinup_state is not in
-          ! the restart file then current model state is the same as prior model state
-          restart_file_spinup_state = spinup_state
-          if ( masterproc ) then
-             write(iulog,*) ' WARNING!  Restart file does not contain info ' &
-                  // ' on spinup state used to generate the restart file. '
-             write(iulog,*) '   Assuming the same as current setting: ', spinup_state
-          end if
-       end if
-    end if
-    if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
-       if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
-          if ( masterproc ) write(iulog,*) ' Phosphorus State Restart: taking pools out of AD spinup mode'
-          exit_spinup = .true.
-       else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
-          if ( masterproc ) write(iulog,*) ' Phosphorus State Restart: taking pools into AD spinup mode'
-          enter_spinup = .true.
-       else
-          call endrun(msg=' Error in entering/exiting spinup.  spinup_state ' &
-               // ' != restart_file_spinup_state, but do not know what to do'//&
-               errMsg(__FILE__, __LINE__))
-       end if
-       if (get_nstep() >= 2) then
-          call endrun(msg=' Error in entering/exiting spinup - should occur only when nstep = 1'//&
-               errMsg(__FILE__, __LINE__))
-       endif
-       do i = bounds%begp, bounds%endp
-          if (exit_spinup) then
-             m_veg = spinup_mortality_factor
-          else if (enter_spinup) then
-             m_veg = 1._r8 / spinup_mortality_factor
-          end if
-          this%deadstemp(i)  = this%deadstemp(i) * m_veg
-          this%deadcrootp(i) = this%deadcrootp(i) * m_veg
-          if (nu_com == 'RD' .and. exit_spinup) then
-             !Initialize plant P storage pool when exiting spinup from CN only mode
-             if (this%ppool(i) .lt. this%leafp(i)) then
-                this%ppool(i) = this%leafp(i)
-             else if (this%ppool(i) .lt. this%leafp_storage(i)) then
-                this%ppool(i) = this%leafp_storage(i)
-             end if
-          end if
-       end do
-    end if
-
-  end subroutine veg_ps_restart
+!#py   subroutine veg_ps_restart ( this,  bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write vegetation-level phosphorus state restart data
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class (vegetation_phosphorus_state)        :: this
+!#py     type(bounds_type)          , intent(in)    :: bounds
+!#py     type(file_desc_t)          , intent(inout) :: ncid
+!#py     character(len=*)           , intent(in)    :: flag   !'read' or 'write' or 'define'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer            :: i,j,k,l,c,a,b,d
+!#py     logical            :: readvar
+!#py     integer            :: idata
+!#py     logical            :: exit_spinup = .false.
+!#py     logical            :: enter_spinup = .false.
+!#py     real(r8)           :: m, m_veg         ! multiplier for the exit_spinup code
+!#py     real(r8), pointer  :: ptr2d(:,:) ! temp. pointers for slicing larger arrays
+!#py     real(r8), pointer  :: ptr1d(:)   ! temp. pointers for slicing larger arrays
+!#py     character(len=128) :: varname    ! temporary
+!#py     integer            :: itemp      ! temporary
+!#py     integer , pointer  :: iptemp(:)  ! pointer to memory to be allocated
+!#py     ! spinup state as read from restart file, for determining whether to enter or exit spinup mode.
+!#py     integer            :: restart_file_spinup_state
+!#py     ! flags for comparing the model and restart decomposition cascades
+!#py     integer            :: decomp_cascade_state, restart_file_decomp_cascade_state
+!#py     real(r8)           :: smax_c, ks_sorption_c
+!#py     real(r8)           :: rootfr(1:nlevdecomp)
+!#py     real(r8)           :: pinit_prof(1:nlevdecomp)
+!#py     real(r8)           :: rootfr_tot
+!#py     !------------------------------------------------------------------------
+!#py     call restartvar(ncid=ncid, flag=flag, varname='leafp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%leafp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='leafp_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%leafp_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='leafp_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%leafp_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frootp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frootp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frootp_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frootp_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='frootp_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%frootp_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livestemp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livestemp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livestemp_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livestemp_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livestemp_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livestemp_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadstemp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadstemp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadstemp_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadstemp_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadstemp_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadstemp_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livecrootp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livecrootp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livecrootp_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livecrootp_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='livecrootp_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%livecrootp_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadcrootp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadcrootp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadcrootp_storage', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadcrootp_storage)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='deadcrootp_xfer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%deadcrootp_xfer)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='retransp', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%retransp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='ppool', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%ppool)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='pft_ptrunc', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%ptrunc)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='plant_p_buffer', xtype=ncd_double,  &
+!#py          dim1name='pft', long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%plant_p_buffer)
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainp', xtype=ncd_double,  &
+!#py             dim1name='pft',    long_name='grain P', units='gP/m2', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainp)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainp_storage', xtype=ncd_double,  &
+!#py             dim1name='pft',    long_name='grain P storage', units='gP/m2', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainp_storage)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainp_xfer', xtype=ncd_double,  &
+!#py             dim1name='pft',    long_name='grain P transfer', units='gP/m2', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainp_xfer)
+!#py     end if
+!#py
+!#py     !--------------------------------
+!#py     ! Spinup state
+!#py     !--------------------------------
+!#py     ! Do nothing for write
+!#py     ! Note that the call to write spinup_state out was done in CNCarbonStateType and
+!#py     ! cannot be called again because it will try to define the variable twice
+!#py     ! when the flag below is set to define
+!#py     if (flag == 'read') then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='spinup_state', xtype=ncd_int,  &
+!#py             long_name='Spinup state of the model that wrote this restart file: ' &
+!#py             // ' 0 = normal model mode, 1 = AD spinup', units='', &
+!#py             interpinic_flag='copy', readvar=readvar,  data=idata)
+!#py        if (readvar) then
+!#py           restart_file_spinup_state = idata
+!#py        else
+!#py           ! assume, for sake of backwards compatibility, that if spinup_state is not in
+!#py           ! the restart file then current model state is the same as prior model state
+!#py           restart_file_spinup_state = spinup_state
+!#py           if ( masterproc ) then
+!#py              write(iulog,*) ' WARNING!  Restart file does not contain info ' &
+!#py                   // ' on spinup state used to generate the restart file. '
+!#py              write(iulog,*) '   Assuming the same as current setting: ', spinup_state
+!#py           end if
+!#py        end if
+!#py     end if
+!#py     if (flag == 'read' .and. spinup_state /= restart_file_spinup_state ) then
+!#py        if (spinup_state == 0 .and. restart_file_spinup_state == 1 ) then
+!#py           if ( masterproc ) write(iulog,*) ' Phosphorus State Restart: taking pools out of AD spinup mode'
+!#py           exit_spinup = .true.
+!#py        else if (spinup_state == 1 .and. restart_file_spinup_state == 0 ) then
+!#py           if ( masterproc ) write(iulog,*) ' Phosphorus State Restart: taking pools into AD spinup mode'
+!#py           enter_spinup = .true.
+!#py        else
+!#py           call endrun(msg=' Error in entering/exiting spinup.  spinup_state ' &
+!#py                // ' != restart_file_spinup_state, but do not know what to do'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        end if
+!#py        if (get_nstep() >= 2) then
+!#py           call endrun(msg=' Error in entering/exiting spinup - should occur only when nstep = 1'//&
+!#py                errMsg(__FILE__, __LINE__))
+!#py        endif
+!#py        do i = bounds%begp, bounds%endp
+!#py           if (exit_spinup) then
+!#py              m_veg = spinup_mortality_factor
+!#py           else if (enter_spinup) then
+!#py              m_veg = 1._r8 / spinup_mortality_factor
+!#py           end if
+!#py           this%deadstemp(i)  = this%deadstemp(i) * m_veg
+!#py           this%deadcrootp(i) = this%deadcrootp(i) * m_veg
+!#py           if (nu_com == 'RD' .and. exit_spinup) then
+!#py              !Initialize plant P storage pool when exiting spinup from CN only mode
+!#py              if (this%ppool(i) .lt. this%leafp(i)) then
+!#py                 this%ppool(i) = this%leafp(i)
+!#py              else if (this%ppool(i) .lt. this%leafp_storage(i)) then
+!#py                 this%ppool(i) = this%leafp_storage(i)
+!#py              end if
+!#py           end if
+!#py        end do
+!#py     end if
+!#py
+!#py !#py !#py   end subroutine veg_ps_restart
 
   !-----------------------------------------------------------------------
   subroutine veg_ps_setvalues ( this, num_patch, filter_patch, value_patch)
@@ -5103,272 +5104,254 @@ module VegetationDataType
     !-----------------------------------------------------------------------
 
     this%eflx_lwrad_net(begp:endp) = spval
-    call hist_addfld1d (fname='FIRA', units='W/m^2',  &
-         avgflag='A', long_name='net infrared (longwave) radiation', &
-         ptr_patch=this%eflx_lwrad_net, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FIRA', units='W/m^2',  &
+         !#py avgflag='A', long_name='net infrared (longwave) radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_net, c2l_scale_type='urbanf')
 
     this%eflx_lwrad_net_r(begp:endp) = spval
-    call hist_addfld1d (fname='FIRA_R', units='W/m^2',  &
-         avgflag='A', long_name='Rural net infrared (longwave) radiation', &
-         ptr_patch=this%eflx_lwrad_net_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='FIRA_R', units='W/m^2',  &
+         !#py avgflag='A', long_name='Rural net infrared (longwave) radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_net_r, set_spec=spval)
 
     this%eflx_lwrad_out(begp:endp) = spval
-    call hist_addfld1d (fname='FIRE', units='W/m^2',  &
-         avgflag='A', long_name='emitted infrared (longwave) radiation', &
-         ptr_patch=this%eflx_lwrad_out, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FIRE', units='W/m^2',  &
+         !#py avgflag='A', long_name='emitted infrared (longwave) radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_out, c2l_scale_type='urbanf')
 
     this%eflx_lwrad_out(begp:endp) = spval
-    call hist_addfld1d (fname='LWup', units='W/m^2',  &
-         avgflag='A', long_name='upwelling longwave radiation', &
-         ptr_patch=this%eflx_lwrad_out, c2l_scale_type='urbanf', default='inactive')
+    !#py call hist_addfld1d (fname='LWup', units='W/m^2',  &
+         !#py avgflag='A', long_name='upwelling longwave radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_out, c2l_scale_type='urbanf', default='inactive')
 
     this%eflx_lwrad_out_r(begp:endp) = spval
-    call hist_addfld1d (fname='FIRE_R', units='W/m^2',  &
-         avgflag='A', long_name='Rural emitted infrared (longwave) radiation', &
-         ptr_patch=this%eflx_lwrad_out_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='FIRE_R', units='W/m^2',  &
+         !#py avgflag='A', long_name='Rural emitted infrared (longwave) radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_out_r, set_spec=spval)
 
     this%eflx_lh_vegt(begp:endp) = spval
-    call hist_addfld1d (fname='FCTR', units='W/m^2',  &
-         avgflag='A', long_name='canopy transpiration', &
-         ptr_patch=this%eflx_lh_vegt, set_lake=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FCTR', units='W/m^2',  &
+         !#py avgflag='A', long_name='canopy transpiration', &
+         !#py !#py ptr_patch=this%eflx_lh_vegt, set_lake=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_lh_vege(begp:endp) = spval
-    call hist_addfld1d (fname='FCEV', units='W/m^2',  &
-         avgflag='A', long_name='canopy evaporation', &
-         ptr_patch=this%eflx_lh_vege, set_lake=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FCEV', units='W/m^2',  &
+         !#py avgflag='A', long_name='canopy evaporation', &
+         !#py !#py ptr_patch=this%eflx_lh_vege, set_lake=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_lh_grnd(begp:endp) = spval
-    call hist_addfld1d (fname='FGEV', units='W/m^2',  &
-         avgflag='A', long_name='ground evaporation', &
-         ptr_patch=this%eflx_lh_grnd, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FGEV', units='W/m^2',  &
+         !#py avgflag='A', long_name='ground evaporation', &
+         !#py !#py ptr_patch=this%eflx_lh_grnd, c2l_scale_type='urbanf')
 
     this%eflx_sh_tot(begp:endp) = spval
-    call hist_addfld1d (fname='FSH_NODYNLNDUSE', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat not including correction for land use change', &
-         ptr_patch=this%eflx_sh_tot, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FSH_NODYNLNDUSE', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat not including correction for land use change', &
+         !#py !#py ptr_patch=this%eflx_sh_tot, c2l_scale_type='urbanf')
 
     this%eflx_sh_tot_r(begp:endp) = spval
-    call hist_addfld1d (fname='FSH_R', units='W/m^2',  &
-         avgflag='A', long_name='Rural sensible heat', &
-         ptr_patch=this%eflx_sh_tot_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='FSH_R', units='W/m^2',  &
+         !#py avgflag='A', long_name='Rural sensible heat', &
+         !#py !#py ptr_patch=this%eflx_sh_tot_r, set_spec=spval)
 
     this%eflx_sh_tot(begp:endp) = spval
-    call hist_addfld1d (fname='Qh', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat', &
-         ptr_patch=this%eflx_sh_tot, c2l_scale_type='urbanf', &
-         default = 'inactive')
+    !#py call hist_addfld1d (fname='Qh', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat', &
+         !#py ptr_patch=this%eflx_sh_tot, c2l_scale_type='urbanf', &
+         !#py !#py default = 'inactive')
 
     this%eflx_lh_tot(begp:endp) = spval
-    call hist_addfld1d (fname='Qle', units='W/m^2',  &
-         avgflag='A', long_name='total evaporation', &
-         ptr_patch=this%eflx_lh_tot, c2l_scale_type='urbanf', &
-         default = 'inactive')
+    !#py call hist_addfld1d (fname='Qle', units='W/m^2',  &
+         !#py avgflag='A', long_name='total evaporation', &
+         !#py ptr_patch=this%eflx_lh_tot, c2l_scale_type='urbanf', &
+         !#py !#py default = 'inactive')
 
     this%eflx_lh_tot(begp:endp) = spval
-    call hist_addfld1d (fname='EFLX_LH_TOT', units='W/m^2', &
-         avgflag='A', long_name='total latent heat flux [+ to atm]', &
-         ptr_patch=this%eflx_lh_tot, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='EFLX_LH_TOT', units='W/m^2', &
+         !#py avgflag='A', long_name='total latent heat flux [+ to atm]', &
+         !#py !#py ptr_patch=this%eflx_lh_tot, c2l_scale_type='urbanf')
 
     this%eflx_lh_tot_r(begp:endp) = spval
-    call hist_addfld1d (fname='EFLX_LH_TOT_R', units='W/m^2',  &
-         avgflag='A', long_name='Rural total evaporation', &
-         ptr_patch=this%eflx_lh_tot_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='EFLX_LH_TOT_R', units='W/m^2',  &
+         !#py avgflag='A', long_name='Rural total evaporation', &
+         !#py !#py ptr_patch=this%eflx_lh_tot_r, set_spec=spval)
 
     this%eflx_soil_grnd(begp:endp) = spval
-    call hist_addfld1d (fname='Qstor', units='W/m^2',  &
-         avgflag='A', long_name='storage heat flux (includes snowmelt)', &
-         ptr_patch=this%eflx_soil_grnd, c2l_scale_type='urbanf', &
-         default = 'inactive')
+    !#py call hist_addfld1d (fname='Qstor', units='W/m^2',  &
+         !#py avgflag='A', long_name='storage heat flux (includes snowmelt)', &
+         !#py ptr_patch=this%eflx_soil_grnd, c2l_scale_type='urbanf', &
+         !#py !#py default = 'inactive')
 
     this%eflx_sh_veg(begp:endp) = spval
-    call hist_addfld1d (fname='FSH_V', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat from veg', &
-         ptr_patch=this%eflx_sh_veg, set_lake=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FSH_V', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat from veg', &
+         !#py !#py ptr_patch=this%eflx_sh_veg, set_lake=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_sh_grnd(begp:endp) = spval
-    call hist_addfld1d (fname='FSH_G', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat from ground', &
-         ptr_patch=this%eflx_sh_grnd, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FSH_G', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat from ground', &
+         !#py !#py ptr_patch=this%eflx_sh_grnd, c2l_scale_type='urbanf')
 
     this%eflx_soil_grnd(begp:endp) = spval
-    call hist_addfld1d (fname='FGR', units='W/m^2',  &
-         avgflag='A', long_name='heat flux into soil/snow including snow melt and lake / snow light transmission', &
-         ptr_patch=this%eflx_soil_grnd, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='FGR', units='W/m^2',  &
+         !#py avgflag='A', long_name='heat flux into soil/snow including snow melt and lake / snow light transmission', &
+         !#py !#py ptr_patch=this%eflx_soil_grnd, c2l_scale_type='urbanf')
 
     this%eflx_soil_grnd_r(begp:endp) = spval
-    call hist_addfld1d (fname='FGR_R', units='W/m^2',  &
-         avgflag='A', long_name='Rural heat flux into soil/snow including snow melt and snow light transmission', &
-         ptr_patch=this%eflx_soil_grnd_r, set_spec=spval)
+    !#py call hist_addfld1d (fname='FGR_R', units='W/m^2',  &
+         !#py avgflag='A', long_name='Rural heat flux into soil/snow including snow melt and snow light transmission', &
+         !#py !#py ptr_patch=this%eflx_soil_grnd_r, set_spec=spval)
 
     this%eflx_lwrad_net_u(begp:endp) = spval
-    call hist_addfld1d (fname='FIRA_U', units='W/m^2',  &
-         avgflag='A', long_name='Urban net infrared (longwave) radiation', &
-         ptr_patch=this%eflx_lwrad_net_u, c2l_scale_type='urbanf', set_nourb=spval)
+    !#py call hist_addfld1d (fname='FIRA_U', units='W/m^2',  &
+         !#py avgflag='A', long_name='Urban net infrared (longwave) radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_net_u, c2l_scale_type='urbanf', set_nourb=spval)
 
     this%eflx_soil_grnd(begp:endp) = spval
-    call hist_addfld1d (fname='EFLX_SOIL_GRND', units='W/m^2', &
-         avgflag='A', long_name='soil heat flux [+ into soil]', &
-         ptr_patch=this%eflx_soil_grnd, default='inactive', c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='EFLX_SOIL_GRND', units='W/m^2', &
+         !#py avgflag='A', long_name='soil heat flux [+ into soil]', &
+         !#py !#py ptr_patch=this%eflx_soil_grnd, default='inactive', c2l_scale_type='urbanf')
 
     this%eflx_lwrad_out_u(begp:endp) = spval
-    call hist_addfld1d (fname='FIRE_U', units='W/m^2',  &
-         avgflag='A', long_name='Urban emitted infrared (longwave) radiation', &
-         ptr_patch=this%eflx_lwrad_out_u, c2l_scale_type='urbanf', set_nourb=spval)
+    !#py call hist_addfld1d (fname='FIRE_U', units='W/m^2',  &
+         !#py avgflag='A', long_name='Urban emitted infrared (longwave) radiation', &
+         !#py !#py ptr_patch=this%eflx_lwrad_out_u, c2l_scale_type='urbanf', set_nourb=spval)
 
     this%eflx_sh_tot_u(begp:endp) = spval
-    call hist_addfld1d (fname='FSH_U', units='W/m^2',  &
-         avgflag='A', long_name='Urban sensible heat', &
-         ptr_patch=this%eflx_sh_tot_u, c2l_scale_type='urbanf', set_nourb=spval)
+    !#py call hist_addfld1d (fname='FSH_U', units='W/m^2',  &
+         !#py avgflag='A', long_name='Urban sensible heat', &
+         !#py !#py ptr_patch=this%eflx_sh_tot_u, c2l_scale_type='urbanf', set_nourb=spval)
 
     this%eflx_lh_tot_u(begp:endp) = spval
-    call hist_addfld1d (fname='EFLX_LH_TOT_U', units='W/m^2',  &
-         avgflag='A', long_name='Urban total evaporation', &
-         ptr_patch=this%eflx_lh_tot_u, c2l_scale_type='urbanf', set_nourb=spval)
+    !#py call hist_addfld1d (fname='EFLX_LH_TOT_U', units='W/m^2',  &
+         !#py avgflag='A', long_name='Urban total evaporation', &
+         !#py !#py ptr_patch=this%eflx_lh_tot_u, c2l_scale_type='urbanf', set_nourb=spval)
 
     this%eflx_soil_grnd_u(begp:endp) = spval
-    call hist_addfld1d (fname='FGR_U', units='W/m^2',  &
-         avgflag='A', long_name='Urban heat flux into soil/snow including snow melt', &
-         ptr_patch=this%eflx_soil_grnd_u, c2l_scale_type='urbanf', set_nourb=spval)
+    !#py call hist_addfld1d (fname='FGR_U', units='W/m^2',  &
+         !#py avgflag='A', long_name='Urban heat flux into soil/snow including snow melt', &
+         !#py !#py ptr_patch=this%eflx_soil_grnd_u, c2l_scale_type='urbanf', set_nourb=spval)
 
     this%netrad(begp:endp) = spval
-    call hist_addfld1d (fname='Rnet', units='W/m^2',  &
-         avgflag='A', long_name='net radiation', &
-         ptr_patch=this%netrad, c2l_scale_type='urbanf', &
-         default='inactive')
+    !#py call hist_addfld1d (fname='Rnet', units='W/m^2',  &
+         !#py avgflag='A', long_name='net radiation', &
+         !#py ptr_patch=this%netrad, c2l_scale_type='urbanf', &
+         !#py !#py default='inactive')
 
     if (use_cn) then
        this%dlrad(begp:endp) = spval
-       call hist_addfld1d (fname='DLRAD', units='W/m^2', &
-            avgflag='A', long_name='downward longwave radiation below the canopy', &
-            ptr_patch=this%dlrad, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='DLRAD', units='W/m^2', &
+            !#py avgflag='A', long_name='downward longwave radiation below the canopy', &
+            !#py !#py ptr_patch=this%dlrad, default='inactive', c2l_scale_type='urbanf')
 
        this%ulrad(begp:endp) = spval
-       call hist_addfld1d (fname='ULRAD', units='W/m^2', &
-            avgflag='A', long_name='upward longwave radiation above the canopy', &
-            ptr_patch=this%ulrad, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='ULRAD', units='W/m^2', &
+            !#py avgflag='A', long_name='upward longwave radiation above the canopy', &
+            !#py !#py ptr_patch=this%ulrad, default='inactive', c2l_scale_type='urbanf')
 
        this%cgrnd(begp:endp) = spval
-       call hist_addfld1d (fname='CGRND', units='W/m^2/K', &
-            avgflag='A', long_name='deriv. of soil energy flux wrt to soil temp', &
-            ptr_patch=this%cgrnd, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='CGRND', units='W/m^2/K', &
+            !#py avgflag='A', long_name='deriv. of soil energy flux wrt to soil temp', &
+            !#py !#py ptr_patch=this%cgrnd, default='inactive', c2l_scale_type='urbanf')
 
        this%cgrndl(begp:endp) = spval
-       call hist_addfld1d (fname='CGRNDL', units='W/m^2/K', &
-            avgflag='A', long_name='deriv. of soil latent heat flux wrt soil temp', &
-            ptr_patch=this%cgrndl, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='CGRNDL', units='W/m^2/K', &
+            !#py avgflag='A', long_name='deriv. of soil latent heat flux wrt soil temp', &
+            !#py !#py ptr_patch=this%cgrndl, default='inactive', c2l_scale_type='urbanf')
 
        this%cgrnds(begp:endp) = spval
-       call hist_addfld1d (fname='CGRNDS', units='W/m^2/K', &
-            avgflag='A', long_name='deriv. of soil sensible heat flux wrt soil temp', &
-            ptr_patch=this%cgrnds, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='CGRNDS', units='W/m^2/K', &
+            !#py avgflag='A', long_name='deriv. of soil sensible heat flux wrt soil temp', &
+            !#py !#py ptr_patch=this%cgrnds, default='inactive', c2l_scale_type='urbanf')
 
        this%eflx_gnet(begp:endp) = spval
-       call hist_addfld1d (fname='EFLX_GNET', units='W/m^2', &
-            avgflag='A', long_name='net heat flux into ground', &
-            ptr_patch=this%eflx_gnet, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='EFLX_GNET', units='W/m^2', &
+            !#py avgflag='A', long_name='net heat flux into ground', &
+            !#py !#py ptr_patch=this%eflx_gnet, default='inactive', c2l_scale_type='urbanf')
     end if ! use_cn
 
     this%eflx_grnd_lake(begp:endp) = spval
-    call hist_addfld1d (fname='EFLX_GRND_LAKE', units='W/m^2', &
-         avgflag='A', long_name='net heat flux into lake/snow surface, excluding light transmission', &
-         ptr_patch=this%eflx_grnd_lake, set_nolake=spval)
+    !#py call hist_addfld1d (fname='EFLX_GRND_LAKE', units='W/m^2', &
+         !#py avgflag='A', long_name='net heat flux into lake/snow surface, excluding light transmission', &
+         !#py !#py ptr_patch=this%eflx_grnd_lake, set_nolake=spval)
 
     this%dgnetdT(begp:endp) = spval
-    call hist_addfld1d (fname='DGNETDT', units='W/m^2/K', &
-         avgflag='A', long_name='derivative of net ground heat flux wrt soil temp', &
-         ptr_patch=this%dgnetdT, default='inactive', c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='DGNETDT', units='W/m^2/K', &
+         !#py avgflag='A', long_name='derivative of net ground heat flux wrt soil temp', &
+         !#py !#py ptr_patch=this%dgnetdT, default='inactive', c2l_scale_type='urbanf')
 
     this%eflx_traffic(begp:endp) = spval
-    call hist_addfld1d (fname='TRAFFICFLUX', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat flux from urban traffic', &
-         ptr_patch=this%eflx_traffic, set_nourb=0._r8, c2l_scale_type='urbanf', &
-         default='inactive')
+    !#py call hist_addfld1d (fname='TRAFFICFLUX', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat flux from urban traffic', &
+         !#py ptr_patch=this%eflx_traffic, set_nourb=0._r8, c2l_scale_type='urbanf', &
+         !#py !#py default='inactive')
 
     this%eflx_wasteheat(begp:endp) = spval
-    call hist_addfld1d (fname='WASTEHEAT', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat flux from heating/cooling sources of urban waste heat', &
-         ptr_patch=this%eflx_wasteheat, set_nourb=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='WASTEHEAT', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat flux from heating/cooling sources of urban waste heat', &
+         !#py !#py ptr_patch=this%eflx_wasteheat, set_nourb=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_heat_from_ac(begp:endp) = spval
-    call hist_addfld1d (fname='HEAT_FROM_AC', units='W/m^2',  &
-         avgflag='A', long_name='sensible heat flux put into canyon due to heat removed from air conditioning', &
-         ptr_patch=this%eflx_heat_from_ac, set_nourb=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='HEAT_FROM_AC', units='W/m^2',  &
+         !#py avgflag='A', long_name='sensible heat flux put into canyon due to heat removed from air conditioning', &
+         !#py !#py ptr_patch=this%eflx_heat_from_ac, set_nourb=0._r8, c2l_scale_type='urbanf')
 
     this%eflx_anthro(begp:endp) = spval
-    call hist_addfld1d (fname='Qanth', units='W/m^2',  &
-         avgflag='A', long_name='anthropogenic heat flux', &
-         ptr_patch=this%eflx_anthro, set_nourb=0._r8, c2l_scale_type='urbanf', &
-         default='inactive')
+    !#py call hist_addfld1d (fname='Qanth', units='W/m^2',  &
+         !#py avgflag='A', long_name='anthropogenic heat flux', &
+         !#py ptr_patch=this%eflx_anthro, set_nourb=0._r8, c2l_scale_type='urbanf', &
+         !#py !#py default='inactive')
 
     this%taux(begp:endp) = spval
-    call hist_addfld1d (fname='TAUX', units='kg/m/s^2',  &
-         avgflag='A', long_name='zonal surface stress', &
-         ptr_patch=this%taux)
+    !#py call hist_addfld1d (fname='TAUX', units='kg/m/s^2',  &
+         !#py avgflag='A', long_name='zonal surface stress', &
+         !#py !#py ptr_patch=this%taux)
 
     this%tauy(begp:endp) = spval
-    call hist_addfld1d (fname='TAUY', units='kg/m/s^2',  &
-         avgflag='A', long_name='meridional surface stress', &
-         ptr_patch=this%tauy)
+    !#py call hist_addfld1d (fname='TAUY', units='kg/m/s^2',  &
+         !#py avgflag='A', long_name='meridional surface stress', &
+         !#py !#py ptr_patch=this%tauy)
 
     this%errseb(begp:endp) = spval
-    call hist_addfld1d (fname='ERRSEB',  units='W/m^2',  &
-         avgflag='A', long_name='surface energy conservation error', &
-         ptr_patch=this%errseb)
+    !#py call hist_addfld1d (fname='ERRSEB',  units='W/m^2',  &
+         !#py avgflag='A', long_name='surface energy conservation error', &
+         !#py !#py ptr_patch=this%errseb)
 
     this%errsol(begp:endp) = spval
-    call hist_addfld1d (fname='ERRSOL',  units='W/m^2',  &
-         avgflag='A', long_name='solar radiation conservation error', &
-         ptr_patch=this%errsol, set_urb=spval)
+    !#py call hist_addfld1d (fname='ERRSOL',  units='W/m^2',  &
+         !#py avgflag='A', long_name='solar radiation conservation error', &
+         !#py !#py ptr_patch=this%errsol, set_urb=spval)
 
     !-----------------------------------------------------------------------
     ! set cold-start initial values for select members of veg_ef
     !-----------------------------------------------------------------------
 
-     do p = begp, endp
-        c = veg_pp%column(p)
-        l = veg_pp%landunit(p)
-
-        if (.not. lun_pp%urbpoi(l)) then ! non-urban
-           this%eflx_lwrad_net_u(p)  = spval
-           this%eflx_lwrad_out_u(p)  = spval
-           this%eflx_lh_tot_u(p)     = spval
-           this%eflx_sh_tot_u(p)     = spval
-           this%eflx_soil_grnd_u(p)  = spval
-           this%eflx_wasteheat(p)    = 0._r8
-           this%eflx_heat_from_ac(p) = 0._r8
-           this%eflx_traffic(p)      = 0._r8
-           this%eflx_anthro(p)       = 0._r8
-        end if
-
-        this%eflx_lwrad_out(p) = sb * (col_es%t_grnd(c))**4
-     end do
 
   end subroutine veg_ef_init
 
   !------------------------------------------------------------------------
-  subroutine veg_ef_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write vegetation energy flux information to/from restart file.
-    !
-    ! !USES:
-    !
-    ! !ARGUMENTS:
-    class(vegetation_energy_flux) :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar   ! determine if variable is on initial file
-    !-----------------------------------------------------------------------
-
-    call restartvar(ncid=ncid, flag=flag, varname='EFLX_LWRAD_OUT', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='emitted infrared (longwave) radiation', units='watt/m^2', &
-         interpinic_flag='interp', readvar=readvar, data=this%eflx_lwrad_out)
-
-  end subroutine veg_ef_restart
+!#py   subroutine veg_ef_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write vegetation energy flux information to/from restart file.
+!#py     !
+!#py     ! !USES:
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(vegetation_energy_flux) :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar   ! determine if variable is on initial file
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='EFLX_LWRAD_OUT', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='emitted infrared (longwave) radiation', units='watt/m^2', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%eflx_lwrad_out)
+!#py
+!#py !#py !#py   end subroutine veg_ef_restart
 
   !------------------------------------------------------------------------
   subroutine veg_ef_clean(this)
@@ -5430,120 +5413,120 @@ module VegetationDataType
     ! initialize history fields for select members of veg_wf
     !-----------------------------------------------------------------------
     this%qflx_irrig_patch(begp:endp) = spval
-    call hist_addfld1d (fname='QIRRIG_ORIG', units='mm/s', &
-         avgflag='A', long_name='Original total irrigation water demand (surface + ground)', &
-         ptr_patch=this%qflx_irrig_patch)
+    !#py call hist_addfld1d (fname='QIRRIG_ORIG', units='mm/s', &
+         !#py avgflag='A', long_name='Original total irrigation water demand (surface + ground)', &
+         !#py !#py ptr_patch=this%qflx_irrig_patch)
 
     this%qflx_real_irrig_patch(begp:endp) = spval     ! real irrig
-    call hist_addfld1d (fname='QIRRIG_REAL', units='mm/s', &
-         avgflag='A', long_name='actual water added through irrigation (surface + ground)', &
-         ptr_patch=this%qflx_real_irrig_patch)
+    !#py call hist_addfld1d (fname='QIRRIG_REAL', units='mm/s', &
+         !#py avgflag='A', long_name='actual water added through irrigation (surface + ground)', &
+         !#py !#py ptr_patch=this%qflx_real_irrig_patch)
 
     this%qflx_surf_irrig_patch(begp:endp) = spval
-    call hist_addfld1d (fname='QIRRIG_SURF', units='mm/s', &
-        avgflag='A', long_name='Surface water irrigation', &
-        ptr_patch=this%qflx_surf_irrig_patch)
+    !#py call hist_addfld1d (fname='QIRRIG_SURF', units='mm/s', &
+        !#py avgflag='A', long_name='Surface water irrigation', &
+        !#py !#py ptr_patch=this%qflx_surf_irrig_patch)
 
     this%qflx_grnd_irrig_patch(begp:endp) = spval
-    call hist_addfld1d (fname='QIRRIG_GRND', units='mm/s', &
-        avgflag='A', long_name='Groundwater irrigation', &
-        ptr_patch=this%qflx_grnd_irrig_patch)
+    !#py call hist_addfld1d (fname='QIRRIG_GRND', units='mm/s', &
+        !#py avgflag='A', long_name='Groundwater irrigation', &
+        !#py !#py ptr_patch=this%qflx_grnd_irrig_patch)
 
     this%qflx_prec_intr(begp:endp) = spval
-    call hist_addfld1d (fname='QINTR', units='mm/s',  &
-         avgflag='A', long_name='interception', &
-         ptr_patch=this%qflx_prec_intr, set_lake=0._r8)
+    !#py call hist_addfld1d (fname='QINTR', units='mm/s',  &
+         !#py avgflag='A', long_name='interception', &
+         !#py !#py ptr_patch=this%qflx_prec_intr, set_lake=0._r8)
 
     this%qflx_dirct_rain(begp:endp) = spval
-    call hist_addfld1d (fname='QWTRGH', units='mm/s',  &
-         avgflag='A', long_name='direct rain throughfall', &
-         ptr_patch=this%qflx_dirct_rain, c2l_scale_type='urbanf', default='inactive')
+    !#py call hist_addfld1d (fname='QWTRGH', units='mm/s',  &
+         !#py avgflag='A', long_name='direct rain throughfall', &
+         !#py !#py ptr_patch=this%qflx_dirct_rain, c2l_scale_type='urbanf', default='inactive')
 
     this%qflx_leafdrip(begp:endp) = spval
-    call hist_addfld1d (fname='QWDRIP', units='mm/s',  &
-         avgflag='A', long_name='leaf rain drip', &
-         ptr_patch=this%qflx_leafdrip, c2l_scale_type='urbanf', default='inactive')
+    !#py call hist_addfld1d (fname='QWDRIP', units='mm/s',  &
+         !#py avgflag='A', long_name='leaf rain drip', &
+         !#py !#py ptr_patch=this%qflx_leafdrip, c2l_scale_type='urbanf', default='inactive')
 
     this%qflx_prec_grnd(begp:endp) = spval
-    call hist_addfld1d (fname='QDRIP', units='mm/s',  &
-         avgflag='A', long_name='throughfall', &
-         ptr_patch=this%qflx_prec_grnd, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='QDRIP', units='mm/s',  &
+         !#py avgflag='A', long_name='throughfall', &
+         !#py !#py ptr_patch=this%qflx_prec_grnd, c2l_scale_type='urbanf')
 
     this%qflx_evap_soi(begp:endp) = spval
-    call hist_addfld1d (fname='QSOIL', units='mm/s',  &
-         avgflag='A', long_name= 'Ground evaporation (soil/snow evaporation + soil/snow sublimation - dew)', &
-         ptr_patch=this%qflx_evap_soi, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='QSOIL', units='mm/s',  &
+         !#py avgflag='A', long_name= 'Ground evaporation (soil/snow evaporation + soil/snow sublimation - dew)', &
+         !#py !#py ptr_patch=this%qflx_evap_soi, c2l_scale_type='urbanf')
 
     this%qflx_evap_can(begp:endp) = spval
-    call hist_addfld1d (fname='QVEGE', units='mm/s',  &
-         avgflag='A', long_name='canopy evaporation', &
-         ptr_patch=this%qflx_evap_can, set_lake=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='QVEGE', units='mm/s',  &
+         !#py avgflag='A', long_name='canopy evaporation', &
+         !#py !#py ptr_patch=this%qflx_evap_can, set_lake=0._r8, c2l_scale_type='urbanf')
 
     this%qflx_tran_veg(begp:endp) = spval
-    call hist_addfld1d (fname='QVEGT', units='mm/s',  &
-         avgflag='A', long_name='canopy transpiration', &
-         ptr_patch=this%qflx_tran_veg, set_lake=0._r8, c2l_scale_type='urbanf')
+    !#py call hist_addfld1d (fname='QVEGT', units='mm/s',  &
+         !#py avgflag='A', long_name='canopy transpiration', &
+         !#py !#py ptr_patch=this%qflx_tran_veg, set_lake=0._r8, c2l_scale_type='urbanf')
 
     this%qflx_snwcp_liq(begp:endp) = spval
-    call hist_addfld1d (fname='QSNWCPLIQ', units='mm H2O/s', &
-         avgflag='A', long_name='excess rainfall due to snow capping', &
-         ptr_patch=this%qflx_snwcp_liq, c2l_scale_type='urbanf', default='inactive')
+    !#py call hist_addfld1d (fname='QSNWCPLIQ', units='mm H2O/s', &
+         !#py avgflag='A', long_name='excess rainfall due to snow capping', &
+         !#py !#py ptr_patch=this%qflx_snwcp_liq, c2l_scale_type='urbanf', default='inactive')
 
     if (use_cn) then
        this%qflx_rain_grnd(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_RAIN_GRND', units='mm H2O/s', &
-            avgflag='A', long_name='rain on ground after interception', &
-            ptr_patch=this%qflx_rain_grnd, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_RAIN_GRND', units='mm H2O/s', &
+            !#py avgflag='A', long_name='rain on ground after interception', &
+            !#py !#py ptr_patch=this%qflx_rain_grnd, default='inactive', c2l_scale_type='urbanf')
 
     end if
 
     if (use_cn) then
        this%qflx_snow_grnd(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_SNOW_GRND', units='mm H2O/s', &
-            avgflag='A', long_name='snow on ground after interception', &
-            ptr_patch=this%qflx_snow_grnd, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_SNOW_GRND', units='mm H2O/s', &
+            !#py avgflag='A', long_name='snow on ground after interception', &
+            !#py !#py ptr_patch=this%qflx_snow_grnd, default='inactive', c2l_scale_type='urbanf')
     end if
 
     if (use_cn) then
        this%qflx_evap_grnd(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_EVAP_GRND', units='mm H2O/s', &
-            avgflag='A', long_name='ground surface evaporation', &
-            ptr_patch=this%qflx_evap_grnd, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_EVAP_GRND', units='mm H2O/s', &
+            !#py avgflag='A', long_name='ground surface evaporation', &
+            !#py !#py ptr_patch=this%qflx_evap_grnd, default='inactive', c2l_scale_type='urbanf')
     end if
 
     if (use_cn) then
        this%qflx_evap_veg(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_EVAP_VEG', units='mm H2O/s', &
-            avgflag='A', long_name='vegetation evaporation', &
-            ptr_patch=this%qflx_evap_veg, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_EVAP_VEG', units='mm H2O/s', &
+            !#py avgflag='A', long_name='vegetation evaporation', &
+            !#py !#py ptr_patch=this%qflx_evap_veg, default='inactive', c2l_scale_type='urbanf')
     end if
 
     if (use_cn) then
        this%qflx_evap_tot(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_EVAP_TOT', units='mm H2O/s', &
-            avgflag='A', long_name='qflx_evap_soi + qflx_evap_can + qflx_tran_veg', &
-            ptr_patch=this%qflx_evap_tot, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_EVAP_TOT', units='mm H2O/s', &
+            !#py avgflag='A', long_name='qflx_evap_soi + qflx_evap_can + qflx_tran_veg', &
+            !#py !#py ptr_patch=this%qflx_evap_tot, default='inactive', c2l_scale_type='urbanf')
     end if
 
     if (use_cn) then
        this%qflx_dew_grnd(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_DEW_GRND', units='mm H2O/s', &
-            avgflag='A', long_name='ground surface dew formation', &
-            ptr_patch=this%qflx_dew_grnd, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_DEW_GRND', units='mm H2O/s', &
+            !#py avgflag='A', long_name='ground surface dew formation', &
+            !#py !#py ptr_patch=this%qflx_dew_grnd, default='inactive', c2l_scale_type='urbanf')
     end if
 
     if (use_cn) then
        this%qflx_sub_snow(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_SUB_SNOW', units='mm H2O/s', &
-            avgflag='A', long_name='sublimation rate from snow pack', &
-            ptr_patch=this%qflx_sub_snow, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_SUB_SNOW', units='mm H2O/s', &
+            !#py avgflag='A', long_name='sublimation rate from snow pack', &
+            !#py !#py ptr_patch=this%qflx_sub_snow, default='inactive', c2l_scale_type='urbanf')
     end if
 
     if (use_cn) then
        this%qflx_dew_snow(begp:endp) = spval
-       call hist_addfld1d (fname='QFLX_DEW_SNOW', units='mm H2O/s', &
-            avgflag='A', long_name='surface dew added to snow pacK', &
-            ptr_patch=this%qflx_dew_snow, default='inactive', c2l_scale_type='urbanf')
+       !#py call hist_addfld1d (fname='QFLX_DEW_SNOW', units='mm H2O/s', &
+            !#py avgflag='A', long_name='surface dew added to snow pacK', &
+            !#py !#py ptr_patch=this%qflx_dew_snow, default='inactive', c2l_scale_type='urbanf')
     end if
 
     !-----------------------------------------------------------------------
@@ -5565,71 +5548,71 @@ module VegetationDataType
   end subroutine veg_wf_init
 
   !------------------------------------------------------------------------
-  subroutine veg_wf_restart(this, bounds, ncid, flag)
-    !
-    ! !DESCRIPTION:
-    ! Read/Write vegetation water flux information to/from restart file.
-    !
-    ! !ARGUMENTS:
-    class(vegetation_water_flux)     :: this
-    type(bounds_type), intent(in)    :: bounds
-    type(file_desc_t), intent(inout) :: ncid
-    character(len=*) , intent(in)    :: flag
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar      ! determine if variable is on initial file
-    integer :: dimlen       ! dimension length
-    integer :: nump_global  ! total number of pfts, globally
-    integer :: err_code     ! error code
-    logical :: do_io
-    !-----------------------------------------------------------------------
-
-    ! Get expected total number of points, for later error checks
-    call get_proc_global(np=nump_global)
-
-    do_io = .true.
-    readvar = .false.
-    if (flag == 'read') then
-       ! On a read, confirm that this variable has the expected size; if not, don't read
-       ! it (instead give it a default value). This is needed to support older initial
-       ! conditions for which this variable had a different size.
-       call ncd_inqvdlen(ncid, 'n_irrig_steps_left', 1, dimlen, err_code)
-       if (dimlen /= nump_global) then
-          do_io = .false.
-       end if
-    end if
-    if (do_io) then
-       call restartvar(ncid=ncid, flag=flag, varname='n_irrig_steps_left', xtype=ncd_int,  &
-            dim1name='pft', &
-            long_name='number of irrigation time steps left', units='#', &
-            interpinic_flag='interp', readvar=readvar, data=this%n_irrig_steps_left)
-    end if
-    if (flag=='read' .and. .not. readvar) then
-       this%n_irrig_steps_left = 0
-    end if
-
-    do_io = .true.
-    readvar = .false.
-    if (flag == 'read') then
-       ! On a read, confirm that this variable has the expected size; if not, don't read
-       ! it (instead give it a default value). This is needed to support older initial
-       ! conditions for which this variable had a different size.
-       call ncd_inqvdlen(ncid, 'irrig_rate', 1, dimlen, err_code)
-       if (dimlen /= nump_global) then
-          do_io = .false.
-       end if
-    end if
-    if (do_io) then
-       call restartvar(ncid=ncid, flag=flag, varname='irrig_rate', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='irrigation rate', units='mm/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%irrig_rate)
-    end if
-    if (flag=='read' .and. .not. readvar) then
-       this%irrig_rate = 0.0_r8
-    end if
-
-  end subroutine veg_wf_restart
+!#py   subroutine veg_wf_restart(this, bounds, ncid, flag)
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/Write vegetation water flux information to/from restart file.
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class(vegetation_water_flux)     :: this
+!#py     type(bounds_type), intent(in)    :: bounds
+!#py     type(file_desc_t), intent(inout) :: ncid
+!#py     character(len=*) , intent(in)    :: flag
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py     integer :: dimlen       ! dimension length
+!#py     integer :: nump_global  ! total number of pfts, globally
+!#py     integer :: err_code     ! error code
+!#py     logical :: do_io
+!#py     !-----------------------------------------------------------------------
+!#py
+!#py     ! Get expected total number of points, for later error checks
+!#py     call get_proc_global(np=nump_global)
+!#py
+!#py     do_io = .true.
+!#py     readvar = .false.
+!#py     if (flag == 'read') then
+!#py        ! On a read, confirm that this variable has the expected size; if not, don't read
+!#py        ! it (instead give it a default value). This is needed to support older initial
+!#py        ! conditions for which this variable had a different size.
+!#py        call ncd_inqvdlen(ncid, 'n_irrig_steps_left', 1, dimlen, err_code)
+!#py        if (dimlen /= nump_global) then
+!#py           do_io = .false.
+!#py        end if
+!#py     end if
+!#py     if (do_io) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='n_irrig_steps_left', xtype=ncd_int,  &
+!#py             dim1name='pft', &
+!#py             long_name='number of irrigation time steps left', units='#', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%n_irrig_steps_left)
+!#py     end if
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        this%n_irrig_steps_left = 0
+!#py     end if
+!#py
+!#py     do_io = .true.
+!#py     readvar = .false.
+!#py     if (flag == 'read') then
+!#py        ! On a read, confirm that this variable has the expected size; if not, don't read
+!#py        ! it (instead give it a default value). This is needed to support older initial
+!#py        ! conditions for which this variable had a different size.
+!#py        call ncd_inqvdlen(ncid, 'irrig_rate', 1, dimlen, err_code)
+!#py        if (dimlen /= nump_global) then
+!#py           do_io = .false.
+!#py        end if
+!#py     end if
+!#py     if (do_io) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='irrig_rate', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='irrigation rate', units='mm/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%irrig_rate)
+!#py     end if
+!#py     if (flag=='read' .and. .not. readvar) then
+!#py        this%irrig_rate = 0.0_r8
+!#py     end if
+!#py
+!#py !#py !#py   end subroutine veg_wf_restart
 
 
   !------------------------------------------------------------------------
@@ -5891,2009 +5874,2009 @@ module VegetationDataType
     else if (carbon_type == 'c12') then
        if (crop_prog) then
           this%grainc_to_food(begp:endp) = spval
-          call hist_addfld1d (fname='GRAINC_TO_FOOD', units='gC/m^2/s', &
-               avgflag='A', long_name='grain C to food', &
-               ptr_patch=this%grainc_to_food, default='inactive')
+          !#py call hist_addfld1d (fname='GRAINC_TO_FOOD', units='gC/m^2/s', &
+               !#py avgflag='A', long_name='grain C to food', &
+               !#py !#py ptr_patch=this%grainc_to_food, default='inactive')
        end if
 
        this%woodc_alloc(begp:endp) = spval
-       call hist_addfld1d (fname='WOODC_ALLOC', units='gC/m^2/s', &
-            avgflag='A', long_name='wood C eallocation', &
-            ptr_patch=this%woodc_alloc)
+       !#py call hist_addfld1d (fname='WOODC_ALLOC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='wood C eallocation', &
+            !#py !#py ptr_patch=this%woodc_alloc)
 
        this%woodc_loss(begp:endp) = spval
-       call hist_addfld1d (fname='WOODC_LOSS', units='gC/m^2/s', &
-            avgflag='A', long_name='wood C loss', &
-            ptr_patch=this%woodc_loss)
+       !#py call hist_addfld1d (fname='WOODC_LOSS', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='wood C loss', &
+            !#py !#py ptr_patch=this%woodc_loss)
 
        this%leafc_loss(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_LOSS', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C loss', &
-            ptr_patch=this%leafc_loss)
+       !#py call hist_addfld1d (fname='LEAFC_LOSS', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C loss', &
+            !#py !#py ptr_patch=this%leafc_loss)
 
        this%leafc_alloc(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_ALLOC', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C allocation', &
-            ptr_patch=this%leafc_alloc)
+       !#py call hist_addfld1d (fname='LEAFC_ALLOC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C allocation', &
+            !#py !#py ptr_patch=this%leafc_alloc)
 
        this%frootc_loss(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_LOSS', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C loss', &
-            ptr_patch=this%frootc_loss)
+       !#py call hist_addfld1d (fname='FROOTC_LOSS', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C loss', &
+            !#py !#py ptr_patch=this%frootc_loss)
 
        this%frootc_alloc(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_ALLOC', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C allocation', &
-            ptr_patch=this%frootc_alloc)
+       !#py call hist_addfld1d (fname='FROOTC_ALLOC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C allocation', &
+            !#py !#py ptr_patch=this%frootc_alloc)
 
        this%m_leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C mortality', &
-            ptr_patch=this%m_leafc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C mortality', &
+            !#py !#py ptr_patch=this%m_leafc_to_litter, default='inactive')
 
        this%m_frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C mortality', &
-            ptr_patch=this%m_frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C mortality', &
+            !#py !#py ptr_patch=this%m_frootc_to_litter, default='inactive')
 
        this%m_leafc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C storage mortality', &
-            ptr_patch=this%m_leafc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C storage mortality', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_litter, default='inactive')
 
        this%m_frootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C storage mortality', &
-            ptr_patch=this%m_frootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C storage mortality', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_litter, default='inactive')
 
        this%m_livestemc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C storage mortality', &
-            ptr_patch=this%m_livestemc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C storage mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_litter, default='inactive')
 
        this%m_deadstemc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C storage mortality', &
-            ptr_patch=this%m_deadstemc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C storage mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_litter, default='inactive')
 
        this%m_livecrootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVECROOTC_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C storage mortality', &
-            ptr_patch=this%m_livecrootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVECROOTC_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C storage mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_litter, default='inactive')
 
        this%m_deadcrootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADCROOTC_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root C storage mortality', &
-            ptr_patch=this%m_deadcrootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADCROOTC_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root C storage mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_litter, default='inactive')
 
        this%m_leafc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C transfer mortality', &
-            ptr_patch=this%m_leafc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C transfer mortality', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_litter, default='inactive')
 
        this%m_frootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C transfer mortality', &
-            ptr_patch=this%m_frootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_litter, default='inactive')
 
        this%m_livestemc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C transfer mortality', &
-            ptr_patch=this%m_livestemc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C transfer mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_litter, default='inactive')
 
        this%m_deadstemc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C transfer mortality', &
-            ptr_patch=this%m_deadstemc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C transfer mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_litter, default='inactive')
 
        this%m_livecrootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVECROOTC_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C transfer mortality', &
-            ptr_patch=this%m_livecrootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVECROOTC_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_litter, default='inactive')
 
        this%m_deadcrootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADCROOTC_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root C transfer mortality', &
-            ptr_patch=this%m_deadcrootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADCROOTC_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_litter, default='inactive')
 
        this%m_livestemc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C mortality', &
-            ptr_patch=this%m_livestemc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_to_litter, default='inactive')
 
        this%m_deadstemc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C mortality', &
-            ptr_patch=this%m_deadstemc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_litter, default='inactive')
 
        this%m_livecrootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVECROOTC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C mortality', &
-            ptr_patch=this%m_livecrootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVECROOTC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_litter, default='inactive')
 
        this%m_deadcrootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADCROOTC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root C mortality', &
-            ptr_patch=this%m_deadcrootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADCROOTC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root C mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_litter, default='inactive')
 
        this%m_gresp_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_GRESP_STORAGE_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration storage mortality', &
-            ptr_patch=this%m_gresp_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_GRESP_STORAGE_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration storage mortality', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_litter, default='inactive')
 
        this%m_gresp_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='M_GRESP_XFER_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration transfer mortality', &
-            ptr_patch=this%m_gresp_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='M_GRESP_XFER_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration transfer mortality', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_litter, default='inactive')
 
        this%m_leafc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C fire loss', &
-            ptr_patch=this%m_leafc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_to_fire, default='inactive')
 
        this%m_leafc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C storage fire loss', &
-            ptr_patch=this%m_leafc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C storage fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_fire, default='inactive')
 
        this%m_leafc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C transfer fire loss', &
-            ptr_patch=this%m_leafc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_fire, default='inactive')
 
        this%m_livestemc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C fire loss', &
-            ptr_patch=this%m_livestemc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_to_fire, default='inactive')
 
        this%m_livestemc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C storage fire loss', &
-            ptr_patch=this%m_livestemc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C storage fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_fire, default='inactive')
 
        this%m_livestemc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C transfer fire loss', &
-            ptr_patch=this%m_livestemc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_fire, default='inactive')
 
        this%m_deadstemc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C fire loss', &
-            ptr_patch=this%m_deadstemc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_fire, default='inactive')
 
        this%m_deadstemc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C storage fire loss', &
-            ptr_patch=this%m_deadstemc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C storage fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_fire, default='inactive')
 
        this%m_deadstemc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C transfer fire loss', &
-            ptr_patch=this%m_deadstemc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_fire, default='inactive')
 
        this%m_frootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C fire loss', &
-            ptr_patch=this%m_frootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_to_fire, default='inactive')
 
        this%m_frootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C storage fire loss', &
-            ptr_patch=this%m_frootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_fire, default='inactive')
 
        this%m_frootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C transfer fire loss', &
-            ptr_patch=this%m_frootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_fire, default='inactive')
 
        this%m_livecrootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C fire loss', &
-            ptr_patch=this%m_livecrootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_fire, default='inactive')
 
        this%m_livecrootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C storage fire loss', &
-            ptr_patch=this%m_livecrootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_fire, default='inactive')
 
        this%m_livecrootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C transfer fire loss', &
-            ptr_patch=this%m_livecrootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_fire, default='inactive')
 
        this%m_deadcrootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADROOTC_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead root C fire loss', &
-            ptr_patch=this%m_deadcrootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADROOTC_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead root C fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_fire, default='inactive')
 
        this%m_deadcrootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADROOTC_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead root C storage fire loss', &
-            ptr_patch=this%m_deadcrootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADROOTC_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_fire, default='inactive')
 
        this%m_deadcrootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADROOTC_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead root C transfer fire loss', &
-            ptr_patch=this%m_deadcrootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADROOTC_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_fire, default='inactive')
 
        this%m_gresp_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_GRESP_STORAGE_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration storage fire loss', &
-            ptr_patch=this%m_gresp_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_GRESP_STORAGE_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration storage fire loss', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_fire, default='inactive')
 
        this%m_gresp_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_GRESP_XFER_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration transfer fire loss', &
-            ptr_patch=this%m_gresp_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_GRESP_XFER_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration transfer fire loss', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_fire, default='inactive')
 
        this%m_cpool_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_CPOOL_TO_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='cpool fire loss', &
-            ptr_patch=this%m_cpool_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_CPOOL_TO_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='cpool fire loss', &
+            !#py !#py ptr_patch=this%m_cpool_to_fire, default='inactive')
 
        this%m_leafc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C fire mortality to litter', &
-            ptr_patch=this%m_leafc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_leafc_to_litter_fire, default='inactive')
 
        ! add by F. Li and S. Levis
        this%m_leafc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C fire mortality to litter', &
-            ptr_patch=this%m_leafc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_litter_fire, default='inactive')
 
        this%m_leafc_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LEAFC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C transfer fire mortality to litter', &
-            ptr_patch=this%m_leafc_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LEAFC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_litter_fire, default='inactive')
 
        this%m_livestemc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C fire mortality to litter', &
-            ptr_patch=this%m_livestemc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livestemc_to_litter_fire, default='inactive')
 
        this%m_livestemc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C storage fire mortality to litter', &
-            ptr_patch=this%m_livestemc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_litter_fire, default='inactive')
 
        this%m_livestemc_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C transfer fire mortality to litter', &
-            ptr_patch=this%m_livestemc_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_litter_fire, default='inactive')
 
        this%m_livestemc_to_deadstemc_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVESTEMC_TO_DEADSTEMC_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C fire mortality to dead stem C', &
-            ptr_patch=this%m_livestemc_to_deadstemc_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVESTEMC_TO_DEADSTEMC_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C fire mortality to dead stem C', &
+            !#py !#py ptr_patch=this%m_livestemc_to_deadstemc_fire, default='inactive')
 
        this%m_deadstemc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C fire mortality to litter', &
-            ptr_patch=this%m_deadstemc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_litter_fire, default='inactive')
 
        this%m_deadstemc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C storage fire mortality to litter', &
-            ptr_patch=this%m_deadstemc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_litter_fire, default='inactive')
 
        this%m_deadstemc_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADSTEMC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C transfer fire mortality to litter', &
-            ptr_patch=this%m_deadstemc_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADSTEMC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_litter_fire, default='inactive')
 
        this%m_frootc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C fire mortality to litter', &
-            ptr_patch=this%m_frootc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_frootc_to_litter_fire, default='inactive')
 
        this%m_frootc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C storage fire mortality to litter', &
-            ptr_patch=this%m_frootc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_litter_fire, default='inactive')
 
        this%m_frootc_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_FROOTC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C transfer fire mortality to litter', &
-            ptr_patch=this%m_frootc_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_FROOTC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_litter_fire, default='inactive')
 
        this%m_livecrootc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C fire mortality to litter', &
-            ptr_patch=this%m_livecrootc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_litter_fire, default='inactive')
 
        this%m_livecrootc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C storage fire mortality to litter', &
-            ptr_patch=this%m_livecrootc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_litter_fire, default='inactive')
 
        this%m_livecrootc_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C transfer fire mortality to litter', &
-            ptr_patch=this%m_livecrootc_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_litter_fire, default='inactive')
 
        this%m_livecrootc_to_deadcrootc_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVEROOTC_TO_DEADROOTC_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live root C fire mortality to dead root C', &
-            ptr_patch=this%m_livecrootc_to_deadcrootc_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVEROOTC_TO_DEADROOTC_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live root C fire mortality to dead root C', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_deadcrootc_fire, default='inactive')
 
        this%m_deadcrootc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADROOTC_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead root C fire mortality to litter', &
-            ptr_patch=this%m_deadcrootc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADROOTC_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead root C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_litter_fire, default='inactive')
 
        this%m_deadcrootc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead root C storage fire mortality to litter', &
-            ptr_patch=this%m_deadcrootc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead root C storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_litter_fire, default='inactive')
 
        this%m_deadcrootc_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADROOTC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead root C transfer fire mortality to litter', &
-            ptr_patch=this%m_deadcrootc_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADROOTC_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead root C transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_litter_fire, default='inactive')
 
        this%m_livecrootc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_LIVECROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C fire mortality to litter', &
-            ptr_patch=this%m_livecrootc_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_LIVECROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_litter_fire, default='inactive')
 
        this%m_deadcrootc_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_DEADCROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root C storage fire mortality to litter', &
-            ptr_patch=this%m_deadcrootc_storage_to_litter_fire,  default='inactive')
+       !#py call hist_addfld1d (fname='M_DEADCROOTC_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root C storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_litter_fire,  default='inactive')
 
        this%m_gresp_storage_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_GRESP_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration storage fire mortality to litter', &
-            ptr_patch=this%m_gresp_storage_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_GRESP_STORAGE_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration storage fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_litter_fire, default='inactive')
 
        this%m_gresp_xfer_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_GRESP_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration transfer fire mortality to litter', &
-            ptr_patch=this%m_gresp_xfer_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_GRESP_XFER_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration transfer fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_litter_fire, default='inactive')
 
       this%m_cpool_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='M_CPOOL_TO_LITTER_FIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='cpool fire mortality to litter', &
-            ptr_patch=this%m_cpool_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='M_CPOOL_TO_LITTER_FIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='cpool fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_cpool_to_litter_fire, default='inactive')
 
       this%m_cpool_to_litter(begp:endp) = spval
-      call hist_addfld1d (fname='M_CPOOL_TO_LITTER', units='gC/m^2/s', &
-           avgflag='A', long_name='cpool mortality to litter', &
-           ptr_patch=this%m_cpool_to_litter, default='inactive')
+      !#py call hist_addfld1d (fname='M_CPOOL_TO_LITTER', units='gC/m^2/s', &
+           !#py avgflag='A', long_name='cpool mortality to litter', &
+           !#py !#py ptr_patch=this%m_cpool_to_litter, default='inactive')
 
        this%leafc_xfer_to_leafc(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_XFER_TO_LEAFC', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C growth from storage', &
-            ptr_patch=this%leafc_xfer_to_leafc, default='inactive')
+       !#py call hist_addfld1d (fname='LEAFC_XFER_TO_LEAFC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C growth from storage', &
+            !#py !#py ptr_patch=this%leafc_xfer_to_leafc, default='inactive')
 
        this%frootc_xfer_to_frootc(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_XFER_TO_FROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C growth from storage', &
-            ptr_patch=this%frootc_xfer_to_frootc, default='inactive')
+       !#py call hist_addfld1d (fname='FROOTC_XFER_TO_FROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C growth from storage', &
+            !#py !#py ptr_patch=this%frootc_xfer_to_frootc, default='inactive')
 
        this%livestemc_xfer_to_livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEMC_XFER_TO_LIVESTEMC', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C growth from storage', &
-            ptr_patch=this%livestemc_xfer_to_livestemc, default='inactive')
+       !#py call hist_addfld1d (fname='LIVESTEMC_XFER_TO_LIVESTEMC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C growth from storage', &
+            !#py !#py ptr_patch=this%livestemc_xfer_to_livestemc, default='inactive')
 
        this%deadstemc_xfer_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='DEADSTEMC_XFER_TO_DEADSTEMC', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C growth from storage', &
-            ptr_patch=this%deadstemc_xfer_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='DEADSTEMC_XFER_TO_DEADSTEMC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C growth from storage', &
+            !#py !#py ptr_patch=this%deadstemc_xfer_to_deadstemc, default='inactive')
 
        this%livecrootc_xfer_to_livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOTC_XFER_TO_LIVECROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C growth from storage', &
-            ptr_patch=this%livecrootc_xfer_to_livecrootc, default='inactive')
+       !#py call hist_addfld1d (fname='LIVECROOTC_XFER_TO_LIVECROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C growth from storage', &
+            !#py !#py ptr_patch=this%livecrootc_xfer_to_livecrootc, default='inactive')
 
        this%deadcrootc_xfer_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='DEADCROOTC_XFER_TO_DEADCROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root C growth from storage', &
-            ptr_patch=this%deadcrootc_xfer_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='DEADCROOTC_XFER_TO_DEADCROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root C growth from storage', &
+            !#py !#py ptr_patch=this%deadcrootc_xfer_to_deadcrootc, default='inactive')
 
        this%leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C litterfall', &
-            ptr_patch=this%leafc_to_litter, default='active')
+       !#py call hist_addfld1d (fname='LEAFC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C litterfall', &
+            !#py !#py ptr_patch=this%leafc_to_litter, default='active')
 
        this%frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C litterfall', &
-            ptr_patch=this%frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='FROOTC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C litterfall', &
+            !#py !#py ptr_patch=this%frootc_to_litter, default='inactive')
 
        this%leaf_mr(begp:endp) = spval
-       call hist_addfld1d (fname='LEAF_MR', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf maintenance respiration', &
-            ptr_patch=this%leaf_mr)
+       !#py call hist_addfld1d (fname='LEAF_MR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf maintenance respiration', &
+            !#py !#py ptr_patch=this%leaf_mr)
 
        this%froot_mr(begp:endp) = spval
-       call hist_addfld1d (fname='FROOT_MR', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root maintenance respiration', &
-            ptr_patch=this%froot_mr, default='inactive')
+       !#py call hist_addfld1d (fname='FROOT_MR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root maintenance respiration', &
+            !#py !#py ptr_patch=this%froot_mr, default='inactive')
 
        this%livestem_mr(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEM_MR', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem maintenance respiration', &
-            ptr_patch=this%livestem_mr, default='inactive')
+       !#py call hist_addfld1d (fname='LIVESTEM_MR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem maintenance respiration', &
+            !#py !#py ptr_patch=this%livestem_mr, default='inactive')
 
        this%livecroot_mr(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOT_MR', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root maintenance respiration', &
-            ptr_patch=this%livecroot_mr, default='inactive')
+       !#py call hist_addfld1d (fname='LIVECROOT_MR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root maintenance respiration', &
+            !#py !#py ptr_patch=this%livecroot_mr, default='inactive')
 
        this%psnsun_to_cpool(begp:endp) = spval
-       call hist_addfld1d (fname='PSNSUN_TO_CPOOL', units='gC/m^2/s', &
-            avgflag='A', long_name='C fixation from sunlit canopy', &
-            ptr_patch=this%psnsun_to_cpool)
+       !#py call hist_addfld1d (fname='PSNSUN_TO_CPOOL', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='C fixation from sunlit canopy', &
+            !#py !#py ptr_patch=this%psnsun_to_cpool)
 
        this%psnshade_to_cpool(begp:endp) = spval
-       call hist_addfld1d (fname='PSNSHADE_TO_CPOOL', units='gC/m^2/s', &
-            avgflag='A', long_name='C fixation from shaded canopy', &
-            ptr_patch=this%psnshade_to_cpool)
+       !#py call hist_addfld1d (fname='PSNSHADE_TO_CPOOL', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='C fixation from shaded canopy', &
+            !#py !#py ptr_patch=this%psnshade_to_cpool)
 
        this%cpool_to_leafc(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_LEAFC', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to leaf C', &
-            ptr_patch=this%cpool_to_leafc, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_LEAFC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to leaf C', &
+            !#py !#py ptr_patch=this%cpool_to_leafc, default='inactive')
 
        this%cpool_to_leafc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_LEAFC_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to leaf C storage', &
-            ptr_patch=this%cpool_to_leafc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_LEAFC_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to leaf C storage', &
+            !#py !#py ptr_patch=this%cpool_to_leafc_storage, default='inactive')
 
        this%cpool_to_frootc(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_FROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to fine root C', &
-            ptr_patch=this%cpool_to_frootc, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_FROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to fine root C', &
+            !#py !#py ptr_patch=this%cpool_to_frootc, default='inactive')
 
        this%cpool_to_frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_FROOTC_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to fine root C storage', &
-            ptr_patch=this%cpool_to_frootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_FROOTC_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to fine root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_frootc_storage, default='inactive')
 
        this%cpool_to_livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_LIVESTEMC', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to live stem C', &
-            ptr_patch=this%cpool_to_livestemc, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_LIVESTEMC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to live stem C', &
+            !#py !#py ptr_patch=this%cpool_to_livestemc, default='inactive')
 
        this%cpool_to_livestemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_LIVESTEMC_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to live stem C storage', &
-            ptr_patch=this%cpool_to_livestemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_LIVESTEMC_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to live stem C storage', &
+            !#py !#py ptr_patch=this%cpool_to_livestemc_storage, default='inactive')
 
        this%cpool_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_DEADSTEMC', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to dead stem C', &
-            ptr_patch=this%cpool_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_DEADSTEMC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to dead stem C', &
+            !#py !#py ptr_patch=this%cpool_to_deadstemc, default='inactive')
 
        this%cpool_to_deadstemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_DEADSTEMC_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to dead stem C storage', &
-            ptr_patch=this%cpool_to_deadstemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_DEADSTEMC_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to dead stem C storage', &
+            !#py !#py ptr_patch=this%cpool_to_deadstemc_storage, default='inactive')
 
        this%cpool_to_livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_LIVECROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to live coarse root C', &
-            ptr_patch=this%cpool_to_livecrootc, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_LIVECROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to live coarse root C', &
+            !#py !#py ptr_patch=this%cpool_to_livecrootc, default='inactive')
 
        this%cpool_to_livecrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_LIVECROOTC_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to live coarse root C storage', &
-            ptr_patch=this%cpool_to_livecrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_LIVECROOTC_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to live coarse root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_livecrootc_storage, default='inactive')
 
        this%cpool_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_DEADCROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to dead coarse root C', &
-            ptr_patch=this%cpool_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_DEADCROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to dead coarse root C', &
+            !#py !#py ptr_patch=this%cpool_to_deadcrootc, default='inactive')
 
        this%cpool_to_deadcrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_DEADCROOTC_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to dead coarse root C storage', &
-            ptr_patch=this%cpool_to_deadcrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_DEADCROOTC_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to dead coarse root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_deadcrootc_storage, default='inactive')
 
        this%cpool_to_gresp_storage(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_TO_GRESP_STORAGE', units='gC/m^2/s', &
-            avgflag='A', long_name='allocation to growth respiration storage', &
-            ptr_patch=this%cpool_to_gresp_storage, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_TO_GRESP_STORAGE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='allocation to growth respiration storage', &
+            !#py !#py ptr_patch=this%cpool_to_gresp_storage, default='inactive')
 
        this%cpool_leaf_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_LEAF_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf growth respiration', &
-            ptr_patch=this%cpool_leaf_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_LEAF_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf growth respiration', &
+            !#py !#py ptr_patch=this%cpool_leaf_gr, default='inactive')
 
        this%cpool_leaf_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_LEAF_STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf growth respiration to storage', &
-            ptr_patch=this%cpool_leaf_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_LEAF_STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_leaf_storage_gr, default='inactive')
 
        this%transfer_leaf_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_LEAF_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf growth respiration from storage', &
-            ptr_patch=this%transfer_leaf_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_LEAF_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_leaf_gr, default='inactive')
 
        this%cpool_froot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_FROOT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root growth respiration', &
-            ptr_patch=this%cpool_froot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_FROOT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_froot_gr, default='inactive')
 
        this%cpool_froot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_FROOT_STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root  growth respiration to storage', &
-            ptr_patch=this%cpool_froot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_FROOT_STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root  growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_froot_storage_gr, default='inactive')
 
        this%transfer_froot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_FROOT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root  growth respiration from storage', &
-            ptr_patch=this%transfer_froot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_FROOT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root  growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_froot_gr, default='inactive')
 
        this%cpool_livestem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_LIVESTEM_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem growth respiration', &
-            ptr_patch=this%cpool_livestem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_LIVESTEM_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem growth respiration', &
+            !#py !#py ptr_patch=this%cpool_livestem_gr, default='inactive')
 
        this%cpool_livestem_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_LIVESTEM_STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem growth respiration to storage', &
-            ptr_patch=this%cpool_livestem_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_LIVESTEM_STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_livestem_storage_gr, default='inactive')
 
        this%transfer_livestem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_LIVESTEM_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem growth respiration from storage', &
-            ptr_patch=this%transfer_livestem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_LIVESTEM_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_livestem_gr, default='inactive')
 
        this%cpool_deadstem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_DEADSTEM_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem growth respiration', &
-            ptr_patch=this%cpool_deadstem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_DEADSTEM_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem growth respiration', &
+            !#py !#py ptr_patch=this%cpool_deadstem_gr, default='inactive')
 
        this%cpool_deadstem_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_DEADSTEM_STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem growth respiration to storage', &
-            ptr_patch=this%cpool_deadstem_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_DEADSTEM_STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_deadstem_storage_gr, default='inactive')
 
        this%transfer_deadstem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_DEADSTEM_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem growth respiration from storage', &
-            ptr_patch=this%transfer_deadstem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_DEADSTEM_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_deadstem_gr, default='inactive')
 
        this%cpool_livecroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_LIVECROOT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root growth respiration', &
-            ptr_patch=this%cpool_livecroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_LIVECROOT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_livecroot_gr, default='inactive')
 
        this%cpool_livecroot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_LIVECROOT_STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root growth respiration to storage', &
-            ptr_patch=this%cpool_livecroot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_LIVECROOT_STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_livecroot_storage_gr, default='inactive')
 
        this%transfer_livecroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_LIVECROOT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root growth respiration from storage', &
-            ptr_patch=this%transfer_livecroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_LIVECROOT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_livecroot_gr, default='inactive')
 
        this%cpool_deadcroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_DEADCROOT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root growth respiration', &
-            ptr_patch=this%cpool_deadcroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_DEADCROOT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_deadcroot_gr, default='inactive')
 
        this%cpool_deadcroot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CPOOL_DEADCROOT_STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root growth respiration to storage', &
-            ptr_patch=this%cpool_deadcroot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CPOOL_DEADCROOT_STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_deadcroot_storage_gr, default='inactive')
 
        this%transfer_deadcroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_DEADCROOT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root growth respiration from storage', &
-            ptr_patch=this%transfer_deadcroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_DEADCROOT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_deadcroot_gr, default='inactive')
 
        this%leafc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='LEAFC_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='leaf C shift storage to transfer', &
-            ptr_patch=this%leafc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='LEAFC_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='leaf C shift storage to transfer', &
+            !#py !#py ptr_patch=this%leafc_storage_to_xfer, default='inactive')
 
        this%frootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='FROOTC_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='fine root C shift storage to transfer', &
-            ptr_patch=this%frootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='FROOTC_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='fine root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%frootc_storage_to_xfer, default='inactive')
 
        this%livestemc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEMC_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C shift storage to transfer', &
-            ptr_patch=this%livestemc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='LIVESTEMC_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C shift storage to transfer', &
+            !#py !#py ptr_patch=this%livestemc_storage_to_xfer, default='inactive')
 
        this%deadstemc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='DEADSTEMC_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead stem C shift storage to transfer', &
-            ptr_patch=this%deadstemc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='DEADSTEMC_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead stem C shift storage to transfer', &
+            !#py !#py ptr_patch=this%deadstemc_storage_to_xfer, default='inactive')
 
        this%livecrootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOTC_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C shift storage to transfer', &
-            ptr_patch=this%livecrootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='LIVECROOTC_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%livecrootc_storage_to_xfer, default='inactive')
 
        this%deadcrootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='DEADCROOTC_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='dead coarse root C shift storage to transfer', &
-            ptr_patch=this%deadcrootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='DEADCROOTC_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='dead coarse root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%deadcrootc_storage_to_xfer, default='inactive')
 
        this%gresp_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='GRESP_STORAGE_TO_XFER', units='gC/m^2/s', &
-            avgflag='A', long_name='growth respiration shift storage to transfer', &
-            ptr_patch=this%gresp_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='GRESP_STORAGE_TO_XFER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth respiration shift storage to transfer', &
+            !#py !#py ptr_patch=this%gresp_storage_to_xfer, default='inactive')
 
        this%livestemc_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='LIVESTEMC_TO_DEADSTEMC', units='gC/m^2/s', &
-            avgflag='A', long_name='live stem C turnover', &
-            ptr_patch=this%livestemc_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='LIVESTEMC_TO_DEADSTEMC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live stem C turnover', &
+            !#py !#py ptr_patch=this%livestemc_to_deadstemc, default='inactive')
 
        this%livecrootc_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='LIVECROOTC_TO_DEADCROOTC', units='gC/m^2/s', &
-            avgflag='A', long_name='live coarse root C turnover', &
-            ptr_patch=this%livecrootc_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='LIVECROOTC_TO_DEADCROOTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='live coarse root C turnover', &
+            !#py !#py ptr_patch=this%livecrootc_to_deadcrootc, default='inactive')
 
        this%gpp(begp:endp) = spval
-       call hist_addfld1d (fname='GPP', units='gC/m^2/s', &
-            avgflag='A', long_name='gross primary production', &
-            ptr_patch=this%gpp)
+       !#py call hist_addfld1d (fname='GPP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='gross primary production', &
+            !#py !#py ptr_patch=this%gpp)
 
        this%gpp_before_downreg(begp:endp) = spval
-       call hist_addfld1d (fname='INIT_GPP', units='gC/m^2/s', &
-            avgflag='A', long_name='GPP flux before downregulation', &
-            ptr_patch=this%gpp_before_downreg, default='inactive')
+       !#py call hist_addfld1d (fname='INIT_GPP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='GPP flux before downregulation', &
+            !#py !#py ptr_patch=this%gpp_before_downreg, default='inactive')
 
        this%mr(begp:endp) = spval
-       call hist_addfld1d (fname='MR', units='gC/m^2/s', &
-            avgflag='A', long_name='maintenance respiration', &
-            ptr_patch=this%mr)
+       !#py call hist_addfld1d (fname='MR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='maintenance respiration', &
+            !#py !#py ptr_patch=this%mr)
 
        this%current_gr(begp:endp) = spval
-       call hist_addfld1d (fname='CURRENT_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='growth resp for new growth displayed in this timestep', &
-            ptr_patch=this%current_gr, default='inactive')
+       !#py call hist_addfld1d (fname='CURRENT_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth resp for new growth displayed in this timestep', &
+            !#py !#py ptr_patch=this%current_gr, default='inactive')
 
        this%transfer_gr(begp:endp) = spval
-       call hist_addfld1d (fname='TRANSFER_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='growth resp for transfer growth displayed in this timestep', &
-            ptr_patch=this%transfer_gr, default='inactive')
+       !#py call hist_addfld1d (fname='TRANSFER_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth resp for transfer growth displayed in this timestep', &
+            !#py !#py ptr_patch=this%transfer_gr, default='inactive')
 
        this%storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='STORAGE_GR', units='gC/m^2/s', &
-            avgflag='A', long_name='growth resp for growth sent to storage for later display', &
-            ptr_patch=this%storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='STORAGE_GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='growth resp for growth sent to storage for later display', &
+            !#py !#py ptr_patch=this%storage_gr, default='inactive')
 
        this%gr(begp:endp) = spval
-       call hist_addfld1d (fname='GR', units='gC/m^2/s', &
-            avgflag='A', long_name='total growth respiration', &
-            ptr_patch=this%gr)
+       !#py call hist_addfld1d (fname='GR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='total growth respiration', &
+            !#py !#py ptr_patch=this%gr)
 
        this%xr(begp:endp) = spval
-       call hist_addfld1d (fname='XR', units='gC/m^2/s', &
-            avgflag='A', long_name='total excess respiration', &
-            ptr_patch=this%xr)
+       !#py call hist_addfld1d (fname='XR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='total excess respiration', &
+            !#py !#py ptr_patch=this%xr)
 
        this%ar(begp:endp) = spval
-       call hist_addfld1d (fname='AR', units='gC/m^2/s', &
-            avgflag='A', long_name='autotrophic respiration (MR + GR)', &
-            ptr_patch=this%ar)
+       !#py call hist_addfld1d (fname='AR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='autotrophic respiration (MR + GR)', &
+            !#py !#py ptr_patch=this%ar)
 
        this%rr(begp:endp) = spval
-       call hist_addfld1d (fname='RR', units='gC/m^2/s', &
-            avgflag='A', long_name='root respiration (fine root MR + total root GR)', &
-            ptr_patch=this%rr)
+       !#py call hist_addfld1d (fname='RR', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='root respiration (fine root MR + total root GR)', &
+            !#py !#py ptr_patch=this%rr)
 
        this%npp(begp:endp) = spval
-       call hist_addfld1d (fname='NPP', units='gC/m^2/s', &
-            avgflag='A', long_name='net primary production', &
-            ptr_patch=this%npp)
+       !#py call hist_addfld1d (fname='NPP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='net primary production', &
+            !#py !#py ptr_patch=this%npp)
 
        this%agnpp(begp:endp) = spval
-       call hist_addfld1d (fname='AGNPP', units='gC/m^2/s', &
-            avgflag='A', long_name='aboveground NPP', &
-            ptr_patch=this%agnpp)
+       !#py call hist_addfld1d (fname='AGNPP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='aboveground NPP', &
+            !#py !#py ptr_patch=this%agnpp)
 
        this%bgnpp(begp:endp) = spval
-       call hist_addfld1d (fname='BGNPP', units='gC/m^2/s', &
-            avgflag='A', long_name='belowground NPP', &
-            ptr_patch=this%bgnpp)
+       !#py call hist_addfld1d (fname='BGNPP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='belowground NPP', &
+            !#py !#py ptr_patch=this%bgnpp)
 
        this%agwdnpp(begp:endp) = spval
-       call hist_addfld1d (fname='AGWDNPP', units='gC/m^2/s', &
-            avgflag='A', long_name='aboveground wood NPP', &
-            ptr_patch=this%agwdnpp)
+       !#py call hist_addfld1d (fname='AGWDNPP', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='aboveground wood NPP', &
+            !#py !#py ptr_patch=this%agwdnpp)
 
        this%litfall(begp:endp) = spval
-       call hist_addfld1d (fname='LITFALL', units='gC/m^2/s', &
-            avgflag='A', long_name='litterfall (leaves and fine roots)', &
-            ptr_patch=this%litfall)
+       !#py call hist_addfld1d (fname='LITFALL', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='litterfall (leaves and fine roots)', &
+            !#py !#py ptr_patch=this%litfall)
 
        this%vegfire(begp:endp) = spval
-       call hist_addfld1d (fname='VEGFIRE', units='gC/m^2/s', &
-            avgflag='A', long_name='patch-level fire loss', &
-            ptr_patch=this%vegfire, default='inactive')
+       !#py call hist_addfld1d (fname='VEGFIRE', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='patch-level fire loss', &
+            !#py !#py ptr_patch=this%vegfire, default='inactive')
 
        this%wood_harvestc(begp:endp) = spval
-       call hist_addfld1d (fname='WOOD_HARVESTC', units='gC/m^2/s', &
-            avgflag='A', long_name='wood harvest carbon (to product pools)', &
-            ptr_patch=this%wood_harvestc)
+       !#py call hist_addfld1d (fname='WOOD_HARVESTC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='wood harvest carbon (to product pools)', &
+            !#py !#py ptr_patch=this%wood_harvestc)
 
        this%fire_closs(begp:endp) = spval
-       call hist_addfld1d (fname='PFT_FIRE_CLOSS', units='gC/m^2/s', &
-            avgflag='A', long_name='total patch-level fire C loss for non-peat fires outside land-type converted region', &
-            ptr_patch=this%fire_closs)
+       !#py call hist_addfld1d (fname='PFT_FIRE_CLOSS', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='total patch-level fire C loss for non-peat fires outside land-type converted region', &
+            !#py !#py ptr_patch=this%fire_closs)
 
        this%availc(begp:endp) = spval
-       call hist_addfld1d (fname='AVAILC', units='gC/m^2/s', &
-            avgflag='A', long_name='C flux available for allocation', &
-            ptr_patch=this%availc, default='active')
+       !#py call hist_addfld1d (fname='AVAILC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='C flux available for allocation', &
+            !#py !#py ptr_patch=this%availc, default='active')
 
        this%plant_calloc(begp:endp) = spval
-       call hist_addfld1d (fname='PLANT_CALLOC', units='gC/m^2/s', &
-            avgflag='A', long_name='total allocated C flux', &
-            ptr_patch=this%plant_calloc, default='active')
+       !#py call hist_addfld1d (fname='PLANT_CALLOC', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='total allocated C flux', &
+            !#py !#py ptr_patch=this%plant_calloc, default='active')
 
        this%excess_cflux(begp:endp) = spval
-       call hist_addfld1d (fname='EXCESS_CFLUX', units='gC/m^2/s', &
-            avgflag='A', long_name='C flux not allocated due to downregulation', &
-            ptr_patch=this%excess_cflux, default='inactive')
+       !#py call hist_addfld1d (fname='EXCESS_CFLUX', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='C flux not allocated due to downregulation', &
+            !#py !#py ptr_patch=this%excess_cflux, default='inactive')
 
        this%prev_leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='PREV_LEAFC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='previous timestep leaf C litterfall flux', &
-            ptr_patch=this%prev_leafc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='PREV_LEAFC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='previous timestep leaf C litterfall flux', &
+            !#py !#py ptr_patch=this%prev_leafc_to_litter, default='inactive')
 
        this%prev_frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='PREV_FROOTC_TO_LITTER', units='gC/m^2/s', &
-            avgflag='A', long_name='previous timestep froot C litterfall flux', &
-            ptr_patch=this%prev_frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='PREV_FROOTC_TO_LITTER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='previous timestep froot C litterfall flux', &
+            !#py !#py ptr_patch=this%prev_frootc_to_litter, default='inactive')
 
        this%xsmrpool_recover(begp:endp) = spval
-       call hist_addfld1d (fname='XSMRPOOL_RECOVER', units='gC/m^2/s', &
-            avgflag='A', long_name='C flux assigned to recovery of negative xsmrpool', &
-            ptr_patch=this%xsmrpool_recover, default='inactive')
+       !#py call hist_addfld1d (fname='XSMRPOOL_RECOVER', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='C flux assigned to recovery of negative xsmrpool', &
+            !#py !#py ptr_patch=this%xsmrpool_recover, default='inactive')
 
        if (nu_com .ne. 'RD' ) then
           this%allocation_leaf(begp:endp) = spval
-          call hist_addfld1d (fname='allocation_leaf', units='', &
-               avgflag='A', long_name='fraction of availc allocated to leaf', &
-               ptr_patch=this%allocation_leaf)
+          !#py call hist_addfld1d (fname='allocation_leaf', units='', &
+               !#py avgflag='A', long_name='fraction of availc allocated to leaf', &
+               !#py !#py ptr_patch=this%allocation_leaf)
           this%allocation_stem(begp:endp) = spval
-          call hist_addfld1d (fname='allocation_stem', units='', &
-               avgflag='A', long_name='fraction of availc allocated to stem', &
-               ptr_patch=this%allocation_stem)
+          !#py call hist_addfld1d (fname='allocation_stem', units='', &
+               !#py avgflag='A', long_name='fraction of availc allocated to stem', &
+               !#py !#py ptr_patch=this%allocation_stem)
           this%allocation_froot(begp:endp) = spval
-          call hist_addfld1d (fname='allocation_froot', units='', &
-               avgflag='A', long_name='fraction of availc allocated to fine root', &
-               ptr_patch=this%allocation_froot)
+          !#py call hist_addfld1d (fname='allocation_froot', units='', &
+               !#py avgflag='A', long_name='fraction of availc allocated to fine root', &
+               !#py !#py ptr_patch=this%allocation_froot)
        end if
 
        this%crop_seedc_to_leaf(begp:endp) = spval
-       call hist_addfld1d (fname='CROP_SEEDC_TO_LEAF', units='gC/m^2/s', &
-            avgflag='A', long_name='crop seed source to leaf', &
-            ptr_patch=this%crop_seedc_to_leaf, default='inactive')
+       !#py call hist_addfld1d (fname='CROP_SEEDC_TO_LEAF', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='crop seed source to leaf', &
+            !#py !#py ptr_patch=this%crop_seedc_to_leaf, default='inactive')
 
        this%dwt_seedc_to_leaf(begp:endp) = spval
-       call hist_addfld1d (fname='DWT_SEEDC_TO_LEAF_PATCH', units='gC/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level seed source to patch-level leaf ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_seedc_to_leaf, default='inactive')
+       !#py call hist_addfld1d (fname='DWT_SEEDC_TO_LEAF_PATCH', units='gC/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level seed source to patch-level leaf ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_seedc_to_leaf, default='inactive')
 
        this%dwt_seedc_to_deadstem(begp:endp) = spval
-       call hist_addfld1d (fname='DWT_SEEDC_TO_DEADSTEM_PATCH', units='gC/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level seed source to patch-level deadstem ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_seedc_to_deadstem, default='inactive')
+       !#py call hist_addfld1d (fname='DWT_SEEDC_TO_DEADSTEM_PATCH', units='gC/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level seed source to patch-level deadstem ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_seedc_to_deadstem, default='inactive')
 
        this%dwt_conv_cflux(begp:endp) = spval
-       call hist_addfld1d (fname='DWT_CONV_CFLUX_PATCH', units='gC/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level conversion C flux (immediate loss to atm) ' // &
-            '(0 at all times except first timestep of year) ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_conv_cflux, default='inactive')
+       !#py call hist_addfld1d (fname='DWT_CONV_CFLUX_PATCH', units='gC/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level conversion C flux (immediate loss to atm) ' // &
+            !#py '(0 at all times except first timestep of year) ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_conv_cflux, default='inactive')
 
        this%dwt_prod10c_gain(begp:endp) = spval
-       call hist_addfld1d (fname='DWT_PROD10C_GAIN_PATCH', units='gC/m^2/s', &
-            avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
-            ptr_patch=this%dwt_prod10c_gain, default='inactive')
+       !#py call hist_addfld1d (fname='DWT_PROD10C_GAIN_PATCH', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
+            !#py !#py ptr_patch=this%dwt_prod10c_gain, default='inactive')
 
        this%dwt_prod100c_gain(begp:endp) = spval
-       call hist_addfld1d (fname='DWT_PROD100C_GAIN_PATCH', units='gC/m^2/s', &
-            avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
-            ptr_patch=this%dwt_prod100c_gain, default='inactive')
+       !#py call hist_addfld1d (fname='DWT_PROD100C_GAIN_PATCH', units='gC/m^2/s', &
+            !#py avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
+            !#py !#py ptr_patch=this%dwt_prod100c_gain, default='inactive')
 
        this%annsum_npp(begp:endp) = spval
-       call hist_addfld1d (fname='ANNSUM_NPP', units='gC/m^2/yr', &
-            avgflag='A', long_name='annual sum of NPP', &
-            ptr_patch=this%annsum_npp, default='inactive')
+       !#py call hist_addfld1d (fname='ANNSUM_NPP', units='gC/m^2/yr', &
+            !#py avgflag='A', long_name='annual sum of NPP', &
+            !#py !#py ptr_patch=this%annsum_npp, default='inactive')
 
 
        ! end of C12 block
 
     else if ( carbon_type == 'c13') then
        this%m_leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LEAFC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C mortality', &
-            ptr_patch=this%m_leafc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LEAFC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C mortality', &
+            !#py !#py ptr_patch=this%m_leafc_to_litter, default='inactive')
 
        this%m_frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_FROOTC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C mortality', &
-            ptr_patch=this%m_frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_FROOTC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C mortality', &
+            !#py !#py ptr_patch=this%m_frootc_to_litter, default='inactive')
 
        this%m_leafc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LEAFC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C storage mortality', &
-            ptr_patch=this%m_leafc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LEAFC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C storage mortality', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_litter, default='inactive')
 
        this%m_frootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_FROOTC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C storage mortality', &
-            ptr_patch=this%m_frootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_FROOTC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C storage mortality', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_litter, default='inactive')
 
        this%m_livestemc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVESTEMC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C storage mortality', &
-            ptr_patch=this%m_livestemc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVESTEMC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C storage mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_litter, default='inactive')
 
        this%m_deadstemc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C storage mortality', &
-            ptr_patch=this%m_deadstemc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C storage mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_litter, default='inactive')
 
        this%m_livecrootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVECROOTC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C storage mortality', &
-            ptr_patch=this%m_livecrootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVECROOTC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C storage mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_litter, default='inactive')
 
        this%m_deadcrootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C storage mortality', &
-            ptr_patch=this%m_deadcrootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C storage mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_litter, default='inactive')
 
        this%m_leafc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LEAFC_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C transfer mortality', &
-            ptr_patch=this%m_leafc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LEAFC_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C transfer mortality', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_litter, default='inactive')
 
        this%m_frootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_FROOTC_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C transfer mortality', &
-            ptr_patch=this%m_frootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_FROOTC_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_litter, default='inactive')
 
        this%m_livestemc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVESTEMC_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C transfer mortality', &
-            ptr_patch=this%m_livestemc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVESTEMC_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C transfer mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_litter, default='inactive')
 
        this%m_deadstemc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C transfer mortality', &
-            ptr_patch=this%m_deadstemc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C transfer mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_litter, default='inactive')
 
        this%m_livecrootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVECROOTC_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C transfer mortality', &
-            ptr_patch=this%m_livecrootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVECROOTC_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_litter, default='inactive')
 
        this%m_deadcrootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C transfer mortality', &
-            ptr_patch=this%m_deadcrootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_litter, default='inactive')
 
        this%m_livestemc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVESTEMC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C mortality', &
-            ptr_patch=this%m_livestemc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVESTEMC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_to_litter, default='inactive')
 
        this%m_deadstemc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C mortality', &
-            ptr_patch=this%m_deadstemc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_litter, default='inactive')
 
        this%m_livecrootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVECROOTC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C mortality', &
-            ptr_patch=this%m_livecrootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVECROOTC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_litter, default='inactive')
 
        this%m_deadcrootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C mortality', &
-            ptr_patch=this%m_deadcrootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_litter, default='inactive')
 
        this%m_gresp_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_GRESP_STORAGE_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth respiration storage mortality', &
-            ptr_patch=this%m_gresp_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_GRESP_STORAGE_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth respiration storage mortality', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_litter, default='inactive')
 
        this%m_gresp_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_GRESP_XFER_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth respiration transfer mortality', &
-            ptr_patch=this%m_gresp_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_GRESP_XFER_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth respiration transfer mortality', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_litter, default='inactive')
 
        this%m_leafc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LEAFC_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C fire loss', &
-            ptr_patch=this%m_leafc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LEAFC_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_to_fire, default='inactive')
 
        this%m_frootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_FROOTC_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C fire loss', &
-            ptr_patch=this%m_frootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_FROOTC_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_to_fire, default='inactive')
 
        this%m_leafc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LEAFC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C storage fire loss', &
-            ptr_patch=this%m_leafc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LEAFC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C storage fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_fire, default='inactive')
 
        this%m_frootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_FROOTC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C storage fire loss', &
-            ptr_patch=this%m_frootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_FROOTC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_fire, default='inactive')
 
        this%m_livestemc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVESTEMC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C storage fire loss', &
-            ptr_patch=this%m_livestemc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVESTEMC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C storage fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_fire, default='inactive')
 
        this%m_deadstemc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C storage fire loss', &
-            ptr_patch=this%m_deadstemc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C storage fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_fire, default='inactive')
 
        this%m_livecrootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVECROOTC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C storage fire loss', &
-            ptr_patch=this%m_livecrootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVECROOTC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_fire, default='inactive')
 
        this%m_deadcrootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C storage fire loss', &
-            ptr_patch=this%m_deadcrootc_storage_to_fire,  default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_fire,  default='inactive')
 
        this%m_leafc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LEAFC_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C transfer fire loss', &
-            ptr_patch=this%m_leafc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LEAFC_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_fire, default='inactive')
 
        this%m_frootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_FROOTC_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C transfer fire loss', &
-            ptr_patch=this%m_frootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_FROOTC_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_fire, default='inactive')
 
        this%m_livestemc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVESTEMC_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C transfer fire loss', &
-            ptr_patch=this%m_livestemc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVESTEMC_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_fire, default='inactive')
 
        this%m_deadstemc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C transfer fire loss', &
-            ptr_patch=this%m_deadstemc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_fire, default='inactive')
 
        this%m_livecrootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVECROOTC_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C transfer fire loss', &
-            ptr_patch=this%m_livecrootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVECROOTC_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_fire, default='inactive')
 
        this%m_deadcrootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C transfer fire loss', &
-            ptr_patch=this%m_deadcrootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_fire, default='inactive')
 
        this%m_livestemc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVESTEMC_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C fire loss', &
-            ptr_patch=this%m_livestemc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVESTEMC_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_to_fire, default='inactive')
 
        this%m_deadstemc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C fire loss', &
-            ptr_patch=this%m_deadstemc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_fire, default='inactive')
 
        this%m_deadstemc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADSTEMC_TO_LITTER_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C fire mortality to litter', &
-            ptr_patch=this%m_deadstemc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADSTEMC_TO_LITTER_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_litter_fire, default='inactive')
 
        this%m_livecrootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_LIVECROOTC_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C fire loss', &
-            ptr_patch=this%m_livecrootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_LIVECROOTC_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_fire, default='inactive')
 
        this%m_deadcrootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C fire loss', &
-            ptr_patch=this%m_deadcrootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_fire, default='inactive')
 
        this%m_deadcrootc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_DEADCROOTC_TO_LITTER_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C fire mortality to litter', &
-            ptr_patch=this%m_deadcrootc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_DEADCROOTC_TO_LITTER_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_litter_fire, default='inactive')
 
        this%m_gresp_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_GRESP_STORAGE_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth respiration storage fire loss', &
-            ptr_patch=this%m_gresp_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_GRESP_STORAGE_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth respiration storage fire loss', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_fire, default='inactive')
 
        this%m_gresp_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_M_GRESP_XFER_TO_FIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth respiration transfer fire loss', &
-            ptr_patch=this%m_gresp_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_M_GRESP_XFER_TO_FIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth respiration transfer fire loss', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_fire, default='inactive')
 
        this%leafc_xfer_to_leafc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAFC_XFER_TO_LEAFC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C growth from storage', &
-            ptr_patch=this%leafc_xfer_to_leafc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LEAFC_XFER_TO_LEAFC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C growth from storage', &
+            !#py !#py ptr_patch=this%leafc_xfer_to_leafc, default='inactive')
 
        this%frootc_xfer_to_frootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOTC_XFER_TO_FROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C growth from storage', &
-            ptr_patch=this%frootc_xfer_to_frootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_FROOTC_XFER_TO_FROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C growth from storage', &
+            !#py !#py ptr_patch=this%frootc_xfer_to_frootc, default='inactive')
 
        this%livestemc_xfer_to_livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEMC_XFER_TO_LIVESTEMC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C growth from storage', &
-            ptr_patch=this%livestemc_xfer_to_livestemc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVESTEMC_XFER_TO_LIVESTEMC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C growth from storage', &
+            !#py !#py ptr_patch=this%livestemc_xfer_to_livestemc, default='inactive')
 
        this%deadstemc_xfer_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADSTEMC_XFER_TO_DEADSTEMC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C growth from storage', &
-            ptr_patch=this%deadstemc_xfer_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADSTEMC_XFER_TO_DEADSTEMC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C growth from storage', &
+            !#py !#py ptr_patch=this%deadstemc_xfer_to_deadstemc, default='inactive')
 
        this%livecrootc_xfer_to_livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOTC_XFER_TO_LIVECROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C growth from storage', &
-            ptr_patch=this%livecrootc_xfer_to_livecrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVECROOTC_XFER_TO_LIVECROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C growth from storage', &
+            !#py !#py ptr_patch=this%livecrootc_xfer_to_livecrootc, default='inactive')
 
        this%deadcrootc_xfer_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADCROOTC_XFER_TO_DEADCROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C growth from storage', &
-            ptr_patch=this%deadcrootc_xfer_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADCROOTC_XFER_TO_DEADCROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C growth from storage', &
+            !#py !#py ptr_patch=this%deadcrootc_xfer_to_deadcrootc, default='inactive')
 
        this%leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAFC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C litterfall', &
-            ptr_patch=this%leafc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LEAFC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C litterfall', &
+            !#py !#py ptr_patch=this%leafc_to_litter, default='inactive')
 
        this%frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOTC_TO_LITTER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C litterfall', &
-            ptr_patch=this%frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C13_FROOTC_TO_LITTER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C litterfall', &
+            !#py !#py ptr_patch=this%frootc_to_litter, default='inactive')
 
        this%leaf_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAF_MR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf maintenance respiration', &
-            ptr_patch=this%leaf_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LEAF_MR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf maintenance respiration', &
+            !#py !#py ptr_patch=this%leaf_mr, default='inactive')
 
        this%froot_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOT_MR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root maintenance respiration', &
-            ptr_patch=this%froot_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_FROOT_MR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root maintenance respiration', &
+            !#py !#py ptr_patch=this%froot_mr, default='inactive')
 
        this%livestem_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEM_MR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem maintenance respiration', &
-            ptr_patch=this%livestem_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVESTEM_MR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem maintenance respiration', &
+            !#py !#py ptr_patch=this%livestem_mr, default='inactive')
 
        this%livecroot_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOT_MR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root maintenance respiration', &
-            ptr_patch=this%livecroot_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVECROOT_MR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root maintenance respiration', &
+            !#py !#py ptr_patch=this%livecroot_mr, default='inactive')
 
        this%psnsun_to_cpool(begp:endp) = spval
-       call hist_addfld1d (fname='C13_PSNSUN_TO_CPOOL', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 C fixation from sunlit canopy', &
-            ptr_patch=this%psnsun_to_cpool)
+       !#py call hist_addfld1d (fname='C13_PSNSUN_TO_CPOOL', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 C fixation from sunlit canopy', &
+            !#py !#py ptr_patch=this%psnsun_to_cpool)
 
        this%psnshade_to_cpool(begp:endp) = spval
-       call hist_addfld1d (fname='C13_PSNSHADE_TO_CPOOL', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 C fixation from shaded canopy', &
-            ptr_patch=this%psnshade_to_cpool)
+       !#py call hist_addfld1d (fname='C13_PSNSHADE_TO_CPOOL', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 C fixation from shaded canopy', &
+            !#py !#py ptr_patch=this%psnshade_to_cpool)
 
        this%cpool_to_leafc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_LEAFC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to leaf C', &
-            ptr_patch=this%cpool_to_leafc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_LEAFC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to leaf C', &
+            !#py !#py ptr_patch=this%cpool_to_leafc, default='inactive')
 
        this%cpool_to_leafc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_LEAFC_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to leaf C storage', &
-            ptr_patch=this%cpool_to_leafc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_LEAFC_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to leaf C storage', &
+            !#py !#py ptr_patch=this%cpool_to_leafc_storage, default='inactive')
 
        this%cpool_to_frootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_FROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to fine root C', &
-            ptr_patch=this%cpool_to_frootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_FROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to fine root C', &
+            !#py !#py ptr_patch=this%cpool_to_frootc, default='inactive')
 
        this%cpool_to_frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_FROOTC_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to fine root C storage', &
-            ptr_patch=this%cpool_to_frootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_FROOTC_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to fine root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_frootc_storage, default='inactive')
 
        this%cpool_to_livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_LIVESTEMC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to live stem C', &
-            ptr_patch=this%cpool_to_livestemc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_LIVESTEMC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to live stem C', &
+            !#py !#py ptr_patch=this%cpool_to_livestemc, default='inactive')
 
        this%cpool_to_livestemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_LIVESTEMC_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to live stem C storage', &
-            ptr_patch=this%cpool_to_livestemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_LIVESTEMC_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to live stem C storage', &
+            !#py !#py ptr_patch=this%cpool_to_livestemc_storage, default='inactive')
 
        this%cpool_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_DEADSTEMC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to dead stem C', &
-            ptr_patch=this%cpool_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_DEADSTEMC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to dead stem C', &
+            !#py !#py ptr_patch=this%cpool_to_deadstemc, default='inactive')
 
        this%cpool_to_deadstemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_DEADSTEMC_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to dead stem C storage', &
-            ptr_patch=this%cpool_to_deadstemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_DEADSTEMC_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to dead stem C storage', &
+            !#py !#py ptr_patch=this%cpool_to_deadstemc_storage, default='inactive')
 
        this%cpool_to_livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_LIVECROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to live coarse root C', &
-            ptr_patch=this%cpool_to_livecrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_LIVECROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to live coarse root C', &
+            !#py !#py ptr_patch=this%cpool_to_livecrootc, default='inactive')
 
        this%cpool_to_livecrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_LIVECROOTC_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to live coarse root C storage', &
-            ptr_patch=this%cpool_to_livecrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_LIVECROOTC_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to live coarse root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_livecrootc_storage, default='inactive')
 
        this%cpool_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_DEADCROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to dead coarse root C', &
-            ptr_patch=this%cpool_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_DEADCROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to dead coarse root C', &
+            !#py !#py ptr_patch=this%cpool_to_deadcrootc, default='inactive')
 
        this%cpool_to_deadcrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_DEADCROOTC_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to dead coarse root C storage', &
-            ptr_patch=this%cpool_to_deadcrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_DEADCROOTC_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to dead coarse root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_deadcrootc_storage, default='inactive')
 
        this%cpool_to_gresp_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_TO_GRESP_STORAGE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 allocation to growth respiration storage', &
-            ptr_patch=this%cpool_to_gresp_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_TO_GRESP_STORAGE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 allocation to growth respiration storage', &
+            !#py !#py ptr_patch=this%cpool_to_gresp_storage, default='inactive')
 
        this%cpool_leaf_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_LEAF_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf growth respiration', &
-            ptr_patch=this%cpool_leaf_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_LEAF_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf growth respiration', &
+            !#py !#py ptr_patch=this%cpool_leaf_gr, default='inactive')
 
        this%cpool_leaf_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_LEAF_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf growth respiration to storage', &
-            ptr_patch=this%cpool_leaf_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_LEAF_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_leaf_storage_gr, default='inactive')
 
        this%transfer_leaf_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_LEAF_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf growth respiration from storage', &
-            ptr_patch=this%transfer_leaf_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_LEAF_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_leaf_gr, default='inactive')
 
        this%cpool_froot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_FROOT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root growth respiration', &
-            ptr_patch=this%cpool_froot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_FROOT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_froot_gr, default='inactive')
 
        this%cpool_froot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_FROOT_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root  growth respiration to storage', &
-            ptr_patch=this%cpool_froot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_FROOT_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root  growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_froot_storage_gr, default='inactive')
 
        this%transfer_froot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_FROOT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root  growth respiration from storage', &
-            ptr_patch=this%transfer_froot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_FROOT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root  growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_froot_gr, default='inactive')
 
        this%cpool_livestem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_LIVESTEM_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem growth respiration', &
-            ptr_patch=this%cpool_livestem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_LIVESTEM_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem growth respiration', &
+            !#py !#py ptr_patch=this%cpool_livestem_gr, default='inactive')
 
        this%cpool_livestem_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_LIVESTEM_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem growth respiration to storage', &
-            ptr_patch=this%cpool_livestem_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_LIVESTEM_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_livestem_storage_gr, default='inactive')
 
        this%transfer_livestem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_LIVESTEM_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem growth respiration from storage', &
-            ptr_patch=this%transfer_livestem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_LIVESTEM_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_livestem_gr, default='inactive')
 
        this%cpool_deadstem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_DEADSTEM_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem growth respiration', &
-            ptr_patch=this%cpool_deadstem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_DEADSTEM_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem growth respiration', &
+            !#py !#py ptr_patch=this%cpool_deadstem_gr, default='inactive')
 
        this%cpool_deadstem_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_DEADSTEM_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem growth respiration to storage', &
-            ptr_patch=this%cpool_deadstem_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_DEADSTEM_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_deadstem_storage_gr, default='inactive')
 
        this%transfer_deadstem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_DEADSTEM_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem growth respiration from storage', &
-            ptr_patch=this%transfer_deadstem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_DEADSTEM_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_deadstem_gr, default='inactive')
 
        this%cpool_livecroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_LIVECROOT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root growth respiration', &
-            ptr_patch=this%cpool_livecroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_LIVECROOT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_livecroot_gr, default='inactive')
 
        this%cpool_livecroot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_LIVECROOT_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root growth respiration to storage', &
-            ptr_patch=this%cpool_livecroot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_LIVECROOT_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_livecroot_storage_gr, default='inactive')
 
        this%transfer_livecroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_LIVECROOT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root growth respiration from storage', &
-            ptr_patch=this%transfer_livecroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_LIVECROOT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_livecroot_gr, default='inactive')
 
        this%cpool_deadcroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_DEADCROOT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root growth respiration', &
-            ptr_patch=this%cpool_deadcroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_DEADCROOT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_deadcroot_gr, default='inactive')
 
        this%cpool_deadcroot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CPOOL_DEADCROOT_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root growth respiration to storage', &
-            ptr_patch=this%cpool_deadcroot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CPOOL_DEADCROOT_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_deadcroot_storage_gr, default='inactive')
 
        this%transfer_deadcroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_DEADCROOT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root growth respiration from storage', &
-            ptr_patch=this%transfer_deadcroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_DEADCROOT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_deadcroot_gr, default='inactive')
 
        this%leafc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LEAFC_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 leaf C shift storage to transfer', &
-            ptr_patch=this%leafc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LEAFC_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 leaf C shift storage to transfer', &
+            !#py !#py ptr_patch=this%leafc_storage_to_xfer, default='inactive')
 
        this%frootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_FROOTC_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 fine root C shift storage to transfer', &
-            ptr_patch=this%frootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_FROOTC_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 fine root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%frootc_storage_to_xfer, default='inactive')
 
        this%livestemc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEMC_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C shift storage to transfer', &
-            ptr_patch=this%livestemc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVESTEMC_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C shift storage to transfer', &
+            !#py !#py ptr_patch=this%livestemc_storage_to_xfer, default='inactive')
 
        this%deadstemc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADSTEMC_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead stem C shift storage to transfer', &
-            ptr_patch=this%deadstemc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADSTEMC_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead stem C shift storage to transfer', &
+            !#py !#py ptr_patch=this%deadstemc_storage_to_xfer, default='inactive')
 
        this%livecrootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOTC_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C shift storage to transfer', &
-            ptr_patch=this%livecrootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVECROOTC_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%livecrootc_storage_to_xfer, default='inactive')
 
        this%deadcrootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DEADCROOTC_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 dead coarse root C shift storage to transfer', &
-            ptr_patch=this%deadcrootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DEADCROOTC_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 dead coarse root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%deadcrootc_storage_to_xfer, default='inactive')
 
        this%gresp_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C13_GRESP_STORAGE_TO_XFER', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth respiration shift storage to transfer', &
-            ptr_patch=this%gresp_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C13_GRESP_STORAGE_TO_XFER', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth respiration shift storage to transfer', &
+            !#py !#py ptr_patch=this%gresp_storage_to_xfer, default='inactive')
 
        this%livestemc_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVESTEMC_TO_DEADSTEMC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live stem C turnover', &
-            ptr_patch=this%livestemc_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVESTEMC_TO_DEADSTEMC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live stem C turnover', &
+            !#py !#py ptr_patch=this%livestemc_to_deadstemc, default='inactive')
 
        this%livecrootc_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LIVECROOTC_TO_DEADCROOTC', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 live coarse root C turnover', &
-            ptr_patch=this%livecrootc_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LIVECROOTC_TO_DEADCROOTC', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 live coarse root C turnover', &
+            !#py !#py ptr_patch=this%livecrootc_to_deadcrootc, default='inactive')
 
        this%gpp(begp:endp) = spval
-       call hist_addfld1d (fname='C13_GPP', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 gross primary production', &
-            ptr_patch=this%gpp)
+       !#py call hist_addfld1d (fname='C13_GPP', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 gross primary production', &
+            !#py !#py ptr_patch=this%gpp)
 
        this%mr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_MR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 maintenance respiration', &
-            ptr_patch=this%mr)
+       !#py call hist_addfld1d (fname='C13_MR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 maintenance respiration', &
+            !#py !#py ptr_patch=this%mr)
 
        this%current_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CURRENT_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth resp for new growth displayed in this timestep', &
-            ptr_patch=this%current_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CURRENT_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth resp for new growth displayed in this timestep', &
+            !#py !#py ptr_patch=this%current_gr, default='inactive')
 
        this%transfer_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_TRANSFER_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth resp for transfer growth displayed in this timestep', &
-            ptr_patch=this%transfer_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_TRANSFER_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth resp for transfer growth displayed in this timestep', &
+            !#py !#py ptr_patch=this%transfer_gr, default='inactive')
 
        this%storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_STORAGE_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 growth resp for growth sent to storage for later display', &
-            ptr_patch=this%storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C13_STORAGE_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 growth resp for growth sent to storage for later display', &
+            !#py !#py ptr_patch=this%storage_gr, default='inactive')
 
        this%gr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_GR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 total growth respiration', &
-            ptr_patch=this%gr)
+       !#py call hist_addfld1d (fname='C13_GR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 total growth respiration', &
+            !#py !#py ptr_patch=this%gr)
 
        this%ar(begp:endp) = spval
-       call hist_addfld1d (fname='C13_AR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 autotrophic respiration (MR + GR)', &
-            ptr_patch=this%ar)
+       !#py call hist_addfld1d (fname='C13_AR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 autotrophic respiration (MR + GR)', &
+            !#py !#py ptr_patch=this%ar)
 
        this%rr(begp:endp) = spval
-       call hist_addfld1d (fname='C13_RR', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 root respiration (fine root MR + total root GR)', &
-            ptr_patch=this%rr)
+       !#py call hist_addfld1d (fname='C13_RR', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 root respiration (fine root MR + total root GR)', &
+            !#py !#py ptr_patch=this%rr)
 
        this%npp(begp:endp) = spval
-       call hist_addfld1d (fname='C13_NPP', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 net primary production', &
-            ptr_patch=this%npp)
+       !#py call hist_addfld1d (fname='C13_NPP', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 net primary production', &
+            !#py !#py ptr_patch=this%npp)
 
        this%agnpp(begp:endp) = spval
-       call hist_addfld1d (fname='C13_AGNPP', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 aboveground NPP', &
-            ptr_patch=this%agnpp)
+       !#py call hist_addfld1d (fname='C13_AGNPP', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 aboveground NPP', &
+            !#py !#py ptr_patch=this%agnpp)
 
        this%bgnpp(begp:endp) = spval
-       call hist_addfld1d (fname='C13_BGNPP', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 belowground NPP', &
-            ptr_patch=this%bgnpp)
+       !#py call hist_addfld1d (fname='C13_BGNPP', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 belowground NPP', &
+            !#py !#py ptr_patch=this%bgnpp)
 
        this%litfall(begp:endp) = spval
-       call hist_addfld1d (fname='C13_LITFALL', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 litterfall (leaves and fine roots)', &
-            ptr_patch=this%litfall, default='inactive')
+       !#py call hist_addfld1d (fname='C13_LITFALL', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 litterfall (leaves and fine roots)', &
+            !#py !#py ptr_patch=this%litfall, default='inactive')
 
        this%vegfire(begp:endp) = spval
-       call hist_addfld1d (fname='C13_VEGFIRE', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 patch-level fire loss', &
-            ptr_patch=this%vegfire, default='inactive')
+       !#py call hist_addfld1d (fname='C13_VEGFIRE', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 patch-level fire loss', &
+            !#py !#py ptr_patch=this%vegfire, default='inactive')
 
        this%fire_closs(begp:endp) = spval
-       call hist_addfld1d (fname='C13_PFT_FIRE_CLOSS', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 total patch-level fire C loss', &
-            ptr_patch=this%fire_closs)
+       !#py call hist_addfld1d (fname='C13_PFT_FIRE_CLOSS', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 total patch-level fire C loss', &
+            !#py !#py ptr_patch=this%fire_closs)
 
        this%crop_seedc_to_leaf(begp:endp) = spval
-       call hist_addfld1d (fname='C13_CROP_SEEDC_TO_LEAF', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 crop seed source to leaf', &
-            ptr_patch=this%crop_seedc_to_leaf, default='inactive')
+       !#py call hist_addfld1d (fname='C13_CROP_SEEDC_TO_LEAF', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 crop seed source to leaf', &
+            !#py !#py ptr_patch=this%crop_seedc_to_leaf, default='inactive')
 
        this%dwt_conv_cflux(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DWT_CONV_CFLUX_PATCH', units='gC13/m^2/s', &
-            avgflag='A', &
-            long_name='C13 patch-level conversion C flux (immediate loss to atm) ' // &
-            '(0 at all times except first timestep of year) ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_conv_cflux, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DWT_CONV_CFLUX_PATCH', units='gC13/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='C13 patch-level conversion C flux (immediate loss to atm) ' // &
+            !#py '(0 at all times except first timestep of year) ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_conv_cflux, default='inactive')
 
        this%dwt_prod10c_gain(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DWT_PROD10C_GAIN_PATCH', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 landcover change-driven addition to 10-yr wood product pool', &
-            ptr_patch=this%dwt_prod10c_gain, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DWT_PROD10C_GAIN_PATCH', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 landcover change-driven addition to 10-yr wood product pool', &
+            !#py !#py ptr_patch=this%dwt_prod10c_gain, default='inactive')
 
        this%dwt_prod100c_gain(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DWT_PROD100C_GAIN_PATCH', units='gC13/m^2/s', &
-            avgflag='A', long_name='C13 landcover change-driven addition to 100-yr wood product pool', &
-            ptr_patch=this%dwt_prod100c_gain, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DWT_PROD100C_GAIN_PATCH', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C13 landcover change-driven addition to 100-yr wood product pool', &
+            !#py !#py ptr_patch=this%dwt_prod100c_gain, default='inactive')
 
        this%dwt_seedc_to_leaf(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DWT_SEEDC_TO_LEAF_PATCH', units='gC13/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level C13 seed source to patch-level leaf ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_seedc_to_leaf, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DWT_SEEDC_TO_LEAF_PATCH', units='gC13/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level C13 seed source to patch-level leaf ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_seedc_to_leaf, default='inactive')
 
        this%dwt_seedc_to_deadstem(begp:endp) = spval
-       call hist_addfld1d (fname='C13_DWT_SEEDC_TO_DEADSTEM_PATCH', units='gC13/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level C13 seed source to patch-level deadstem ' // &
-           '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_seedc_to_deadstem, default='inactive')
+       !#py call hist_addfld1d (fname='C13_DWT_SEEDC_TO_DEADSTEM_PATCH', units='gC13/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level C13 seed source to patch-level deadstem ' // &
+           !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_seedc_to_deadstem, default='inactive')
 
        this%xsmrpool_c13ratio(begp:endp) = spval
-       call hist_addfld1d (fname='XSMRPOOL_C13RATIO', units='proportion', &
-            avgflag='A', long_name='C13/C(12+13) ratio for xsmrpool', &
-            ptr_patch=this%xsmrpool_c13ratio, default='inactive')
+       !#py call hist_addfld1d (fname='XSMRPOOL_C13RATIO', units='proportion', &
+            !#py avgflag='A', long_name='C13/C(12+13) ratio for xsmrpool', &
+            !#py !#py ptr_patch=this%xsmrpool_c13ratio, default='inactive')
 
        ! end of C13 block
 
     else if ( carbon_type == 'c14' ) then
        this%m_leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LEAFC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C mortality', &
-            ptr_patch=this%m_leafc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LEAFC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C mortality', &
+            !#py !#py ptr_patch=this%m_leafc_to_litter, default='inactive')
 
        this%m_frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_FROOTC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C mortality', &
-            ptr_patch=this%m_frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_FROOTC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C mortality', &
+            !#py !#py ptr_patch=this%m_frootc_to_litter, default='inactive')
 
        this%m_leafc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LEAFC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C storage mortality', &
-            ptr_patch=this%m_leafc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LEAFC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C storage mortality', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_litter, default='inactive')
 
        this%m_frootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_FROOTC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C storage mortality', &
-            ptr_patch=this%m_frootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_FROOTC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C storage mortality', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_litter, default='inactive')
 
        this%m_livestemc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVESTEMC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C storage mortality', &
-            ptr_patch=this%m_livestemc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVESTEMC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C storage mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_litter, default='inactive')
 
        this%m_deadstemc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C storage mortality', &
-            ptr_patch=this%m_deadstemc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C storage mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_litter, default='inactive')
 
        this%m_livecrootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVECROOTC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C storage mortality', &
-            ptr_patch=this%m_livecrootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVECROOTC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C storage mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_litter, default='inactive')
 
        this%m_deadcrootc_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C storage mortality', &
-            ptr_patch=this%m_deadcrootc_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C storage mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_litter, default='inactive')
 
        this%m_leafc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LEAFC_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C transfer mortality', &
-            ptr_patch=this%m_leafc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LEAFC_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C transfer mortality', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_litter, default='inactive')
 
        this%m_frootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_FROOTC_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C transfer mortality', &
-            ptr_patch=this%m_frootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_FROOTC_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_litter, default='inactive')
 
        this%m_livestemc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVESTEMC_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C transfer mortality', &
-            ptr_patch=this%m_livestemc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVESTEMC_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C transfer mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_litter, default='inactive')
 
        this%m_deadstemc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C transfer mortality', &
-            ptr_patch=this%m_deadstemc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C transfer mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_litter, default='inactive')
 
        this%m_livecrootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVECROOTC_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C transfer mortality', &
-            ptr_patch=this%m_livecrootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVECROOTC_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_litter, default='inactive')
 
        this%m_deadcrootc_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C transfer mortality', &
-            ptr_patch=this%m_deadcrootc_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C transfer mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_litter, default='inactive')
 
        this%m_livestemc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVESTEMC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C mortality', &
-            ptr_patch=this%m_livestemc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVESTEMC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C mortality', &
+            !#py !#py ptr_patch=this%m_livestemc_to_litter, default='inactive')
 
        this%m_deadstemc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C mortality', &
-            ptr_patch=this%m_deadstemc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C mortality', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_litter, default='inactive')
 
        this%m_livecrootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVECROOTC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C mortality', &
-            ptr_patch=this%m_livecrootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVECROOTC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C mortality', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_litter, default='inactive')
 
        this%m_deadcrootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C mortality', &
-            ptr_patch=this%m_deadcrootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C mortality', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_litter, default='inactive')
 
        this%m_gresp_storage_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_GRESP_STORAGE_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth respiration storage mortality', &
-            ptr_patch=this%m_gresp_storage_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_GRESP_STORAGE_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth respiration storage mortality', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_litter, default='inactive')
 
        this%m_gresp_xfer_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_GRESP_XFER_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth respiration transfer mortality', &
-            ptr_patch=this%m_gresp_xfer_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_GRESP_XFER_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth respiration transfer mortality', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_litter, default='inactive')
 
        this%m_leafc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LEAFC_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C fire loss', &
-            ptr_patch=this%m_leafc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LEAFC_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_to_fire, default='inactive')
 
        this%m_frootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_FROOTC_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C fire loss', &
-            ptr_patch=this%m_frootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_FROOTC_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_to_fire, default='inactive')
 
        this%m_leafc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LEAFC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C storage fire loss', &
-            ptr_patch=this%m_leafc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LEAFC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C storage fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_storage_to_fire, default='inactive')
 
        this%m_frootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_FROOTC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C storage fire loss', &
-            ptr_patch=this%m_frootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_FROOTC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_storage_to_fire, default='inactive')
 
        this%m_livestemc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVESTEMC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C storage fire loss', &
-            ptr_patch=this%m_livestemc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVESTEMC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C storage fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_storage_to_fire, default='inactive')
 
        this%m_deadstemc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C storage fire loss', &
-            ptr_patch=this%m_deadstemc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C storage fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_storage_to_fire, default='inactive')
 
        this%m_livecrootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVECROOTC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C storage fire loss', &
-            ptr_patch=this%m_livecrootc_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVECROOTC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_storage_to_fire, default='inactive')
 
        this%m_deadcrootc_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C storage fire loss', &
-            ptr_patch=this%m_deadcrootc_storage_to_fire,  default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C storage fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_storage_to_fire,  default='inactive')
 
        this%m_leafc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LEAFC_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C transfer fire loss', &
-            ptr_patch=this%m_leafc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LEAFC_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_leafc_xfer_to_fire, default='inactive')
 
        this%m_frootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_FROOTC_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C transfer fire loss', &
-            ptr_patch=this%m_frootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_FROOTC_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_frootc_xfer_to_fire, default='inactive')
 
        this%m_livestemc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVESTEMC_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C transfer fire loss', &
-            ptr_patch=this%m_livestemc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVESTEMC_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_xfer_to_fire, default='inactive')
 
        this%m_deadstemc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C transfer fire loss', &
-            ptr_patch=this%m_deadstemc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_xfer_to_fire, default='inactive')
 
        this%m_livecrootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVECROOTC_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C transfer fire loss', &
-            ptr_patch=this%m_livecrootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVECROOTC_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_xfer_to_fire, default='inactive')
 
        this%m_deadcrootc_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C transfer fire loss', &
-            ptr_patch=this%m_deadcrootc_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C transfer fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_xfer_to_fire, default='inactive')
 
        this%m_livestemc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVESTEMC_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C fire loss', &
-            ptr_patch=this%m_livestemc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVESTEMC_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C fire loss', &
+            !#py !#py ptr_patch=this%m_livestemc_to_fire, default='inactive')
 
        this%m_deadstemc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C fire loss', &
-            ptr_patch=this%m_deadstemc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C fire loss', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_fire, default='inactive')
 
        this%m_deadstemc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADSTEMC_TO_LITTER_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C fire mortality to litter', &
-            ptr_patch=this%m_deadstemc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADSTEMC_TO_LITTER_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadstemc_to_litter_fire, default='inactive')
 
        this%m_livecrootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_LIVECROOTC_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C fire loss', &
-            ptr_patch=this%m_livecrootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_LIVECROOTC_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C fire loss', &
+            !#py !#py ptr_patch=this%m_livecrootc_to_fire, default='inactive')
 
        this%m_deadcrootc_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C fire loss', &
-            ptr_patch=this%m_deadcrootc_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C fire loss', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_fire, default='inactive')
 
        this%m_deadcrootc_to_litter_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_DEADCROOTC_TO_LITTER_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C fire mortality to litter', &
-            ptr_patch=this%m_deadcrootc_to_litter_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_DEADCROOTC_TO_LITTER_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C fire mortality to litter', &
+            !#py !#py ptr_patch=this%m_deadcrootc_to_litter_fire, default='inactive')
 
        this%m_gresp_storage_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_GRESP_STORAGE_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth respiration storage fire loss', &
-            ptr_patch=this%m_gresp_storage_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_GRESP_STORAGE_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth respiration storage fire loss', &
+            !#py !#py ptr_patch=this%m_gresp_storage_to_fire, default='inactive')
 
        this%m_gresp_xfer_to_fire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_M_GRESP_XFER_TO_FIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth respiration transfer fire loss', &
-            ptr_patch=this%m_gresp_xfer_to_fire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_M_GRESP_XFER_TO_FIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth respiration transfer fire loss', &
+            !#py !#py ptr_patch=this%m_gresp_xfer_to_fire, default='inactive')
 
        this%leafc_xfer_to_leafc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAFC_XFER_TO_LEAFC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C growth from storage', &
-            ptr_patch=this%leafc_xfer_to_leafc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LEAFC_XFER_TO_LEAFC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C growth from storage', &
+            !#py !#py ptr_patch=this%leafc_xfer_to_leafc, default='inactive')
 
        this%frootc_xfer_to_frootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOTC_XFER_TO_FROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C growth from storage', &
-            ptr_patch=this%frootc_xfer_to_frootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_FROOTC_XFER_TO_FROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C growth from storage', &
+            !#py !#py ptr_patch=this%frootc_xfer_to_frootc, default='inactive')
 
        this%livestemc_xfer_to_livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEMC_XFER_TO_LIVESTEMC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C growth from storage', &
-            ptr_patch=this%livestemc_xfer_to_livestemc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVESTEMC_XFER_TO_LIVESTEMC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C growth from storage', &
+            !#py !#py ptr_patch=this%livestemc_xfer_to_livestemc, default='inactive')
 
        this%deadstemc_xfer_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADSTEMC_XFER_TO_DEADSTEMC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C growth from storage', &
-            ptr_patch=this%deadstemc_xfer_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADSTEMC_XFER_TO_DEADSTEMC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C growth from storage', &
+            !#py !#py ptr_patch=this%deadstemc_xfer_to_deadstemc, default='inactive')
 
        this%livecrootc_xfer_to_livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOTC_XFER_TO_LIVECROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C growth from storage', &
-            ptr_patch=this%livecrootc_xfer_to_livecrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVECROOTC_XFER_TO_LIVECROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C growth from storage', &
+            !#py !#py ptr_patch=this%livecrootc_xfer_to_livecrootc, default='inactive')
 
        this%deadcrootc_xfer_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADCROOTC_XFER_TO_DEADCROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C growth from storage', &
-            ptr_patch=this%deadcrootc_xfer_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADCROOTC_XFER_TO_DEADCROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C growth from storage', &
+            !#py !#py ptr_patch=this%deadcrootc_xfer_to_deadcrootc, default='inactive')
 
        this%leafc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAFC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C litterfall', &
-            ptr_patch=this%leafc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LEAFC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C litterfall', &
+            !#py !#py ptr_patch=this%leafc_to_litter, default='inactive')
 
        this%frootc_to_litter(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOTC_TO_LITTER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C litterfall', &
-            ptr_patch=this%frootc_to_litter, default='inactive')
+       !#py call hist_addfld1d (fname='C14_FROOTC_TO_LITTER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C litterfall', &
+            !#py !#py ptr_patch=this%frootc_to_litter, default='inactive')
 
        this%leaf_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAF_MR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf maintenance respiration', &
-            ptr_patch=this%leaf_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LEAF_MR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf maintenance respiration', &
+            !#py !#py ptr_patch=this%leaf_mr, default='inactive')
 
        this%froot_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOT_MR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root maintenance respiration', &
-            ptr_patch=this%froot_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_FROOT_MR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root maintenance respiration', &
+            !#py !#py ptr_patch=this%froot_mr, default='inactive')
 
        this%livestem_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEM_MR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem maintenance respiration', &
-            ptr_patch=this%livestem_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVESTEM_MR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem maintenance respiration', &
+            !#py !#py ptr_patch=this%livestem_mr, default='inactive')
 
        this%livecroot_mr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOT_MR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root maintenance respiration', &
-            ptr_patch=this%livecroot_mr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVECROOT_MR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root maintenance respiration', &
+            !#py !#py ptr_patch=this%livecroot_mr, default='inactive')
 
        this%psnsun_to_cpool(begp:endp) = spval
-       call hist_addfld1d (fname='C14_PSNSUN_TO_CPOOL', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 C fixation from sunlit canopy', &
-            ptr_patch=this%psnsun_to_cpool)
+       !#py call hist_addfld1d (fname='C14_PSNSUN_TO_CPOOL', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 C fixation from sunlit canopy', &
+            !#py !#py ptr_patch=this%psnsun_to_cpool)
 
        this%psnshade_to_cpool(begp:endp) = spval
-       call hist_addfld1d (fname='C14_PSNSHADE_TO_CPOOL', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 C fixation from shaded canopy', &
-            ptr_patch=this%psnshade_to_cpool)
+       !#py call hist_addfld1d (fname='C14_PSNSHADE_TO_CPOOL', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 C fixation from shaded canopy', &
+            !#py !#py ptr_patch=this%psnshade_to_cpool)
 
        this%cpool_to_leafc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_LEAFC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to leaf C', &
-            ptr_patch=this%cpool_to_leafc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_LEAFC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to leaf C', &
+            !#py !#py ptr_patch=this%cpool_to_leafc, default='inactive')
 
        this%cpool_to_leafc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_LEAFC_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to leaf C storage', &
-            ptr_patch=this%cpool_to_leafc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_LEAFC_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to leaf C storage', &
+            !#py !#py ptr_patch=this%cpool_to_leafc_storage, default='inactive')
 
        this%cpool_to_frootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_FROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to fine root C', &
-            ptr_patch=this%cpool_to_frootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_FROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to fine root C', &
+            !#py !#py ptr_patch=this%cpool_to_frootc, default='inactive')
 
        this%cpool_to_frootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_FROOTC_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to fine root C storage', &
-            ptr_patch=this%cpool_to_frootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_FROOTC_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to fine root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_frootc_storage, default='inactive')
 
        this%cpool_to_livestemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_LIVESTEMC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to live stem C', &
-            ptr_patch=this%cpool_to_livestemc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_LIVESTEMC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to live stem C', &
+            !#py !#py ptr_patch=this%cpool_to_livestemc, default='inactive')
 
        this%cpool_to_livestemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_LIVESTEMC_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to live stem C storage', &
-            ptr_patch=this%cpool_to_livestemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_LIVESTEMC_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to live stem C storage', &
+            !#py !#py ptr_patch=this%cpool_to_livestemc_storage, default='inactive')
 
        this%cpool_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_DEADSTEMC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to dead stem C', &
-            ptr_patch=this%cpool_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_DEADSTEMC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to dead stem C', &
+            !#py !#py ptr_patch=this%cpool_to_deadstemc, default='inactive')
 
        this%cpool_to_deadstemc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_DEADSTEMC_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to dead stem C storage', &
-            ptr_patch=this%cpool_to_deadstemc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_DEADSTEMC_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to dead stem C storage', &
+            !#py !#py ptr_patch=this%cpool_to_deadstemc_storage, default='inactive')
 
        this%cpool_to_livecrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_LIVECROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to live coarse root C', &
-            ptr_patch=this%cpool_to_livecrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_LIVECROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to live coarse root C', &
+            !#py !#py ptr_patch=this%cpool_to_livecrootc, default='inactive')
 
        this%cpool_to_livecrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_LIVECROOTC_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to live coarse root C storage', &
-            ptr_patch=this%cpool_to_livecrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_LIVECROOTC_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to live coarse root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_livecrootc_storage, default='inactive')
 
        this%cpool_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_DEADCROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to dead coarse root C', &
-            ptr_patch=this%cpool_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_DEADCROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to dead coarse root C', &
+            !#py !#py ptr_patch=this%cpool_to_deadcrootc, default='inactive')
 
        this%cpool_to_deadcrootc_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_DEADCROOTC_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to dead coarse root C storage', &
-            ptr_patch=this%cpool_to_deadcrootc_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_DEADCROOTC_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to dead coarse root C storage', &
+            !#py !#py ptr_patch=this%cpool_to_deadcrootc_storage, default='inactive')
 
        this%cpool_to_gresp_storage(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_TO_GRESP_STORAGE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 allocation to growth respiration storage', &
-            ptr_patch=this%cpool_to_gresp_storage, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_TO_GRESP_STORAGE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 allocation to growth respiration storage', &
+            !#py !#py ptr_patch=this%cpool_to_gresp_storage, default='inactive')
 
        this%cpool_leaf_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_LEAF_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf growth respiration', &
-            ptr_patch=this%cpool_leaf_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_LEAF_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf growth respiration', &
+            !#py !#py ptr_patch=this%cpool_leaf_gr, default='inactive')
 
        this%cpool_leaf_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_LEAF_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf growth respiration to storage', &
-            ptr_patch=this%cpool_leaf_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_LEAF_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_leaf_storage_gr, default='inactive')
 
        this%transfer_leaf_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_LEAF_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf growth respiration from storage', &
-            ptr_patch=this%transfer_leaf_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_LEAF_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_leaf_gr, default='inactive')
 
        this%cpool_froot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_FROOT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root growth respiration', &
-            ptr_patch=this%cpool_froot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_FROOT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_froot_gr, default='inactive')
 
        this%cpool_froot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_FROOT_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root  growth respiration to storage', &
-            ptr_patch=this%cpool_froot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_FROOT_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root  growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_froot_storage_gr, default='inactive')
 
        this%transfer_froot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_FROOT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root  growth respiration from storage', &
-            ptr_patch=this%transfer_froot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_FROOT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root  growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_froot_gr, default='inactive')
 
        this%cpool_livestem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_LIVESTEM_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem growth respiration', &
-            ptr_patch=this%cpool_livestem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_LIVESTEM_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem growth respiration', &
+            !#py !#py ptr_patch=this%cpool_livestem_gr, default='inactive')
 
        this%cpool_livestem_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_LIVESTEM_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem growth respiration to storage', &
-            ptr_patch=this%cpool_livestem_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_LIVESTEM_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_livestem_storage_gr, default='inactive')
 
        this%transfer_livestem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_LIVESTEM_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem growth respiration from storage', &
-            ptr_patch=this%transfer_livestem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_LIVESTEM_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_livestem_gr, default='inactive')
 
        this%cpool_deadstem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_DEADSTEM_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem growth respiration', &
-            ptr_patch=this%cpool_deadstem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_DEADSTEM_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem growth respiration', &
+            !#py !#py ptr_patch=this%cpool_deadstem_gr, default='inactive')
 
        this%cpool_deadstem_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_DEADSTEM_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem growth respiration to storage', &
-            ptr_patch=this%cpool_deadstem_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_DEADSTEM_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_deadstem_storage_gr, default='inactive')
 
        this%transfer_deadstem_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_DEADSTEM_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem growth respiration from storage', &
-            ptr_patch=this%transfer_deadstem_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_DEADSTEM_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_deadstem_gr, default='inactive')
 
        this%cpool_livecroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_LIVECROOT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root growth respiration', &
-            ptr_patch=this%cpool_livecroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_LIVECROOT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_livecroot_gr, default='inactive')
 
        this%cpool_livecroot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_LIVECROOT_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root growth respiration to storage', &
-            ptr_patch=this%cpool_livecroot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_LIVECROOT_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_livecroot_storage_gr, default='inactive')
 
        this%transfer_livecroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_LIVECROOT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root growth respiration from storage', &
-            ptr_patch=this%transfer_livecroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_LIVECROOT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_livecroot_gr, default='inactive')
 
        this%cpool_deadcroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_DEADCROOT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root growth respiration', &
-            ptr_patch=this%cpool_deadcroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_DEADCROOT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root growth respiration', &
+            !#py !#py ptr_patch=this%cpool_deadcroot_gr, default='inactive')
 
        this%cpool_deadcroot_storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CPOOL_DEADCROOT_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root growth respiration to storage', &
-            ptr_patch=this%cpool_deadcroot_storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CPOOL_DEADCROOT_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root growth respiration to storage', &
+            !#py !#py ptr_patch=this%cpool_deadcroot_storage_gr, default='inactive')
 
        this%transfer_deadcroot_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_DEADCROOT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root growth respiration from storage', &
-            ptr_patch=this%transfer_deadcroot_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_DEADCROOT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root growth respiration from storage', &
+            !#py !#py ptr_patch=this%transfer_deadcroot_gr, default='inactive')
 
        this%leafc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LEAFC_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 leaf C shift storage to transfer', &
-            ptr_patch=this%leafc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LEAFC_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 leaf C shift storage to transfer', &
+            !#py !#py ptr_patch=this%leafc_storage_to_xfer, default='inactive')
 
        this%frootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_FROOTC_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 fine root C shift storage to transfer', &
-            ptr_patch=this%frootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_FROOTC_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 fine root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%frootc_storage_to_xfer, default='inactive')
 
        this%livestemc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEMC_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C shift storage to transfer', &
-            ptr_patch=this%livestemc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVESTEMC_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C shift storage to transfer', &
+            !#py !#py ptr_patch=this%livestemc_storage_to_xfer, default='inactive')
 
        this%deadstemc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADSTEMC_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead stem C shift storage to transfer', &
-            ptr_patch=this%deadstemc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADSTEMC_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead stem C shift storage to transfer', &
+            !#py !#py ptr_patch=this%deadstemc_storage_to_xfer, default='inactive')
 
        this%livecrootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOTC_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C shift storage to transfer', &
-            ptr_patch=this%livecrootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVECROOTC_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%livecrootc_storage_to_xfer, default='inactive')
 
        this%deadcrootc_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DEADCROOTC_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 dead coarse root C shift storage to transfer', &
-            ptr_patch=this%deadcrootc_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DEADCROOTC_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 dead coarse root C shift storage to transfer', &
+            !#py !#py ptr_patch=this%deadcrootc_storage_to_xfer, default='inactive')
 
        this%gresp_storage_to_xfer(begp:endp) = spval
-       call hist_addfld1d (fname='C14_GRESP_STORAGE_TO_XFER', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth respiration shift storage to transfer', &
-            ptr_patch=this%gresp_storage_to_xfer, default='inactive')
+       !#py call hist_addfld1d (fname='C14_GRESP_STORAGE_TO_XFER', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth respiration shift storage to transfer', &
+            !#py !#py ptr_patch=this%gresp_storage_to_xfer, default='inactive')
 
        this%livestemc_to_deadstemc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVESTEMC_TO_DEADSTEMC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live stem C turnover', &
-            ptr_patch=this%livestemc_to_deadstemc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVESTEMC_TO_DEADSTEMC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live stem C turnover', &
+            !#py !#py ptr_patch=this%livestemc_to_deadstemc, default='inactive')
 
        this%livecrootc_to_deadcrootc(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LIVECROOTC_TO_DEADCROOTC', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 live coarse root C turnover', &
-            ptr_patch=this%livecrootc_to_deadcrootc, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LIVECROOTC_TO_DEADCROOTC', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 live coarse root C turnover', &
+            !#py !#py ptr_patch=this%livecrootc_to_deadcrootc, default='inactive')
 
        this%gpp(begp:endp) = spval
-       call hist_addfld1d (fname='C14_GPP', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 gross primary production', &
-            ptr_patch=this%gpp)
+       !#py call hist_addfld1d (fname='C14_GPP', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 gross primary production', &
+            !#py !#py ptr_patch=this%gpp)
 
        this%mr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_MR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 maintenance respiration', &
-            ptr_patch=this%mr)
+       !#py call hist_addfld1d (fname='C14_MR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 maintenance respiration', &
+            !#py !#py ptr_patch=this%mr)
 
        this%current_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CURRENT_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth resp for new growth displayed in this timestep', &
-            ptr_patch=this%current_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CURRENT_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth resp for new growth displayed in this timestep', &
+            !#py !#py ptr_patch=this%current_gr, default='inactive')
 
        this%transfer_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_TRANSFER_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth resp for transfer growth displayed in this timestep', &
-            ptr_patch=this%transfer_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_TRANSFER_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth resp for transfer growth displayed in this timestep', &
+            !#py !#py ptr_patch=this%transfer_gr, default='inactive')
 
        this%storage_gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_STORAGE_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 growth resp for growth sent to storage for later display', &
-            ptr_patch=this%storage_gr, default='inactive')
+       !#py call hist_addfld1d (fname='C14_STORAGE_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 growth resp for growth sent to storage for later display', &
+            !#py !#py ptr_patch=this%storage_gr, default='inactive')
 
        this%gr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_GR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 total growth respiration', &
-            ptr_patch=this%gr)
+       !#py call hist_addfld1d (fname='C14_GR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 total growth respiration', &
+            !#py !#py ptr_patch=this%gr)
 
        this%ar(begp:endp) = spval
-       call hist_addfld1d (fname='C14_AR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 autotrophic respiration (MR + GR)', &
-            ptr_patch=this%ar)
+       !#py call hist_addfld1d (fname='C14_AR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 autotrophic respiration (MR + GR)', &
+            !#py !#py ptr_patch=this%ar)
 
        this%rr(begp:endp) = spval
-       call hist_addfld1d (fname='C14_RR', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 root respiration (fine root MR + total root GR)', &
-            ptr_patch=this%rr)
+       !#py call hist_addfld1d (fname='C14_RR', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 root respiration (fine root MR + total root GR)', &
+            !#py !#py ptr_patch=this%rr)
 
        this%npp(begp:endp) = spval
-       call hist_addfld1d (fname='C14_NPP', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 net primary production', &
-            ptr_patch=this%npp)
+       !#py call hist_addfld1d (fname='C14_NPP', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 net primary production', &
+            !#py !#py ptr_patch=this%npp)
 
        this%agnpp(begp:endp) = spval
-       call hist_addfld1d (fname='C14_AGNPP', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 aboveground NPP', &
-            ptr_patch=this%agnpp)
+       !#py call hist_addfld1d (fname='C14_AGNPP', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 aboveground NPP', &
+            !#py !#py ptr_patch=this%agnpp)
 
        this%bgnpp(begp:endp) = spval
-       call hist_addfld1d (fname='C14_BGNPP', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 belowground NPP', &
-            ptr_patch=this%bgnpp)
+       !#py call hist_addfld1d (fname='C14_BGNPP', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 belowground NPP', &
+            !#py !#py ptr_patch=this%bgnpp)
 
        this%litfall(begp:endp) = spval
-       call hist_addfld1d (fname='C14_LITFALL', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 litterfall (leaves and fine roots)', &
-            ptr_patch=this%litfall, default='inactive')
+       !#py call hist_addfld1d (fname='C14_LITFALL', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 litterfall (leaves and fine roots)', &
+            !#py !#py ptr_patch=this%litfall, default='inactive')
 
        this%vegfire(begp:endp) = spval
-       call hist_addfld1d (fname='C14_VEGFIRE', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 patch-level fire loss', &
-            ptr_patch=this%vegfire, default='inactive')
+       !#py call hist_addfld1d (fname='C14_VEGFIRE', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 patch-level fire loss', &
+            !#py !#py ptr_patch=this%vegfire, default='inactive')
 
        this%fire_closs(begp:endp) = spval
-       call hist_addfld1d (fname='C14_PFT_FIRE_CLOSS', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 total patch-level fire C loss', &
-            ptr_patch=this%fire_closs)
+       !#py call hist_addfld1d (fname='C14_PFT_FIRE_CLOSS', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 total patch-level fire C loss', &
+            !#py !#py ptr_patch=this%fire_closs)
 
        this%crop_seedc_to_leaf(begp:endp) = spval
-       call hist_addfld1d (fname='C14_CROP_SEEDC_TO_LEAF', units='gC13/m^2/s', &
-            avgflag='A', long_name='C14 crop seed source to leaf', &
-            ptr_patch=this%crop_seedc_to_leaf, default='inactive')
+       !#py call hist_addfld1d (fname='C14_CROP_SEEDC_TO_LEAF', units='gC13/m^2/s', &
+            !#py avgflag='A', long_name='C14 crop seed source to leaf', &
+            !#py !#py ptr_patch=this%crop_seedc_to_leaf, default='inactive')
 
        this%dwt_conv_cflux(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DWT_CONV_CFLUX_PATCH', units='gC14/m^2/s', &
-            avgflag='A', &
-            long_name='C14 patch-level conversion C flux (immediate loss to atm) ' // &
-            '(0 at all times except first timestep of year) ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_conv_cflux, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DWT_CONV_CFLUX_PATCH', units='gC14/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='C14 patch-level conversion C flux (immediate loss to atm) ' // &
+            !#py '(0 at all times except first timestep of year) ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_conv_cflux, default='inactive')
 
        this%dwt_prod10c_gain(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DWT_PROD10C_GAIN_PATCH', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 landcover change-driven addition to 10-yr wood product pool', &
-            ptr_patch=this%dwt_prod10c_gain, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DWT_PROD10C_GAIN_PATCH', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 landcover change-driven addition to 10-yr wood product pool', &
+            !#py !#py ptr_patch=this%dwt_prod10c_gain, default='inactive')
 
        this%dwt_prod100c_gain(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DWT_PROD100C_GAIN_PATCH', units='gC14/m^2/s', &
-            avgflag='A', long_name='C14 landcover change-driven addition to 100-yr wood product pool', &
-            ptr_patch=this%dwt_prod100c_gain, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DWT_PROD100C_GAIN_PATCH', units='gC14/m^2/s', &
+            !#py avgflag='A', long_name='C14 landcover change-driven addition to 100-yr wood product pool', &
+            !#py !#py ptr_patch=this%dwt_prod100c_gain, default='inactive')
 
        this%dwt_seedc_to_leaf(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DWT_SEEDC_TO_LEAF_PATCH', units='gC14/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level C14 seed source to patch-level leaf ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_seedc_to_leaf, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DWT_SEEDC_TO_LEAF_PATCH', units='gC14/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level C14 seed source to patch-level leaf ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_seedc_to_leaf, default='inactive')
 
        this%dwt_seedc_to_deadstem(begp:endp) = spval
-       call hist_addfld1d (fname='C14_DWT_SEEDC_TO_DEADSTEM_PATCH', units='gC14/m^2/s', &
-            avgflag='A', &
-            long_name='patch-level C14 seed source to patch-level deadstem ' // &
-            '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-            ptr_patch=this%dwt_seedc_to_deadstem, default='inactive')
+       !#py call hist_addfld1d (fname='C14_DWT_SEEDC_TO_DEADSTEM_PATCH', units='gC14/m^2/s', &
+            !#py avgflag='A', &
+            !#py long_name='patch-level C14 seed source to patch-level deadstem ' // &
+            !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+            !#py !#py ptr_patch=this%dwt_seedc_to_deadstem, default='inactive')
 
 
        ! end of C14 block
@@ -7952,142 +7935,142 @@ module VegetationDataType
   end subroutine veg_cf_init
 
   !-----------------------------------------------------------------------
-  subroutine veg_cf_restart ( this, bounds, ncid, flag )
-    !
-    ! !DESCRIPTION:
-    ! Read/write restart data for vegetation carbon fluxes
-    !
-    ! !ARGUMENTS:
-    class (vegetation_carbon_flux)    :: this
-    type(bounds_type) , intent(in)    :: bounds
-    type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
-    character(len=*)  , intent(in)    :: flag   !'read' or 'write'
-    !
-    ! !LOCAL VARIABLES:
-    integer :: j,c ! indices
-    logical :: readvar      ! determine if variable is on initial file
-    !------------------------------------------------------------------------
-
-    ! -------------------------------------------
-    ! None of these restarts are needed for FATES
-    ! -------------------------------------------
-    if (use_fates) return
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='grainc_xfer_to_grainc', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain C growth from storage', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainc_xfer_to_grainc)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='livestemc_to_litter', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='live stem C litterfall', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%livestemc_to_litter)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainc_to_food', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain C to food', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainc_to_food)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='cpool_to_grainc', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='allocation to grain C', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%cpool_to_grainc)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='cpool_to_grainc_storage', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='allocation to grain C storage', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%cpool_to_grainc_storage)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='cpool_grain_gr', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain growth respiration', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%cpool_grain_gr)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='cpool_grain_storage_gr', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain growth respiration to storage', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%cpool_grain_storage_gr)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='transfer_grain_gr', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain growth respiration from storage', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%transfer_grain_gr)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainc_storage_to_xfer', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain C shift storage to transfer', units='gC/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainc_storage_to_xfer)
-    end if
-
-    if (use_lch4 .or. use_betr) then
-       call restartvar(ncid=ncid, flag=flag, varname='tempavg_agnpp', xtype=ncd_double,  &
-            dim1name='pft',&
-            long_name='Temp. Average AGNPP',units='gC/m^2/s', &
-            readvar=readvar, interpinic_flag='interp', data=this%tempavg_agnpp)
-
-       call restartvar(ncid=ncid, flag=flag, varname='tempavg_bgnpp', xtype=ncd_double,  &
-            dim1name='pft',&
-            long_name='Temp. Average BGNPP',units='gC/m^2/s', &
-            readvar=readvar, interpinic_flag='interp', data=this%tempavg_bgnpp)
-
-       call restartvar(ncid=ncid, flag=flag, varname='annavg_agnpp', xtype=ncd_double,  &
-            dim1name='pft',&
-            long_name='Ann. Average AGNPP',units='gC/m^2/s', &
-            readvar=readvar, interpinic_flag='interp', data=this%annavg_agnpp)
-
-       call restartvar(ncid=ncid, flag=flag, varname='annavg_bgnpp', xtype=ncd_double,  &
-            dim1name='pft',&
-            long_name='Ann. Average BGNPP',units='gC/m^2/s', &
-            readvar=readvar, interpinic_flag='interp', data=this%annavg_bgnpp)
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='gpp_pepv', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%gpp_before_downreg)
-
-    call restartvar(ncid=ncid, flag=flag, varname='availc', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%availc)
-
-    call restartvar(ncid=ncid, flag=flag, varname='xsmrpool_recover', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%xsmrpool_recover)
-
-    call restartvar(ncid=ncid, flag=flag, varname='plant_calloc', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%plant_calloc)
-
-    call restartvar(ncid=ncid, flag=flag, varname='excess_cflux', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%excess_cflux)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prev_leafc_to_litter', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prev_leafc_to_litter)
-
-    call restartvar(ncid=ncid, flag=flag, varname='prev_frootc_to_litter', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%prev_frootc_to_litter)
-
-    call restartvar(ncid=ncid, flag=flag, varname='tempsum_npp', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%tempsum_npp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='annsum_npp', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%annsum_npp)
-
-  end subroutine veg_cf_restart
+!#py   subroutine veg_cf_restart ( this, bounds, ncid, flag )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write restart data for vegetation carbon fluxes
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class (vegetation_carbon_flux)    :: this
+!#py     type(bounds_type) , intent(in)    :: bounds
+!#py     type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
+!#py     character(len=*)  , intent(in)    :: flag   !'read' or 'write'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer :: j,c ! indices
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     ! -------------------------------------------
+!#py     ! None of these restarts are needed for FATES
+!#py     ! -------------------------------------------
+!#py     if (use_fates) return
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainc_xfer_to_grainc', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain C growth from storage', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainc_xfer_to_grainc)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='livestemc_to_litter', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='live stem C litterfall', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%livestemc_to_litter)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainc_to_food', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain C to food', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainc_to_food)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='cpool_to_grainc', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='allocation to grain C', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%cpool_to_grainc)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='cpool_to_grainc_storage', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='allocation to grain C storage', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%cpool_to_grainc_storage)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='cpool_grain_gr', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain growth respiration', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%cpool_grain_gr)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='cpool_grain_storage_gr', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain growth respiration to storage', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%cpool_grain_storage_gr)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='transfer_grain_gr', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain growth respiration from storage', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%transfer_grain_gr)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainc_storage_to_xfer', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain C shift storage to transfer', units='gC/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainc_storage_to_xfer)
+!#py     end if
+!#py
+!#py     if (use_lch4 .or. use_betr) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='tempavg_agnpp', xtype=ncd_double,  &
+!#py             dim1name='pft',&
+!#py             long_name='Temp. Average AGNPP',units='gC/m^2/s', &
+!#py             readvar=readvar, interpinic_flag='interp', data=this%tempavg_agnpp)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='tempavg_bgnpp', xtype=ncd_double,  &
+!#py             dim1name='pft',&
+!#py             long_name='Temp. Average BGNPP',units='gC/m^2/s', &
+!#py             readvar=readvar, interpinic_flag='interp', data=this%tempavg_bgnpp)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='annavg_agnpp', xtype=ncd_double,  &
+!#py             dim1name='pft',&
+!#py             long_name='Ann. Average AGNPP',units='gC/m^2/s', &
+!#py             readvar=readvar, interpinic_flag='interp', data=this%annavg_agnpp)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='annavg_bgnpp', xtype=ncd_double,  &
+!#py             dim1name='pft',&
+!#py             long_name='Ann. Average BGNPP',units='gC/m^2/s', &
+!#py             readvar=readvar, interpinic_flag='interp', data=this%annavg_bgnpp)
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='gpp_pepv', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%gpp_before_downreg)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='availc', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%availc)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='xsmrpool_recover', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%xsmrpool_recover)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='plant_calloc', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%plant_calloc)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='excess_cflux', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%excess_cflux)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prev_leafc_to_litter', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prev_leafc_to_litter)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='prev_frootc_to_litter', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%prev_frootc_to_litter)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='tempsum_npp', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%tempsum_npp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='annsum_npp', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%annsum_npp)
+!#py
+!#py !#py !#py   end subroutine veg_cf_restart
 
 
   !-----------------------------------------------------------------------
@@ -9004,500 +8987,500 @@ module VegetationDataType
     ! add suffix if number of soil decomposition depths is greater than 1
 
     this%m_leafn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N mortality', &
-         ptr_patch=this%m_leafn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N mortality', &
+         !#py !#py ptr_patch=this%m_leafn_to_litter, default='inactive')
 
     this%m_frootn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N mortality', &
-         ptr_patch=this%m_frootn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N mortality', &
+         !#py !#py ptr_patch=this%m_frootn_to_litter, default='inactive')
 
     this%m_leafn_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFN_STORAGE_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N storage mortality', &
-         ptr_patch=this%m_leafn_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFN_STORAGE_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N storage mortality', &
+         !#py !#py ptr_patch=this%m_leafn_storage_to_litter, default='inactive')
 
     this%m_frootn_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTN_STORAGE_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N storage mortality', &
-         ptr_patch=this%m_frootn_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTN_STORAGE_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N storage mortality', &
+         !#py !#py ptr_patch=this%m_frootn_storage_to_litter, default='inactive')
 
     this%m_livestemn_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMN_STORAGE_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N storage mortality', &
-         ptr_patch=this%m_livestemn_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMN_STORAGE_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N storage mortality', &
+         !#py !#py ptr_patch=this%m_livestemn_storage_to_litter, default='inactive')
 
     this%m_deadstemn_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_STORAGE_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N storage mortality', &
-         ptr_patch=this%m_deadstemn_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_STORAGE_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N storage mortality', &
+         !#py !#py ptr_patch=this%m_deadstemn_storage_to_litter, default='inactive')
 
     this%m_livecrootn_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTN_STORAGE_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N storage mortality', &
-         ptr_patch=this%m_livecrootn_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTN_STORAGE_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N storage mortality', &
+         !#py !#py ptr_patch=this%m_livecrootn_storage_to_litter, default='inactive')
 
     this%m_deadcrootn_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_STORAGE_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N storage mortality', &
-         ptr_patch=this%m_deadcrootn_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_STORAGE_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N storage mortality', &
+         !#py !#py ptr_patch=this%m_deadcrootn_storage_to_litter, default='inactive')
 
     this%m_leafn_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFN_XFER_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N transfer mortality', &
-         ptr_patch=this%m_leafn_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFN_XFER_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N transfer mortality', &
+         !#py !#py ptr_patch=this%m_leafn_xfer_to_litter, default='inactive')
 
     this%m_frootn_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTN_XFER_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N transfer mortality', &
-         ptr_patch=this%m_frootn_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTN_XFER_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N transfer mortality', &
+         !#py !#py ptr_patch=this%m_frootn_xfer_to_litter, default='inactive')
 
     this%m_livestemn_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMN_XFER_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N transfer mortality', &
-         ptr_patch=this%m_livestemn_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMN_XFER_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N transfer mortality', &
+         !#py !#py ptr_patch=this%m_livestemn_xfer_to_litter, default='inactive')
 
     this%m_deadstemn_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_XFER_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N transfer mortality', &
-         ptr_patch=this%m_deadstemn_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_XFER_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N transfer mortality', &
+         !#py !#py ptr_patch=this%m_deadstemn_xfer_to_litter, default='inactive')
 
     this%m_livecrootn_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTN_XFER_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N transfer mortality', &
-         ptr_patch=this%m_livecrootn_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTN_XFER_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N transfer mortality', &
+         !#py !#py ptr_patch=this%m_livecrootn_xfer_to_litter, default='inactive')
 
     this%m_deadcrootn_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_XFER_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N transfer mortality', &
-         ptr_patch=this%m_deadcrootn_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_XFER_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N transfer mortality', &
+         !#py !#py ptr_patch=this%m_deadcrootn_xfer_to_litter, default='inactive')
 
     this%m_livestemn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N mortality', &
-         ptr_patch=this%m_livestemn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N mortality', &
+         !#py !#py ptr_patch=this%m_livestemn_to_litter, default='inactive')
 
     this%m_deadstemn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N mortality', &
-         ptr_patch=this%m_deadstemn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N mortality', &
+         !#py !#py ptr_patch=this%m_deadstemn_to_litter, default='inactive')
 
     this%m_livecrootn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N mortality', &
-         ptr_patch=this%m_livecrootn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N mortality', &
+         !#py !#py ptr_patch=this%m_livecrootn_to_litter, default='inactive')
 
     this%m_deadcrootn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N mortality', &
-         ptr_patch=this%m_deadcrootn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N mortality', &
+         !#py !#py ptr_patch=this%m_deadcrootn_to_litter, default='inactive')
 
     this%m_retransn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_RETRANSN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='retranslocated N pool mortality', &
-         ptr_patch=this%m_retransn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_RETRANSN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='retranslocated N pool mortality', &
+         !#py !#py ptr_patch=this%m_retransn_to_litter, default='inactive')
 
     this%m_npool_to_litter_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_NPOOL_TO_LITTER_FIRE', units='gN/m^2/s', &
-        avgflag='A', long_name='N pool mortality due to fire', &
-        ptr_patch=this%m_npool_to_litter_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_NPOOL_TO_LITTER_FIRE', units='gN/m^2/s', &
+        !#py avgflag='A', long_name='N pool mortality due to fire', &
+        !#py !#py ptr_patch=this%m_npool_to_litter_fire, default='inactive')
 
     this%m_npool_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_NPOOL_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='retranslocated N pool mortality', &
-         ptr_patch=this%m_npool_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_NPOOL_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='retranslocated N pool mortality', &
+         !#py !#py ptr_patch=this%m_npool_to_litter, default='inactive')
 
     this%m_leafn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N fire loss', &
-         ptr_patch=this%m_leafn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N fire loss', &
+         !#py !#py ptr_patch=this%m_leafn_to_fire, default='inactive')
 
     this%m_frootn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N fire loss ', &
-         ptr_patch=this%m_frootn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N fire loss ', &
+         !#py !#py ptr_patch=this%m_frootn_to_fire, default='inactive')
 
     this%m_leafn_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFN_STORAGE_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N storage fire loss', &
-         ptr_patch=this%m_leafn_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFN_STORAGE_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N storage fire loss', &
+         !#py !#py ptr_patch=this%m_leafn_storage_to_fire, default='inactive')
 
     this%m_frootn_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTN_STORAGE_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N storage fire loss', &
-         ptr_patch=this%m_frootn_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTN_STORAGE_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N storage fire loss', &
+         !#py !#py ptr_patch=this%m_frootn_storage_to_fire, default='inactive')
 
     this%m_livestemn_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMN_STORAGE_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N storage fire loss', &
-         ptr_patch=this%m_livestemn_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMN_STORAGE_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N storage fire loss', &
+         !#py !#py ptr_patch=this%m_livestemn_storage_to_fire, default='inactive')
 
     this%m_deadstemn_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_STORAGE_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N storage fire loss', &
-         ptr_patch=this%m_deadstemn_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_STORAGE_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N storage fire loss', &
+         !#py !#py ptr_patch=this%m_deadstemn_storage_to_fire, default='inactive')
 
     this%m_livecrootn_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTN_STORAGE_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N storage fire loss', &
-         ptr_patch=this%m_livecrootn_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTN_STORAGE_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N storage fire loss', &
+         !#py !#py ptr_patch=this%m_livecrootn_storage_to_fire, default='inactive')
 
     this%m_deadcrootn_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_STORAGE_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N storage fire loss', &
-         ptr_patch=this%m_deadcrootn_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_STORAGE_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N storage fire loss', &
+         !#py !#py ptr_patch=this%m_deadcrootn_storage_to_fire, default='inactive')
 
     this%m_leafn_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFN_XFER_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N transfer fire loss', &
-         ptr_patch=this%m_leafn_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFN_XFER_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N transfer fire loss', &
+         !#py !#py ptr_patch=this%m_leafn_xfer_to_fire, default='inactive')
 
     this%m_frootn_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTN_XFER_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N transfer fire loss', &
-         ptr_patch=this%m_frootn_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTN_XFER_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N transfer fire loss', &
+         !#py !#py ptr_patch=this%m_frootn_xfer_to_fire, default='inactive')
 
     this%m_livestemn_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMN_XFER_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N transfer fire loss', &
-         ptr_patch=this%m_livestemn_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMN_XFER_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N transfer fire loss', &
+         !#py !#py ptr_patch=this%m_livestemn_xfer_to_fire, default='inactive')
 
     this%m_deadstemn_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_XFER_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N transfer fire loss', &
-         ptr_patch=this%m_deadstemn_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_XFER_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N transfer fire loss', &
+         !#py !#py ptr_patch=this%m_deadstemn_xfer_to_fire, default='inactive')
 
     this%m_livecrootn_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTN_XFER_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N transfer fire loss', &
-         ptr_patch=this%m_livecrootn_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTN_XFER_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N transfer fire loss', &
+         !#py !#py ptr_patch=this%m_livecrootn_xfer_to_fire, default='inactive')
 
     this%m_deadcrootn_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_XFER_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N transfer fire loss', &
-         ptr_patch=this%m_deadcrootn_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_XFER_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N transfer fire loss', &
+         !#py !#py ptr_patch=this%m_deadcrootn_xfer_to_fire, default='inactive')
 
     this%m_livestemn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N fire loss', &
-         ptr_patch=this%m_livestemn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N fire loss', &
+         !#py !#py ptr_patch=this%m_livestemn_to_fire, default='inactive')
 
     this%m_deadstemn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N fire loss', &
-         ptr_patch=this%m_deadstemn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N fire loss', &
+         !#py !#py ptr_patch=this%m_deadstemn_to_fire, default='inactive')
 
     this%m_deadstemn_to_litter_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMN_TO_LITTER_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N fire mortality to litter', &
-         ptr_patch=this%m_deadstemn_to_litter_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMN_TO_LITTER_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N fire mortality to litter', &
+         !#py !#py ptr_patch=this%m_deadstemn_to_litter_fire, default='inactive')
 
     this%m_livecrootn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N fire loss', &
-         ptr_patch=this%m_livecrootn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N fire loss', &
+         !#py !#py ptr_patch=this%m_livecrootn_to_fire, default='inactive')
 
     this%m_deadcrootn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N fire loss', &
-         ptr_patch=this%m_deadcrootn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N fire loss', &
+         !#py !#py ptr_patch=this%m_deadcrootn_to_fire, default='inactive')
 
     this%m_deadcrootn_to_litter_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTN_TO_LITTER_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N fire mortality to litter', &
-         ptr_patch=this%m_deadcrootn_to_litter_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTN_TO_LITTER_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N fire mortality to litter', &
+         !#py !#py ptr_patch=this%m_deadcrootn_to_litter_fire, default='inactive')
 
     this%m_retransn_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_RETRANSN_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='retranslocated N pool fire loss', &
-         ptr_patch=this%m_retransn_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_RETRANSN_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='retranslocated N pool fire loss', &
+         !#py !#py ptr_patch=this%m_retransn_to_fire, default='inactive')
 
     this%m_npool_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_NPOOL_TO_FIRE', units='gN/m^2/s', &
-         avgflag='A', long_name='retranslocated N pool fire loss', &
-         ptr_patch=this%m_npool_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_NPOOL_TO_FIRE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='retranslocated N pool fire loss', &
+         !#py !#py ptr_patch=this%m_npool_to_fire, default='inactive')
 
     this%leafn_xfer_to_leafn(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN_XFER_TO_LEAFN', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N growth from storage', &
-         ptr_patch=this%leafn_xfer_to_leafn, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFN_XFER_TO_LEAFN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N growth from storage', &
+         !#py !#py ptr_patch=this%leafn_xfer_to_leafn, default='inactive')
 
     this%frootn_xfer_to_frootn(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTN_XFER_TO_FROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N growth from storage', &
-         ptr_patch=this%frootn_xfer_to_frootn, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTN_XFER_TO_FROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N growth from storage', &
+         !#py !#py ptr_patch=this%frootn_xfer_to_frootn, default='inactive')
 
     this%livestemn_xfer_to_livestemn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN_XFER_TO_LIVESTEMN', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N growth from storage', &
-         ptr_patch=this%livestemn_xfer_to_livestemn, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMN_XFER_TO_LIVESTEMN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N growth from storage', &
+         !#py !#py ptr_patch=this%livestemn_xfer_to_livestemn, default='inactive')
 
     this%deadstemn_xfer_to_deadstemn(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMN_XFER_TO_DEADSTEMN', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N growth from storage', &
-         ptr_patch=this%deadstemn_xfer_to_deadstemn, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMN_XFER_TO_DEADSTEMN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N growth from storage', &
+         !#py !#py ptr_patch=this%deadstemn_xfer_to_deadstemn, default='inactive')
 
     this%livecrootn_xfer_to_livecrootn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN_XFER_TO_LIVECROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N growth from storage', &
-         ptr_patch=this%livecrootn_xfer_to_livecrootn, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTN_XFER_TO_LIVECROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N growth from storage', &
+         !#py !#py ptr_patch=this%livecrootn_xfer_to_livecrootn, default='inactive')
 
     this%deadcrootn_xfer_to_deadcrootn(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTN_XFER_TO_DEADCROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N growth from storage', &
-         ptr_patch=this%deadcrootn_xfer_to_deadcrootn, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTN_XFER_TO_DEADCROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N growth from storage', &
+         !#py !#py ptr_patch=this%deadcrootn_xfer_to_deadcrootn, default='inactive')
 
     this%leafn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N litterfall', &
-         ptr_patch=this%leafn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N litterfall', &
+         !#py !#py ptr_patch=this%leafn_to_litter, default='inactive')
 
     this%leafn_to_retransn(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN_TO_RETRANSN', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N to retranslocated N pool', &
-         ptr_patch=this%leafn_to_retransn, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFN_TO_RETRANSN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N to retranslocated N pool', &
+         !#py !#py ptr_patch=this%leafn_to_retransn, default='inactive')
 
     this%frootn_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTN_TO_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N litterfall', &
-         ptr_patch=this%frootn_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTN_TO_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N litterfall', &
+         !#py !#py ptr_patch=this%frootn_to_litter, default='inactive')
 
     this%retransn_to_npool(begp:endp) = spval
-    call hist_addfld1d (fname='RETRANSN_TO_NPOOL', units='gN/m^2/s', &
-         avgflag='A', long_name='deployment of retranslocated N', &
-         ptr_patch=this%retransn_to_npool)
+    !#py call hist_addfld1d (fname='RETRANSN_TO_NPOOL', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='deployment of retranslocated N', &
+         !#py !#py ptr_patch=this%retransn_to_npool)
 
     this%sminn_to_npool(begp:endp) = spval
-    call hist_addfld1d (fname='SMINN_TO_NPOOL', units='gN/m^2/s', &
-         avgflag='A', long_name='deployment of soil mineral N uptake', &
-         ptr_patch=this%sminn_to_npool)
+    !#py call hist_addfld1d (fname='SMINN_TO_NPOOL', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='deployment of soil mineral N uptake', &
+         !#py !#py ptr_patch=this%sminn_to_npool)
 
     this%npool_to_leafn(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_LEAFN', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to leaf N', &
-         ptr_patch=this%npool_to_leafn, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_LEAFN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to leaf N', &
+         !#py !#py ptr_patch=this%npool_to_leafn, default='inactive')
 
     this%npool_to_leafn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_LEAFN_STORAGE', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to leaf N storage', &
-         ptr_patch=this%npool_to_leafn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_LEAFN_STORAGE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to leaf N storage', &
+         !#py !#py ptr_patch=this%npool_to_leafn_storage, default='inactive')
 
     this%npool_to_frootn(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_FROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to fine root N', &
-         ptr_patch=this%npool_to_frootn, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_FROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to fine root N', &
+         !#py !#py ptr_patch=this%npool_to_frootn, default='inactive')
 
     this%npool_to_frootn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_FROOTN_STORAGE', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to fine root N storage', &
-         ptr_patch=this%npool_to_frootn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_FROOTN_STORAGE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to fine root N storage', &
+         !#py !#py ptr_patch=this%npool_to_frootn_storage, default='inactive')
 
     this%npool_to_livestemn(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_LIVESTEMN', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to live stem N', &
-         ptr_patch=this%npool_to_livestemn, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_LIVESTEMN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live stem N', &
+         !#py !#py ptr_patch=this%npool_to_livestemn, default='inactive')
 
     this%npool_to_livestemn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_LIVESTEMN_STORAGE', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to live stem N storage', &
-         ptr_patch=this%npool_to_livestemn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_LIVESTEMN_STORAGE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live stem N storage', &
+         !#py !#py ptr_patch=this%npool_to_livestemn_storage, default='inactive')
 
     this%npool_to_deadstemn(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_DEADSTEMN', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to dead stem N', &
-         ptr_patch=this%npool_to_deadstemn, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_DEADSTEMN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead stem N', &
+         !#py !#py ptr_patch=this%npool_to_deadstemn, default='inactive')
 
     this%npool_to_deadstemn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_DEADSTEMN_STORAGE', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to dead stem N storage', &
-         ptr_patch=this%npool_to_deadstemn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_DEADSTEMN_STORAGE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead stem N storage', &
+         !#py !#py ptr_patch=this%npool_to_deadstemn_storage, default='inactive')
 
     this%npool_to_livecrootn(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_LIVECROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to live coarse root N', &
-         ptr_patch=this%npool_to_livecrootn, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_LIVECROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live coarse root N', &
+         !#py !#py ptr_patch=this%npool_to_livecrootn, default='inactive')
 
     this%npool_to_livecrootn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_LIVECROOTN_STORAGE', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to live coarse root N storage', &
-         ptr_patch=this%npool_to_livecrootn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_LIVECROOTN_STORAGE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live coarse root N storage', &
+         !#py !#py ptr_patch=this%npool_to_livecrootn_storage, default='inactive')
 
     this%npool_to_deadcrootn(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_DEADCROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to dead coarse root N', &
-         ptr_patch=this%npool_to_deadcrootn, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_DEADCROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead coarse root N', &
+         !#py !#py ptr_patch=this%npool_to_deadcrootn, default='inactive')
 
     this%npool_to_deadcrootn_storage(begp:endp) = spval
-    call hist_addfld1d (fname='NPOOL_TO_DEADCROOTN_STORAGE', units='gN/m^2/s', &
-         avgflag='A', long_name='allocation to dead coarse root N storage', &
-         ptr_patch=this%npool_to_deadcrootn_storage, default='inactive')
+    !#py call hist_addfld1d (fname='NPOOL_TO_DEADCROOTN_STORAGE', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead coarse root N storage', &
+         !#py !#py ptr_patch=this%npool_to_deadcrootn_storage, default='inactive')
 
     this%leafn_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFN_STORAGE_TO_XFER', units='gN/m^2/s', &
-         avgflag='A', long_name='leaf N shift storage to transfer', &
-         ptr_patch=this%leafn_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFN_STORAGE_TO_XFER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='leaf N shift storage to transfer', &
+         !#py !#py ptr_patch=this%leafn_storage_to_xfer, default='inactive')
 
     this%frootn_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTN_STORAGE_TO_XFER', units='gN/m^2/s', &
-         avgflag='A', long_name='fine root N shift storage to transfer', &
-         ptr_patch=this%frootn_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTN_STORAGE_TO_XFER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='fine root N shift storage to transfer', &
+         !#py !#py ptr_patch=this%frootn_storage_to_xfer, default='inactive')
 
     this%livestemn_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN_STORAGE_TO_XFER', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N shift storage to transfer', &
-         ptr_patch=this%livestemn_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMN_STORAGE_TO_XFER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N shift storage to transfer', &
+         !#py !#py ptr_patch=this%livestemn_storage_to_xfer, default='inactive')
 
     this%deadstemn_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMN_STORAGE_TO_XFER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead stem N shift storage to transfer', &
-         ptr_patch=this%deadstemn_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMN_STORAGE_TO_XFER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead stem N shift storage to transfer', &
+         !#py !#py ptr_patch=this%deadstemn_storage_to_xfer, default='inactive')
 
     this%livecrootn_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN_STORAGE_TO_XFER', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N shift storage to transfer', &
-         ptr_patch=this%livecrootn_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTN_STORAGE_TO_XFER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N shift storage to transfer', &
+         !#py !#py ptr_patch=this%livecrootn_storage_to_xfer, default='inactive')
 
     this%deadcrootn_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTN_STORAGE_TO_XFER', units='gN/m^2/s', &
-         avgflag='A', long_name='dead coarse root N shift storage to transfer', &
-         ptr_patch=this%deadcrootn_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTN_STORAGE_TO_XFER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root N shift storage to transfer', &
+         !#py !#py ptr_patch=this%deadcrootn_storage_to_xfer, default='inactive')
 
     this%livestemn_to_deadstemn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN_TO_DEADSTEMN', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N turnover', &
-         ptr_patch=this%livestemn_to_deadstemn, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMN_TO_DEADSTEMN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N turnover', &
+         !#py !#py ptr_patch=this%livestemn_to_deadstemn, default='inactive')
 
     this%livestemn_to_retransn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMN_TO_RETRANSN', units='gN/m^2/s', &
-         avgflag='A', long_name='live stem N to retranslocated N pool', &
-         ptr_patch=this%livestemn_to_retransn, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMN_TO_RETRANSN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live stem N to retranslocated N pool', &
+         !#py !#py ptr_patch=this%livestemn_to_retransn, default='inactive')
 
     this%livecrootn_to_deadcrootn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN_TO_DEADCROOTN', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N turnover', &
-         ptr_patch=this%livecrootn_to_deadcrootn, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTN_TO_DEADCROOTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N turnover', &
+         !#py !#py ptr_patch=this%livecrootn_to_deadcrootn, default='inactive')
 
     this%livecrootn_to_retransn(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTN_TO_RETRANSN', units='gN/m^2/s', &
-         avgflag='A', long_name='live coarse root N to retranslocated N pool', &
-         ptr_patch=this%livecrootn_to_retransn, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTN_TO_RETRANSN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root N to retranslocated N pool', &
+         !#py !#py ptr_patch=this%livecrootn_to_retransn, default='inactive')
 
     this%ndeploy(begp:endp) = spval
-    call hist_addfld1d (fname='NDEPLOY', units='gN/m^2/s', &
-         avgflag='A', long_name='total N deployed in new growth', &
-         ptr_patch=this%ndeploy)
+    !#py call hist_addfld1d (fname='NDEPLOY', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total N deployed in new growth', &
+         !#py !#py ptr_patch=this%ndeploy)
 
     this%wood_harvestn(begp:endp) = spval
-    call hist_addfld1d (fname='WOOD_HARVESTN', units='gN/m^2/s', &
-         avgflag='A', long_name='wood harvest N (to product pools)', &
-         ptr_patch=this%wood_harvestn)
+    !#py call hist_addfld1d (fname='WOOD_HARVESTN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='wood harvest N (to product pools)', &
+         !#py !#py ptr_patch=this%wood_harvestn)
 
     this%fire_nloss(begp:endp) = spval
-    call hist_addfld1d (fname='PFT_FIRE_NLOSS', units='gN/m^2/s', &
-         avgflag='A', long_name='total pft-level fire N loss', &
-         ptr_patch=this%fire_nloss)
+    !#py call hist_addfld1d (fname='PFT_FIRE_NLOSS', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total pft-level fire N loss', &
+         !#py !#py ptr_patch=this%fire_nloss)
 
     if (crop_prog) then
        this%fert(begp:endp) = spval
-       call hist_addfld1d (fname='FERT', units='gN/m^2/s', &
-            avgflag='A', long_name='fertilizer added', &
-            ptr_patch=this%fert)
+       !#py call hist_addfld1d (fname='FERT', units='gN/m^2/s', &
+            !#py avgflag='A', long_name='fertilizer added', &
+            !#py !#py ptr_patch=this%fert)
 
     end if
 
     if (crop_prog) then
        this%soyfixn(begp:endp) = spval
-       call hist_addfld1d (fname='SOYFIXN', units='gN/m^2/s', &
-            avgflag='A', long_name='soybean fixation', &
-            ptr_patch=this%soyfixn)
+       !#py call hist_addfld1d (fname='SOYFIXN', units='gN/m^2/s', &
+            !#py avgflag='A', long_name='soybean fixation', &
+            !#py !#py ptr_patch=this%soyfixn)
 
     end if
 
     if (crop_prog) then
        this%fert_counter(begp:endp) = spval
-       call hist_addfld1d (fname='FERT_COUNTER', units='seconds', &
-            avgflag='A', long_name='time left to fertilize', &
-            ptr_patch=this%fert_counter)
+       !#py call hist_addfld1d (fname='FERT_COUNTER', units='seconds', &
+            !#py avgflag='A', long_name='time left to fertilize', &
+            !#py !#py ptr_patch=this%fert_counter)
     end if
 
     this%crop_seedn_to_leaf(begp:endp) = spval
-    call hist_addfld1d (fname='CROP_SEEDN_TO_LEAF', units='gN/m^2/s', &
-         avgflag='A', long_name='crop seed source to leaf', &
-         ptr_patch=this%crop_seedn_to_leaf, default='inactive')
+    !#py call hist_addfld1d (fname='CROP_SEEDN_TO_LEAF', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='crop seed source to leaf', &
+         !#py !#py ptr_patch=this%crop_seedn_to_leaf, default='inactive')
 
     this%dwt_seedn_to_leaf(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_SEEDN_TO_LEAF_PATCH', units='gN/m^2/s', &
-         avgflag='A', &
-         long_name='patch-level seed source to patch-level leaf ' // &
-         '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-         ptr_patch=this%dwt_seedn_to_leaf, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_SEEDN_TO_LEAF_PATCH', units='gN/m^2/s', &
+         !#py avgflag='A', &
+         !#py long_name='patch-level seed source to patch-level leaf ' // &
+         !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+         !#py !#py ptr_patch=this%dwt_seedn_to_leaf, default='inactive')
 
     this%dwt_seedn_to_deadstem(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_SEEDN_TO_DEADSTEM_PATCH', units='gN/m^2/s', &
-         avgflag='A', &
-         long_name='patch-level seed source to patch-level deadstem ' // &
-         '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-         ptr_patch=this%dwt_seedn_to_deadstem, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_SEEDN_TO_DEADSTEM_PATCH', units='gN/m^2/s', &
+         !#py avgflag='A', &
+         !#py long_name='patch-level seed source to patch-level deadstem ' // &
+         !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+         !#py !#py ptr_patch=this%dwt_seedn_to_deadstem, default='inactive')
 
     this%dwt_conv_nflux(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_CONV_NFLUX_PATCH', units='gN/m^2/s', &
-         avgflag='A', &
-         long_name='patch-level conversion C flux (immediate loss to atm) ' // &
-         '(0 at all times except first timestep of year) ' // &
-         '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-         ptr_patch=this%dwt_conv_nflux, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_CONV_NFLUX_PATCH', units='gN/m^2/s', &
+         !#py avgflag='A', &
+         !#py long_name='patch-level conversion C flux (immediate loss to atm) ' // &
+         !#py '(0 at all times except first timestep of year) ' // &
+         !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+         !#py !#py ptr_patch=this%dwt_conv_nflux, default='inactive')
 
     this%dwt_seedn_to_npool(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_SEEDN_TO_NPOOL_PATCH', units='gN/m^2/s', &
-         avgflag='A', long_name='seed source to PFT-level npool', &
-         ptr_patch=this%dwt_seedn_to_npool, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_SEEDN_TO_NPOOL_PATCH', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='seed source to PFT-level npool', &
+         !#py !#py ptr_patch=this%dwt_seedn_to_npool, default='inactive')
 
     this%plant_ndemand(begp:endp) = spval
-    call hist_addfld1d (fname='PLANT_NDEMAND', units='gN/m^2/s', &
-         avgflag='A', long_name='N flux required to support initial GPP', &
-         ptr_patch=this%plant_ndemand)
+    !#py call hist_addfld1d (fname='PLANT_NDEMAND', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='N flux required to support initial GPP', &
+         !#py !#py ptr_patch=this%plant_ndemand)
 
     this%avail_retransn(begp:endp) = spval
-    call hist_addfld1d (fname='AVAIL_RETRANSN', units='gN/m^2/s', &
-         avgflag='A', long_name='N flux available from retranslocation pool', &
-         ptr_patch=this%avail_retransn, default='inactive')
+    !#py call hist_addfld1d (fname='AVAIL_RETRANSN', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='N flux available from retranslocation pool', &
+         !#py !#py ptr_patch=this%avail_retransn, default='inactive')
 
     this%plant_nalloc(begp:endp) = spval
-    call hist_addfld1d (fname='PLANT_NALLOC', units='gN/m^2/s', &
-         avgflag='A', long_name='total allocated N flux', &
-         ptr_patch=this%plant_nalloc, default='inactive')
+    !#py call hist_addfld1d (fname='PLANT_NALLOC', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total allocated N flux', &
+         !#py !#py ptr_patch=this%plant_nalloc, default='inactive')
 
     this%gap_nloss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='GAP_NLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total nloss from veg to litter due to gap mortality', &
-         ptr_patch=this%gap_nloss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='GAP_NLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total nloss from veg to litter due to gap mortality', &
+         !#py !#py ptr_patch=this%gap_nloss_litter, default='inactive')
 
     this%fire_nloss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='FIRE_NLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total nloss from veg to litter due to fire mortality', &
-         ptr_patch=this%fire_nloss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='FIRE_NLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total nloss from veg to litter due to fire mortality', &
+         !#py !#py ptr_patch=this%fire_nloss_litter, default='inactive')
 
     this%hrv_nloss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='HRV_NLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total nloss from veg to litter due to harvest mortality', &
-         ptr_patch=this%hrv_nloss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='HRV_NLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total nloss from veg to litter due to harvest mortality', &
+         !#py !#py ptr_patch=this%hrv_nloss_litter, default='inactive')
 
     this%sen_nloss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='SEN_NLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total nloss from veg to litter pool due to senescence', &
-         ptr_patch=this%sen_nloss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='SEN_NLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total nloss from veg to litter pool due to senescence', &
+         !#py !#py ptr_patch=this%sen_nloss_litter, default='inactive')
 
     ! Note: the following are vegetation-level variables, reported to the column-level
     this%dwt_prod10n_gain(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_PROD10N_GAIN_PATCH', units='gN/m^2/s', &
-         avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
-         ptr_col=this%dwt_prod10n_gain, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_PROD10N_GAIN_PATCH', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
+         !#py !#py ptr_col=this%dwt_prod10n_gain, default='inactive')
 
     this%dwt_prod100n_gain(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_PROD100N_GAIN_PATCH', units='gN/m^2/s', &
-         avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
-         ptr_col=this%dwt_prod100n_gain, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_PROD100N_GAIN_PATCH', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
+         !#py !#py ptr_col=this%dwt_prod100n_gain, default='inactive')
 
 
     !-----------------------------------------------------------------------
@@ -9540,78 +9523,78 @@ module VegetationDataType
   end subroutine veg_nf_init
 
   !-----------------------------------------------------------------------
-  subroutine veg_nf_restart (this,  bounds, ncid, flag )
-    !
-    ! !DESCRIPTION:
-    ! Read/write restart data for vegetation-level nitrogen fluxes
-    !
-    ! !ARGUMENTS:
-    class (vegetation_nitrogen_flux)  :: this
-    type(bounds_type) , intent(in)    :: bounds
-    type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
-    character(len=*)  , intent(in)    :: flag   !'read' or 'write'
-    !
-    ! !LOCAL VARIABLES:
-    logical :: readvar      ! determine if variable is on initial file
-    !------------------------------------------------------------------------
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag, varname='fert_counter', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%fert_counter)
-
-       call restartvar(ncid=ncid, flag=flag, varname='fert', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%fert)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainn_xfer_to_grainn', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain N growth from storage', units='gN/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainn_xfer_to_grainn)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='livestemn_to_litter', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='livestem N to litter', units='gN/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%livestemn_to_litter)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='grainn_to_food', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain N to food', units='gN/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainn_to_food)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='npool_to_grainn', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='allocation to grain N', units='gN/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%npool_to_grainn)
-
-       call restartvar(ncid=ncid, flag=flag,  varname='npool_to_grainn_storage', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='allocation to grain N storage', units='gN/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%npool_to_grainn_storage)
-
-       call restartvar(ncid=ncid, flag=flag, varname='grainn_storage_to_xfer', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain N shift storage to transfer', units='gN/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainn_storage_to_xfer)
-    end if ! crop_prog
-
-    call restartvar(ncid=ncid, flag=flag, varname='plant_ndemand', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%plant_ndemand)
-
-    call restartvar(ncid=ncid, flag=flag, varname='avail_retransn', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%avail_retransn)
-
-    call restartvar(ncid=ncid, flag=flag, varname='plant_nalloc', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%plant_nalloc)
-
-  end subroutine veg_nf_restart
+!#py   subroutine veg_nf_restart (this,  bounds, ncid, flag )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write restart data for vegetation-level nitrogen fluxes
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class (vegetation_nitrogen_flux)  :: this
+!#py     type(bounds_type) , intent(in)    :: bounds
+!#py     type(file_desc_t) , intent(inout) :: ncid   ! netcdf id
+!#py     character(len=*)  , intent(in)    :: flag   !'read' or 'write'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py     !------------------------------------------------------------------------
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='fert_counter', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%fert_counter)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='fert', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%fert)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainn_xfer_to_grainn', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain N growth from storage', units='gN/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainn_xfer_to_grainn)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='livestemn_to_litter', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='livestem N to litter', units='gN/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%livestemn_to_litter)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainn_to_food', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain N to food', units='gN/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainn_to_food)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='npool_to_grainn', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='allocation to grain N', units='gN/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%npool_to_grainn)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='npool_to_grainn_storage', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='allocation to grain N storage', units='gN/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%npool_to_grainn_storage)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='grainn_storage_to_xfer', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain N shift storage to transfer', units='gN/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainn_storage_to_xfer)
+!#py     end if ! crop_prog
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='plant_ndemand', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%plant_ndemand)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='avail_retransn', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%avail_retransn)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='plant_nalloc', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%plant_nalloc)
+!#py
+!#py !#py !#py   end subroutine veg_nf_restart
 
   !-----------------------------------------------------------------------
   subroutine veg_nf_setvalues ( this, num_patch, filter_patch, value_patch)
@@ -10128,491 +10111,491 @@ module VegetationDataType
     ! initialize history fields for select members of veg_pf
     !-----------------------------------------------------------------------
     this%m_leafp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P mortality', &
-         ptr_patch=this%m_leafp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P mortality', &
+         !#py !#py ptr_patch=this%m_leafp_to_litter, default='inactive')
 
     this%m_frootp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P mortality', &
-         ptr_patch=this%m_frootp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P mortality', &
+         !#py !#py ptr_patch=this%m_frootp_to_litter, default='inactive')
 
     this%m_leafp_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFP_STORAGE_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P storage mortality', &
-         ptr_patch=this%m_leafp_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFP_STORAGE_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P storage mortality', &
+         !#py !#py ptr_patch=this%m_leafp_storage_to_litter, default='inactive')
 
     this%m_frootp_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTP_STORAGE_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P storage mortality', &
-         ptr_patch=this%m_frootp_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTP_STORAGE_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P storage mortality', &
+         !#py !#py ptr_patch=this%m_frootp_storage_to_litter, default='inactive')
 
     this%m_livestemp_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMP_STORAGE_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P storage mortality', &
-         ptr_patch=this%m_livestemp_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMP_STORAGE_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P storage mortality', &
+         !#py !#py ptr_patch=this%m_livestemp_storage_to_litter, default='inactive')
 
     this%m_deadstemp_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_STORAGE_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P storage mortality', &
-         ptr_patch=this%m_deadstemp_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_STORAGE_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P storage mortality', &
+         !#py !#py ptr_patch=this%m_deadstemp_storage_to_litter, default='inactive')
 
     this%m_livecrootp_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTP_STORAGE_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P storage mortality', &
-         ptr_patch=this%m_livecrootp_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTP_STORAGE_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P storage mortality', &
+         !#py !#py ptr_patch=this%m_livecrootp_storage_to_litter, default='inactive')
 
     this%m_deadcrootp_storage_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_STORAGE_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P storage mortality', &
-         ptr_patch=this%m_deadcrootp_storage_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_STORAGE_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P storage mortality', &
+         !#py !#py ptr_patch=this%m_deadcrootp_storage_to_litter, default='inactive')
 
     this%m_leafp_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFP_XFER_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P transfer mortality', &
-         ptr_patch=this%m_leafp_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFP_XFER_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P transfer mortality', &
+         !#py !#py ptr_patch=this%m_leafp_xfer_to_litter, default='inactive')
 
     this%m_frootp_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTP_XFER_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P transfer mortality', &
-         ptr_patch=this%m_frootp_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTP_XFER_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P transfer mortality', &
+         !#py !#py ptr_patch=this%m_frootp_xfer_to_litter, default='inactive')
 
     this%m_livestemp_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMP_XFER_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P transfer mortality', &
-         ptr_patch=this%m_livestemp_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMP_XFER_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P transfer mortality', &
+         !#py !#py ptr_patch=this%m_livestemp_xfer_to_litter, default='inactive')
 
     this%m_deadstemp_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_XFER_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P transfer mortality', &
-         ptr_patch=this%m_deadstemp_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_XFER_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P transfer mortality', &
+         !#py !#py ptr_patch=this%m_deadstemp_xfer_to_litter, default='inactive')
 
     this%m_livecrootp_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTP_XFER_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P transfer mortality', &
-         ptr_patch=this%m_livecrootp_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTP_XFER_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P transfer mortality', &
+         !#py !#py ptr_patch=this%m_livecrootp_xfer_to_litter, default='inactive')
 
     this%m_deadcrootp_xfer_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_XFER_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P transfer mortality', &
-         ptr_patch=this%m_deadcrootp_xfer_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_XFER_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P transfer mortality', &
+         !#py !#py ptr_patch=this%m_deadcrootp_xfer_to_litter, default='inactive')
 
     this%m_livestemp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P mortality', &
-         ptr_patch=this%m_livestemp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P mortality', &
+         !#py !#py ptr_patch=this%m_livestemp_to_litter, default='inactive')
 
     this%m_deadstemp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P mortality', &
-         ptr_patch=this%m_deadstemp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P mortality', &
+         !#py !#py ptr_patch=this%m_deadstemp_to_litter, default='inactive')
 
     this%m_livecrootp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P mortality', &
-         ptr_patch=this%m_livecrootp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P mortality', &
+         !#py !#py ptr_patch=this%m_livecrootp_to_litter, default='inactive')
 
     this%m_deadcrootp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P mortality', &
-         ptr_patch=this%m_deadcrootp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P mortality', &
+         !#py !#py ptr_patch=this%m_deadcrootp_to_litter, default='inactive')
 
     this%m_retransp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_RETRANSP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='retranslocated P pool mortality', &
-         ptr_patch=this%m_retransp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_RETRANSP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='retranslocated P pool mortality', &
+         !#py !#py ptr_patch=this%m_retransp_to_litter, default='inactive')
 
     this%m_ppool_to_litter_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_PPOOL_TO_LITTER_FIRE', units='gP/m^2/s', &
-        avgflag='A', long_name='P pool mortality due to fire', &
-        ptr_patch=this%m_ppool_to_litter_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_PPOOL_TO_LITTER_FIRE', units='gP/m^2/s', &
+        !#py avgflag='A', long_name='P pool mortality due to fire', &
+        !#py !#py ptr_patch=this%m_ppool_to_litter_fire, default='inactive')
 
     this%m_ppool_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='M_PPOOL_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='Storage P pool mortality', &
-         ptr_patch=this%m_ppool_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='M_PPOOL_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='Storage P pool mortality', &
+         !#py !#py ptr_patch=this%m_ppool_to_litter, default='inactive')
 
     this%m_leafp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P fire loss', &
-         ptr_patch=this%m_leafp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P fire loss', &
+         !#py !#py ptr_patch=this%m_leafp_to_fire, default='inactive')
 
     this%m_frootp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P fire loss ', &
-         ptr_patch=this%m_frootp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P fire loss ', &
+         !#py !#py ptr_patch=this%m_frootp_to_fire, default='inactive')
 
     this%m_leafp_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFP_STORAGE_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P storage fire loss', &
-         ptr_patch=this%m_leafp_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFP_STORAGE_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P storage fire loss', &
+         !#py !#py ptr_patch=this%m_leafp_storage_to_fire, default='inactive')
 
     this%m_frootp_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTP_STORAGE_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P storage fire loss', &
-         ptr_patch=this%m_frootp_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTP_STORAGE_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P storage fire loss', &
+         !#py !#py ptr_patch=this%m_frootp_storage_to_fire, default='inactive')
 
     this%m_livestemp_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMP_STORAGE_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P storage fire loss', &
-         ptr_patch=this%m_livestemp_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMP_STORAGE_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P storage fire loss', &
+         !#py !#py ptr_patch=this%m_livestemp_storage_to_fire, default='inactive')
 
     this%m_deadstemp_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_STORAGE_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P storage fire loss', &
-         ptr_patch=this%m_deadstemp_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_STORAGE_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P storage fire loss', &
+         !#py !#py ptr_patch=this%m_deadstemp_storage_to_fire, default='inactive')
 
     this%m_livecrootp_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTP_STORAGE_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P storage fire loss', &
-         ptr_patch=this%m_livecrootp_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTP_STORAGE_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P storage fire loss', &
+         !#py !#py ptr_patch=this%m_livecrootp_storage_to_fire, default='inactive')
 
     this%m_deadcrootp_storage_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_STORAGE_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P storage fire loss', &
-         ptr_patch=this%m_deadcrootp_storage_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_STORAGE_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P storage fire loss', &
+         !#py !#py ptr_patch=this%m_deadcrootp_storage_to_fire, default='inactive')
 
     this%m_leafp_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LEAFP_XFER_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P transfer fire loss', &
-         ptr_patch=this%m_leafp_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LEAFP_XFER_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P transfer fire loss', &
+         !#py !#py ptr_patch=this%m_leafp_xfer_to_fire, default='inactive')
 
     this%m_frootp_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_FROOTP_XFER_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P transfer fire loss', &
-         ptr_patch=this%m_frootp_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_FROOTP_XFER_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P transfer fire loss', &
+         !#py !#py ptr_patch=this%m_frootp_xfer_to_fire, default='inactive')
 
     this%m_livestemp_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMP_XFER_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P transfer fire loss', &
-         ptr_patch=this%m_livestemp_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMP_XFER_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P transfer fire loss', &
+         !#py !#py ptr_patch=this%m_livestemp_xfer_to_fire, default='inactive')
 
     this%m_deadstemp_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_XFER_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P transfer fire loss', &
-         ptr_patch=this%m_deadstemp_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_XFER_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P transfer fire loss', &
+         !#py !#py ptr_patch=this%m_deadstemp_xfer_to_fire, default='inactive')
 
     this%m_livecrootp_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTP_XFER_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P transfer fire loss', &
-         ptr_patch=this%m_livecrootp_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTP_XFER_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P transfer fire loss', &
+         !#py !#py ptr_patch=this%m_livecrootp_xfer_to_fire, default='inactive')
 
     this%m_deadcrootp_xfer_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_XFER_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P transfer fire loss', &
-         ptr_patch=this%m_deadcrootp_xfer_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_XFER_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P transfer fire loss', &
+         !#py !#py ptr_patch=this%m_deadcrootp_xfer_to_fire, default='inactive')
 
     this%m_livestemp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVESTEMP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P fire loss', &
-         ptr_patch=this%m_livestemp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVESTEMP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P fire loss', &
+         !#py !#py ptr_patch=this%m_livestemp_to_fire, default='inactive')
 
     this%m_deadstemp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P fire loss', &
-         ptr_patch=this%m_deadstemp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P fire loss', &
+         !#py !#py ptr_patch=this%m_deadstemp_to_fire, default='inactive')
 
     this%m_deadstemp_to_litter_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADSTEMP_TO_LITTER_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P fire mortality to litter', &
-         ptr_patch=this%m_deadstemp_to_litter_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADSTEMP_TO_LITTER_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P fire mortality to litter', &
+         !#py !#py ptr_patch=this%m_deadstemp_to_litter_fire, default='inactive')
 
     this%m_livecrootp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_LIVECROOTP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P fire loss', &
-         ptr_patch=this%m_livecrootp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_LIVECROOTP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P fire loss', &
+         !#py !#py ptr_patch=this%m_livecrootp_to_fire, default='inactive')
 
     this%m_deadcrootp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P fire loss', &
-         ptr_patch=this%m_deadcrootp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P fire loss', &
+         !#py !#py ptr_patch=this%m_deadcrootp_to_fire, default='inactive')
 
     this%m_deadcrootp_to_litter_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_DEADCROOTP_TO_LITTER_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P fire mortality to litter', &
-         ptr_patch=this%m_deadcrootp_to_litter_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_DEADCROOTP_TO_LITTER_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P fire mortality to litter', &
+         !#py !#py ptr_patch=this%m_deadcrootp_to_litter_fire, default='inactive')
 
     this%m_retransp_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_RETRANSP_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='retranslocated P pool fire loss', &
-         ptr_patch=this%m_retransp_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_RETRANSP_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='retranslocated P pool fire loss', &
+         !#py !#py ptr_patch=this%m_retransp_to_fire, default='inactive')
 
     this%m_ppool_to_fire(begp:endp) = spval
-    call hist_addfld1d (fname='M_PPOOL_TO_FIRE', units='gP/m^2/s', &
-         avgflag='A', long_name='Storage P pool fire loss', &
-         ptr_patch=this%m_ppool_to_fire, default='inactive')
+    !#py call hist_addfld1d (fname='M_PPOOL_TO_FIRE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='Storage P pool fire loss', &
+         !#py !#py ptr_patch=this%m_ppool_to_fire, default='inactive')
 
     this%leafp_xfer_to_leafp(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP_XFER_TO_LEAFP', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P growth from storage', &
-         ptr_patch=this%leafp_xfer_to_leafp, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFP_XFER_TO_LEAFP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P growth from storage', &
+         !#py !#py ptr_patch=this%leafp_xfer_to_leafp, default='inactive')
 
     this%frootp_xfer_to_frootp(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTP_XFER_TO_FROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P growth from storage', &
-         ptr_patch=this%frootp_xfer_to_frootp, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTP_XFER_TO_FROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P growth from storage', &
+         !#py !#py ptr_patch=this%frootp_xfer_to_frootp, default='inactive')
 
     this%livestemp_xfer_to_livestemp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP_XFER_TO_LIVESTEMP', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P growth from storage', &
-         ptr_patch=this%livestemp_xfer_to_livestemp, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMP_XFER_TO_LIVESTEMP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P growth from storage', &
+         !#py !#py ptr_patch=this%livestemp_xfer_to_livestemp, default='inactive')
 
     this%deadstemp_xfer_to_deadstemp(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMP_XFER_TO_DEADSTEMP', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P growth from storage', &
-         ptr_patch=this%deadstemp_xfer_to_deadstemp, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMP_XFER_TO_DEADSTEMP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P growth from storage', &
+         !#py !#py ptr_patch=this%deadstemp_xfer_to_deadstemp, default='inactive')
 
     this%livecrootp_xfer_to_livecrootp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP_XFER_TO_LIVECROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P growth from storage', &
-         ptr_patch=this%livecrootp_xfer_to_livecrootp, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTP_XFER_TO_LIVECROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P growth from storage', &
+         !#py !#py ptr_patch=this%livecrootp_xfer_to_livecrootp, default='inactive')
 
     this%deadcrootp_xfer_to_deadcrootp(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTP_XFER_TO_DEADCROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P growth from storage', &
-         ptr_patch=this%deadcrootp_xfer_to_deadcrootp, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTP_XFER_TO_DEADCROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P growth from storage', &
+         !#py !#py ptr_patch=this%deadcrootp_xfer_to_deadcrootp, default='inactive')
 
     this%leafp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P litterfall', &
-         ptr_patch=this%leafp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P litterfall', &
+         !#py !#py ptr_patch=this%leafp_to_litter, default='inactive')
 
     this%leafp_to_retransp(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP_TO_RETRANSP', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P to retranslocated P pool', &
-         ptr_patch=this%leafp_to_retransp, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFP_TO_RETRANSP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P to retranslocated P pool', &
+         !#py !#py ptr_patch=this%leafp_to_retransp, default='inactive')
 
     this%frootp_to_litter(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTP_TO_LITTER', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P litterfall', &
-         ptr_patch=this%frootp_to_litter, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTP_TO_LITTER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P litterfall', &
+         !#py !#py ptr_patch=this%frootp_to_litter, default='inactive')
 
     this%retransp_to_ppool(begp:endp) = spval
-    call hist_addfld1d (fname='RETRANSP_TO_PPOOL', units='gP/m^2/s', &
-         avgflag='A', long_name='deployment of retranslocated P', &
-         ptr_patch=this%retransp_to_ppool)
+    !#py call hist_addfld1d (fname='RETRANSP_TO_PPOOL', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='deployment of retranslocated P', &
+         !#py !#py ptr_patch=this%retransp_to_ppool)
 
     this%sminp_to_ppool(begp:endp) = spval
-    call hist_addfld1d (fname='SMINP_TO_PPOOL', units='gP/m^2/s', &
-         avgflag='A', long_name='deployment of soil mineral P uptake', &
-         ptr_patch=this%sminp_to_ppool)
+    !#py call hist_addfld1d (fname='SMINP_TO_PPOOL', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='deployment of soil mineral P uptake', &
+         !#py !#py ptr_patch=this%sminp_to_ppool)
 
     this%ppool_to_leafp(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_LEAFP', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to leaf P', &
-         ptr_patch=this%ppool_to_leafp, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_LEAFP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to leaf P', &
+         !#py !#py ptr_patch=this%ppool_to_leafp, default='inactive')
 
     this%ppool_to_leafp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_LEAFP_STORAGE', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to leaf P storage', &
-         ptr_patch=this%ppool_to_leafp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_LEAFP_STORAGE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to leaf P storage', &
+         !#py !#py ptr_patch=this%ppool_to_leafp_storage, default='inactive')
 
     this%ppool_to_frootp(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_FROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to fine root P', &
-         ptr_patch=this%ppool_to_frootp, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_FROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to fine root P', &
+         !#py !#py ptr_patch=this%ppool_to_frootp, default='inactive')
 
     this%ppool_to_frootp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_FROOTP_STORAGE', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to fine root P storage', &
-         ptr_patch=this%ppool_to_frootp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_FROOTP_STORAGE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to fine root P storage', &
+         !#py !#py ptr_patch=this%ppool_to_frootp_storage, default='inactive')
 
     this%ppool_to_livestemp(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_LIVESTEMP', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to live stem P', &
-         ptr_patch=this%ppool_to_livestemp, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_LIVESTEMP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live stem P', &
+         !#py !#py ptr_patch=this%ppool_to_livestemp, default='inactive')
 
     this%ppool_to_livestemp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_LIVESTEMP_STORAGE', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to live stem P storage', &
-         ptr_patch=this%ppool_to_livestemp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_LIVESTEMP_STORAGE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live stem P storage', &
+         !#py !#py ptr_patch=this%ppool_to_livestemp_storage, default='inactive')
 
     this%ppool_to_deadstemp(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_DEADSTEMP', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to dead stem P', &
-         ptr_patch=this%ppool_to_deadstemp, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_DEADSTEMP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead stem P', &
+         !#py !#py ptr_patch=this%ppool_to_deadstemp, default='inactive')
 
     this%ppool_to_deadstemp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_DEADSTEMP_STORAGE', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to dead stem P storage', &
-         ptr_patch=this%ppool_to_deadstemp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_DEADSTEMP_STORAGE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead stem P storage', &
+         !#py !#py ptr_patch=this%ppool_to_deadstemp_storage, default='inactive')
 
     this%ppool_to_livecrootp(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_LIVECROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to live coarse root P', &
-         ptr_patch=this%ppool_to_livecrootp, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_LIVECROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live coarse root P', &
+         !#py !#py ptr_patch=this%ppool_to_livecrootp, default='inactive')
 
     this%ppool_to_livecrootp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_LIVECROOTP_STORAGE', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to live coarse root P storage', &
-         ptr_patch=this%ppool_to_livecrootp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_LIVECROOTP_STORAGE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to live coarse root P storage', &
+         !#py !#py ptr_patch=this%ppool_to_livecrootp_storage, default='inactive')
 
     this%ppool_to_deadcrootp(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_DEADCROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to dead coarse root P', &
-         ptr_patch=this%ppool_to_deadcrootp, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_DEADCROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead coarse root P', &
+         !#py !#py ptr_patch=this%ppool_to_deadcrootp, default='inactive')
 
     this%ppool_to_deadcrootp_storage(begp:endp) = spval
-    call hist_addfld1d (fname='PPOOL_TO_DEADCROOTP_STORAGE', units='gP/m^2/s', &
-         avgflag='A', long_name='allocation to dead coarse root P storage', &
-         ptr_patch=this%ppool_to_deadcrootp_storage, default='inactive')
+    !#py call hist_addfld1d (fname='PPOOL_TO_DEADCROOTP_STORAGE', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='allocation to dead coarse root P storage', &
+         !#py !#py ptr_patch=this%ppool_to_deadcrootp_storage, default='inactive')
 
     this%leafp_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LEAFP_STORAGE_TO_XFER', units='gP/m^2/s', &
-         avgflag='A', long_name='leaf P shift storage to transfer', &
-         ptr_patch=this%leafp_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LEAFP_STORAGE_TO_XFER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='leaf P shift storage to transfer', &
+         !#py !#py ptr_patch=this%leafp_storage_to_xfer, default='inactive')
 
     this%frootp_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='FROOTP_STORAGE_TO_XFER', units='gP/m^2/s', &
-         avgflag='A', long_name='fine root P shift storage to transfer', &
-         ptr_patch=this%frootp_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='FROOTP_STORAGE_TO_XFER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='fine root P shift storage to transfer', &
+         !#py !#py ptr_patch=this%frootp_storage_to_xfer, default='inactive')
 
     this%livestemp_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP_STORAGE_TO_XFER', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P shift storage to transfer', &
-         ptr_patch=this%livestemp_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMP_STORAGE_TO_XFER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P shift storage to transfer', &
+         !#py !#py ptr_patch=this%livestemp_storage_to_xfer, default='inactive')
 
     this%deadstemp_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADSTEMP_STORAGE_TO_XFER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead stem P shift storage to transfer', &
-         ptr_patch=this%deadstemp_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADSTEMP_STORAGE_TO_XFER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead stem P shift storage to transfer', &
+         !#py !#py ptr_patch=this%deadstemp_storage_to_xfer, default='inactive')
 
     this%livecrootp_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP_STORAGE_TO_XFER', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P shift storage to transfer', &
-         ptr_patch=this%livecrootp_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTP_STORAGE_TO_XFER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P shift storage to transfer', &
+         !#py !#py ptr_patch=this%livecrootp_storage_to_xfer, default='inactive')
 
     this%deadcrootp_storage_to_xfer(begp:endp) = spval
-    call hist_addfld1d (fname='DEADCROOTP_STORAGE_TO_XFER', units='gP/m^2/s', &
-         avgflag='A', long_name='dead coarse root P shift storage to transfer', &
-         ptr_patch=this%deadcrootp_storage_to_xfer, default='inactive')
+    !#py call hist_addfld1d (fname='DEADCROOTP_STORAGE_TO_XFER', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='dead coarse root P shift storage to transfer', &
+         !#py !#py ptr_patch=this%deadcrootp_storage_to_xfer, default='inactive')
 
     this%livestemp_to_deadstemp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP_TO_DEADSTEMP', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P turnover', &
-         ptr_patch=this%livestemp_to_deadstemp, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMP_TO_DEADSTEMP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P turnover', &
+         !#py !#py ptr_patch=this%livestemp_to_deadstemp, default='inactive')
 
     this%livestemp_to_retransp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVESTEMP_TO_RETRANSP', units='gP/m^2/s', &
-         avgflag='A', long_name='live stem P to retranslocated P pool', &
-         ptr_patch=this%livestemp_to_retransp, default='inactive')
+    !#py call hist_addfld1d (fname='LIVESTEMP_TO_RETRANSP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live stem P to retranslocated P pool', &
+         !#py !#py ptr_patch=this%livestemp_to_retransp, default='inactive')
 
     this%livecrootp_to_deadcrootp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP_TO_DEADCROOTP', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P turnover', &
-         ptr_patch=this%livecrootp_to_deadcrootp, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTP_TO_DEADCROOTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P turnover', &
+         !#py !#py ptr_patch=this%livecrootp_to_deadcrootp, default='inactive')
 
     this%livecrootp_to_retransp(begp:endp) = spval
-    call hist_addfld1d (fname='LIVECROOTP_TO_RETRANSP', units='gP/m^2/s', &
-         avgflag='A', long_name='live coarse root P to retranslocated N pool', &
-         ptr_patch=this%livecrootp_to_retransp, default='inactive')
+    !#py call hist_addfld1d (fname='LIVECROOTP_TO_RETRANSP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='live coarse root P to retranslocated N pool', &
+         !#py !#py ptr_patch=this%livecrootp_to_retransp, default='inactive')
 
     this%pdeploy(begp:endp) = spval
-    call hist_addfld1d (fname='PDEPLOY', units='gP/m^2/s', &
-         avgflag='A', long_name='total P deployed in new growth', &
-         ptr_patch=this%pdeploy)
+    !#py call hist_addfld1d (fname='PDEPLOY', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='total P deployed in new growth', &
+         !#py !#py ptr_patch=this%pdeploy)
 
     this%wood_harvestp(begp:endp) = spval
-    call hist_addfld1d (fname='WOOD_HARVESTP', units='gP/m^2/s', &
-         avgflag='A', long_name='wood harvest P (to product pools)', &
-         ptr_patch=this%wood_harvestp, default='inactive')
+    !#py call hist_addfld1d (fname='WOOD_HARVESTP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='wood harvest P (to product pools)', &
+         !#py !#py ptr_patch=this%wood_harvestp, default='inactive')
 
     this%fire_ploss(begp:endp) = spval
-    call hist_addfld1d (fname='PFT_FIRE_PLOSS', units='gP/m^2/s', &
-         avgflag='A', long_name='total pft-level fire P loss', &
-         ptr_patch=this%fire_ploss, default='inactive')
+    !#py call hist_addfld1d (fname='PFT_FIRE_PLOSS', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='total pft-level fire P loss', &
+         !#py !#py ptr_patch=this%fire_ploss, default='inactive')
 
     this%gap_ploss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='GAP_PLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total ploss from veg to litter due to gap mortality', &
-         ptr_patch=this%gap_ploss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='GAP_PLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total ploss from veg to litter due to gap mortality', &
+         !#py !#py ptr_patch=this%gap_ploss_litter, default='inactive')
 
     this%fire_ploss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='FIRE_PLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total ploss from veg to litter due to fire mortality', &
-         ptr_patch=this%fire_ploss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='FIRE_PLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total ploss from veg to litter due to fire mortality', &
+         !#py !#py ptr_patch=this%fire_ploss_litter, default='inactive')
 
     this%hrv_ploss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='HRV_PLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total ploss from veg to litter due to harvest mortality', &
-         ptr_patch=this%hrv_ploss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='HRV_PLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total ploss from veg to litter due to harvest mortality', &
+         !#py !#py ptr_patch=this%hrv_ploss_litter, default='inactive')
 
     this%sen_ploss_litter(begp:endp) = spval
-    call hist_addfld1d (fname='SEN_PLOSS_LITTER', units='gN/m^2/s', &
-         avgflag='A', long_name='total ploss from veg to litter pool due to senescence', &
-         ptr_patch=this%sen_ploss_litter, default='inactive')
+    !#py call hist_addfld1d (fname='SEN_PLOSS_LITTER', units='gN/m^2/s', &
+         !#py avgflag='A', long_name='total ploss from veg to litter pool due to senescence', &
+         !#py !#py ptr_patch=this%sen_ploss_litter, default='inactive')
 
     if (crop_prog) then
        this%fert_p(begp:endp) = spval
-       call hist_addfld1d (fname='FERT_P', units='gP/m^2/s', &
-            avgflag='A', long_name='fertilizer P added', &
-            ptr_patch=this%fert_p)
+       !#py call hist_addfld1d (fname='FERT_P', units='gP/m^2/s', &
+            !#py avgflag='A', long_name='fertilizer P added', &
+            !#py !#py ptr_patch=this%fert_p)
 
     end if
 
     if (crop_prog) then
        this%fert_p_counter(begp:endp) = spval
-       call hist_addfld1d (fname='FERT_P_COUNTER', units='seconds', &
-            avgflag='A', long_name='time left to fertilize', &
-            ptr_patch=this%fert_p_counter)
+       !#py call hist_addfld1d (fname='FERT_P_COUNTER', units='seconds', &
+            !#py avgflag='A', long_name='time left to fertilize', &
+            !#py !#py ptr_patch=this%fert_p_counter)
     end if
 
     this%crop_seedp_to_leaf(begp:endp) = spval
-    call hist_addfld1d (fname='CROP_SEEDP_TO_LEAF', units='gP/m^2/s', &
-         avgflag='A', long_name='crop seed source to leaf', &
-         ptr_patch=this%crop_seedp_to_leaf, default='inactive')
+    !#py call hist_addfld1d (fname='CROP_SEEDP_TO_LEAF', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='crop seed source to leaf', &
+         !#py !#py ptr_patch=this%crop_seedp_to_leaf, default='inactive')
 
     this%dwt_seedp_to_leaf(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_SEEDP_TO_LEAF_PATCH', units='gP/m^2/s', &
-         avgflag='A', &
-         long_name='patch-level seed source to patch-level leaf ' // &
-         '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-         ptr_patch=this%dwt_seedp_to_leaf, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_SEEDP_TO_LEAF_PATCH', units='gP/m^2/s', &
+         !#py avgflag='A', &
+         !#py long_name='patch-level seed source to patch-level leaf ' // &
+         !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+         !#py !#py ptr_patch=this%dwt_seedp_to_leaf, default='inactive')
 
     this%dwt_seedp_to_deadstem(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_SEEDP_TO_DEADSTEM_PATCH', units='gP/m^2/s', &
-         avgflag='A', &
-         long_name='patch-level seed source to patch-level deadstem ' // &
-         '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-         ptr_patch=this%dwt_seedp_to_deadstem, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_SEEDP_TO_DEADSTEM_PATCH', units='gP/m^2/s', &
+         !#py avgflag='A', &
+         !#py long_name='patch-level seed source to patch-level deadstem ' // &
+         !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+         !#py !#py ptr_patch=this%dwt_seedp_to_deadstem, default='inactive')
 
     this%dwt_conv_pflux(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_CONV_PFLUX_PATCH', units='gP/m^2/s', &
-         avgflag='A', &
-         long_name='patch-level conversion C flux (immediate loss to atm) ' // &
-         '(0 at all times except first timestep of year) ' // &
-         '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
-         ptr_patch=this%dwt_conv_pflux, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_CONV_PFLUX_PATCH', units='gP/m^2/s', &
+         !#py avgflag='A', &
+         !#py long_name='patch-level conversion C flux (immediate loss to atm) ' // &
+         !#py '(0 at all times except first timestep of year) ' // &
+         !#py '(per-area-gridcell; only makes sense with dov2xy=.false.)', &
+         !#py !#py ptr_patch=this%dwt_conv_pflux, default='inactive')
 
     this%dwt_prod10p_gain(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_PROD10P_GAIN_PATCH', units='gP/m^2/s', &
-         avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
-         ptr_col=this%dwt_prod10p_gain, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_PROD10P_GAIN_PATCH', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='landcover change-driven addition to 10-yr wood product pool', &
+         !#py !#py ptr_col=this%dwt_prod10p_gain, default='inactive')
 
     this%dwt_prod100p_gain(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_PROD100P_GAIN_PATCH', units='gP/m^2/s', &
-         avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
-         ptr_col=this%dwt_prod100p_gain, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_PROD100P_GAIN_PATCH', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='landcover change-driven addition to 100-yr wood product pool', &
+         !#py !#py ptr_col=this%dwt_prod100p_gain, default='inactive')
 
     this%dwt_seedp_to_ppool(begp:endp) = spval
-    call hist_addfld1d (fname='DWT_SEEDP_TO_PPOOL_PATCH', units='gP/m^2/s', &
-         avgflag='A', long_name='seed source to PFT-level', &
-         ptr_patch=this%dwt_seedp_to_ppool, default='inactive')
+    !#py call hist_addfld1d (fname='DWT_SEEDP_TO_PPOOL_PATCH', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='seed source to PFT-level', &
+         !#py !#py ptr_patch=this%dwt_seedp_to_ppool, default='inactive')
 
     this%plant_pdemand(begp:endp) = spval
-    call hist_addfld1d (fname='PLANT_PDEMAND', units='gP/m^2/s', &
-         avgflag='A', long_name='P flux required to support initial GPP', &
-         ptr_patch=this%plant_pdemand)
+    !#py call hist_addfld1d (fname='PLANT_PDEMAND', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='P flux required to support initial GPP', &
+         !#py !#py ptr_patch=this%plant_pdemand)
 
     this%avail_retransp(begp:endp) = spval
-    call hist_addfld1d (fname='AVAIL_RETRANSP', units='gP/m^2/s', &
-         avgflag='A', long_name='P flux available from retranslocation pool', &
-         ptr_patch=this%avail_retransp, default='active')
+    !#py call hist_addfld1d (fname='AVAIL_RETRANSP', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='P flux available from retranslocation pool', &
+         !#py !#py ptr_patch=this%avail_retransp, default='active')
 
     this%plant_palloc(begp:endp) = spval
-    call hist_addfld1d (fname='PLANT_PALLOC', units='gP/m^2/s', &
-         avgflag='A', long_name='total allocated P flux', &
-         ptr_patch=this%plant_palloc, default='active')
+    !#py call hist_addfld1d (fname='PLANT_PALLOC', units='gP/m^2/s', &
+         !#py avgflag='A', long_name='total allocated P flux', &
+         !#py !#py ptr_patch=this%plant_palloc, default='active')
 
 
     !-----------------------------------------------------------------------
@@ -10654,92 +10637,92 @@ module VegetationDataType
   end subroutine veg_pf_init
 
   !-----------------------------------------------------------------------
-  subroutine veg_pf_restart (this,  bounds, ncid, flag )
-    !
-    ! !DESCRIPTION:
-    ! Read/write restart data for vegetation-level phosphorus fluxes
-    !
-    ! !ARGUMENTS:
-    class (vegetation_phosphorus_flux) :: this
-    type(bounds_type) , intent(in)     :: bounds
-    type(file_desc_t) , intent(inout)  :: ncid   ! netcdf id
-    character(len=*)  , intent(in)     :: flag   !'read' or 'write'
-    !
-    ! !LOCAL VARIABLES:
-    integer :: j,c ! indices
-    logical :: readvar      ! determine if variable is on initial file
-    !------------------------------------------------------------------------
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag, varname='fert_p_counter', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%fert_p_counter)
-
-       call restartvar(ncid=ncid, flag=flag, varname='fert_p', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='', units='', &
-            interpinic_flag='interp', readvar=readvar, data=this%fert_p)
-    end if
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='grainp_xfer_to_grainp', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain P growth from storage', units='gP/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainp_xfer_to_grainp)
-    end if
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='livestemp_to_litter', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='livestem P to litter', units='gP/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%livestemp_to_litter)
-    end if
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='grainp_to_food', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain P to food', units='gP/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainp_to_food)
-    end if
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='ppool_to_grainp', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='allocation to grain P', units='gP/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%ppool_to_grainp)
-    end if
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag,  varname='ppool_to_grainp_storage', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='allocation to grain P storage', units='gP/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%ppool_to_grainp_storage)
-    end if
-
-    if (crop_prog) then
-       call restartvar(ncid=ncid, flag=flag, varname='grainp_storage_to_xfer', xtype=ncd_double,  &
-            dim1name='pft', &
-            long_name='grain P shift storage to transfer', units='gP/m2/s', &
-            interpinic_flag='interp', readvar=readvar, data=this%grainp_storage_to_xfer)
-    end if
-
-    call restartvar(ncid=ncid, flag=flag, varname='plant_pdemand', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%plant_pdemand)
-
-    call restartvar(ncid=ncid, flag=flag, varname='avail_retransp', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%avail_retransp)
-
-    call restartvar(ncid=ncid, flag=flag, varname='plant_palloc', xtype=ncd_double,  &
-         dim1name='pft', &
-         long_name='', units='', &
-         interpinic_flag='interp', readvar=readvar, data=this%plant_palloc)
-
-  end subroutine veg_pf_restart
+!#py   subroutine veg_pf_restart (this,  bounds, ncid, flag )
+!#py     !
+!#py     ! !DESCRIPTION:
+!#py     ! Read/write restart data for vegetation-level phosphorus fluxes
+!#py     !
+!#py     ! !ARGUMENTS:
+!#py     class (vegetation_phosphorus_flux) :: this
+!#py     type(bounds_type) , intent(in)     :: bounds
+!#py     type(file_desc_t) , intent(inout)  :: ncid   ! netcdf id
+!#py     character(len=*)  , intent(in)     :: flag   !'read' or 'write'
+!#py     !
+!#py     ! !LOCAL VARIABLES:
+!#py     integer :: j,c ! indices
+!#py     logical :: readvar      ! determine if variable is on initial file
+!#py     !------------------------------------------------------------------------
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='fert_p_counter', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%fert_p_counter)
+!#py
+!#py        call restartvar(ncid=ncid, flag=flag, varname='fert_p', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='', units='', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%fert_p)
+!#py     end if
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainp_xfer_to_grainp', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain P growth from storage', units='gP/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainp_xfer_to_grainp)
+!#py     end if
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='livestemp_to_litter', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='livestem P to litter', units='gP/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%livestemp_to_litter)
+!#py     end if
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='grainp_to_food', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain P to food', units='gP/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainp_to_food)
+!#py     end if
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='ppool_to_grainp', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='allocation to grain P', units='gP/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%ppool_to_grainp)
+!#py     end if
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag,  varname='ppool_to_grainp_storage', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='allocation to grain P storage', units='gP/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%ppool_to_grainp_storage)
+!#py     end if
+!#py
+!#py     if (crop_prog) then
+!#py        call restartvar(ncid=ncid, flag=flag, varname='grainp_storage_to_xfer', xtype=ncd_double,  &
+!#py             dim1name='pft', &
+!#py             long_name='grain P shift storage to transfer', units='gP/m2/s', &
+!#py             interpinic_flag='interp', readvar=readvar, data=this%grainp_storage_to_xfer)
+!#py     end if
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='plant_pdemand', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%plant_pdemand)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='avail_retransp', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%avail_retransp)
+!#py
+!#py     call restartvar(ncid=ncid, flag=flag, varname='plant_palloc', xtype=ncd_double,  &
+!#py          dim1name='pft', &
+!#py          long_name='', units='', &
+!#py          interpinic_flag='interp', readvar=readvar, data=this%plant_palloc)
+!#py
+!#py !#py !#py   end subroutine veg_pf_restart
 
 
   !-----------------------------------------------------------------------
