@@ -1,11 +1,17 @@
 # Introduction
 This is accompany code associated with the paper submission 'SPEL: Software Tool for Porting ELM with OpenACC in a Function Unit Test Framework'. This software tool builds off of previous work done by Dali Wang and Yao Cindy to create a robust method for developing the E3SM Land Model (ELM) onto GPUs.
 
-SPEL contains two folders: 
+SPEL contains the folders: 
 
 ./SourceFiles/: folder contains the ELM Fortran source files and the GPU-ready ELM test modules 
 
-./scripts/: folder contains SPEL Python scripts and few Fortran modelules to generate ELM test modules
+./scripts/: folder contains SPEL Python scripts and few Fortran modules to generate ELM test modules
+
+./modified-files/: folder created to hold optimized versions of source files -- created as neeeded
+
+./scripts/script-output: created at first run to hold temporary files
+
+./unit-tests/: Created at first run and will contain directories for all cases.
 
 ## SPEL setup and instructions
 Currently, these SPEL Python scripts are used to:
@@ -33,8 +39,10 @@ Compilation of unit-test only requires NV Fortran compiler, CUDA 10+, and potent
 
 __make__ command will create the _elmtest.exe_ which is then run with __./elmtest.exe [numSetsOfSites] [clump-pproc]__ where _numSetsOfSites_ controls the number of unique sites used for the reference output to be computed and _clump-pproc_ (optional default = 1) are the number of clumps to have per mpi task. 
 
+The Makefile defaults to compiling with CPU-only and with debug mode. To change to OpenACC edit the Makefile to compile with *FC_FLAGS_ACC*
+
 Unit Test Example:
->./elmtest.exe 2. ->> Perform a Unit Test for 2 sets of the 42 Ameriflux sites.
+>mpirun -n1 ./elmtest.exe 2. ->> Perform a Unit Test for 2 sets of the 42 Ameriflux sites on one mpi task.
 
 #### Notes on LakeTemperature Example
 + Example reference simulation data for LakeTemperature come with SPEL called __E3SM_constants.txt__ and __output_LakeTemperature_vars.txt__. These must be in same directory as executable.
