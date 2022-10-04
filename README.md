@@ -14,6 +14,7 @@ Currently, these SPEL Python scripts are used to:
 * Perform automatic OpenACC acceleration using either the __routine__ directive or __parallel loop__ directives.
 * Understand code by generating simple call tree and dependency graph of the modules.
 * write Fortran routines to generate input/output needed to initialize variables and verify the results and a needed Makefile
+* Note: The current intended workflow is to generate a unit test with *opt = False* and then re-run with *opt = True* as desired. Currently, *opt = True* bypasses many of the other processing scripts as it is meant to be run multiple times as the user recognizes and resolves issues with the code.
 
 __Setup__ : In scripts directory, edit __mod_config.py__ with specific file layout as needed and  __UnitTestforELM.py__ with a list of subroutines to parse (only parent subroutine needs to be listed) and a name for the case. While running with __python3 UnitTestforELM.py__, a directory will be created in __./unit-test/{casename}__ to contain the Function Unit Test program.
 
