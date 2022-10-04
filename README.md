@@ -125,3 +125,44 @@ __utilityFunctions.py__ :
 SPEL has been developed mainly on the Summit computer at the Oak Ridge National Laboratory. Summit has 4,608 computing nodes, most of which contain two 22-core IBM POWER9 CPUs, six 16-GB NVIDIA Volta GPUs, and 512 GB of shared memory. The software environment includes NVIDIA HPC 21.3 and several libraries:  spectrum-mpi (10.4), NetCDF (4.8), pnetcdf(1.12), HDF (1.10), and CUDA (11.1).
 
 SPEL uses CUDA Fortran (NVIDIA HPC package) to manage memory.
+
+#### Instructions to create an example test module (LakeTemperature) on Summit 
+====== Create a new folder and install the code
+git clone https://github.com/peterdschwartz/SPEL_OpenACC.git
+ 
+===== create LakeTemperature Test module
+cd SPEL_OpenACC/scripts
+python3 UnitTestforELM.py   # It creates a LakeTemperature module 
+                            # at SPEL_OpenACC/unit-tests/LakeTemparature
+cd SPEL_OpenACC/unit-tests/LakeTemperature  
+ 
+====== compilation on Summit
+module load nvhpc   #Load appropriate module file current it is nvhpc/21.3
+make clean; make    #Make CPU-version test module
+   
+Make GPU-version test module 
+       Change the compiler flag in makefile. 
+       From: FC_FLAGS = $(FC_FLAGS_DEBUG) $(MODEL_FLAGS)
+  To:   FC_FLAGS = $(FC_FLAGS_ACC) $(MODEL_FLAGS)
+       make clean; make
+
+====== run on Summit 
+bsub -Is -P cli144 -nnodes 1 -W 2:00 $SHELL   # Launch interactive session
+ 
+Go to the test module directory and copy (reference) data for the test module (LakeTemperature)
+cd SPEL_OpenACC/unit-tests/LakeTemperature
+cp ../../*.txt .    # copy reference/input data (E3SM_constants.txt 
+                    # and output_LakeTemperature_vars.txt) 
+  
+Run the test module (both CPU Version and GPU version)
+./elmtest.exe 2      # run LakeTemperature Module using 2 sets of 42
+                       # AmeriFlux datasets, total 84 sites
+ 
+(For a larger dataset (> 4 sets), we will need to increase
+ the CUDA heapsize via cudeDeviceSetLimit accordingly)
+ 
+PS:
+ 
+Verification procedure is done by inserting the “call update_vars_LakeTemperature(flag, tag) (from verificationMod.F90) into Main.F90 after the function call (such as “LakeTemperature”) to output a file that hold all variables modified by LakeTemperature. We conduct the same verification procedure for both CPU-version and GPU-version code and produce two output files, then we call “errorAnalysis.py” to analysis the differences between these two outputs.
+ 
+The final optimized LakeTemparture.F90 code is saved at SPEL_OpenACC/scripts/LakeTemperatureMod.OPT.F90. It can be used to replace the LakeTemperatureMod.F90 in the test module directory to create a new elmtest.exe.
