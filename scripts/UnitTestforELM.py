@@ -27,12 +27,19 @@ def main():
     sub_name_list = ["LakeTemperature"] #['DustEmission','DustDryDep']  # ["dyn_cnbal_patch"]
     # sub_name_list = ["HydrologyNoDrainage"] #["SnowWater"] , "AerosolMasses","LakeHydrology"]
 
+    # Create script output directory if not present:
+    if(not os.path.isdir("./script-output")):
+        print("Making script output directory")
+        os.system("mkdir script-output")
+    
     #Create case directory 
     if(not os.path.isdir(f"{casename}") ):
         print(f"Making case directory {casename}")
         if(not os.path.isdir(f"{unittests_dir}")):
             os.system(f"mkdir {unittests_dir}")
         os.system(f"mkdir {casename}")
+    
+
     
     # EcoDyn_subs_list = ["SoilLittDecompAlloc", "SoilLittDecompAlloc2","Phenology","GrowthResp",
     #                "vegcf_summary_rr","RootDynamics","CarbonStateUpdate0","CNLitterToColumn","CarbonIsoFlux1"
