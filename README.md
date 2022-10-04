@@ -15,7 +15,7 @@ Currently, these SPEL Python scripts are used to:
 * Understand code by generating simple call tree and dependency graph of the modules.
 * write Fortran routines to generate input/output needed to initialize variables and verify the results and a needed Makefile
 
-__Setup__ : In scripts directory, edit __mod_config.py__ with specific file layout as needed and  __add_input_output.py__ with a list of subroutines to parse (only parent subroutine needs to be listed) and a name for the case. While running with __python3 add_input_output.py__, a directory will be created in __./unit-test/{casename}__ to contain the Function Unit Test program.
+__Setup__ : In scripts directory, edit __mod_config.py__ with specific file layout as needed and  __UnitTestforELM.py__ with a list of subroutines to parse (only parent subroutine needs to be listed) and a name for the case. While running with __python3 UnitTestforELM.py__, a directory will be created in __./unit-test/{casename}__ to contain the Function Unit Test program.
 
 A Makefile will automatically be generated for the chosen subroutines to test.  
 __elm_initializeMod.F90__ and __main.F90__ will be modified by the scripts to 
@@ -34,6 +34,12 @@ __make__ command will create the _elmtest.exe_ which is then run with __./elmtes
 
 Unit Test Example:
 >./elmtest.exe 2. ->> Perform a Unit Test for 2 sets of the 42 Ameriflux sites.
+
+#### Notes on LakeTemperature Example
++ Example reference simulation data for LakeTemperature come with SPEL called __E3SM_constants.txt__ and __output_LakeTemperature_vars.txt__. These must be in same directory as executable.
++ __elm_initializationMod.F90__ and __main.F90__ are hard-coded with SPEL output to avoid having to make changes for this example. (will update SPEL to handle this automatically in the future)
++ Since the optimizations are only semi-automatic and require some familiarity to fully implement, an optimized version of LakeTemperature is provided in the __./scripts__ directory called __LakeTemperature.OPT.F90__.  
++ An original version of LakeTemperatureMod.F90 is in the main directory called __CPU-LakeTemperatureMod.F90__
 
 ### SPEL Script Description
 __edit_file.py__ :
@@ -70,25 +76,41 @@ __analyze_subroutines.py__ :
 >accelerate loops that do not have a race condition detected (reduction operation).
 >Loops that have that detected are listed in Yellow for the user to examine afterwards.
 
-__add_input_output.py__ :
+__UnitTestforELM.py__ :
 >This has the __main__ python function that calls the others.
->Also contains a class for derived types that holds the structure of all the
->types used for the unit testing and is primarily needed to create the write and
->read fortran subroutines.  
-__DerivedType.py__ 
+>This is where the user sets which subroutines they wish to create a Unit Test for using
+>the *sub_name_list* list variable.  
+>If *opt = True* then SPEL will attempt to parse and accelerate subroutines 
+>on a loop-by-loop level, some features that are incompatible with the "routine" directive.
+>Then,a Makefile, verification routines, I/O routines and other files are created that
+>are necessary for a Unit Test are created.
+ 
+__DerivedType.py__ :
 >Contains DerivedType Class used for processing the ELM data types
-__LoopConstructs.py__
+
+__LoopConstructs.py__ :
 >Contains Loop Class used for processing and modifying loops in ELM functions
-__errorAnalysis.py__ 
+
+__errorAnalysis.py__ :
 >Functions used for analyszing output from __verficationMod.F90__
-__mod_config.py__ 
+
+__mod_config.py__ :
 >Configure location of source files and essential files.
-__process_associate.py__ 
+
+__process_associate.py__ : 
 >Holds function to obtain global variables in associate list. 
-__variable_analysis.py__
+
+__variable_analysis.py__ :
 >Functions to find global variables that aren't derived types.
-__write_routines.py__ 
->Functions that write needed .F90 files (e.g., duplicateMod.F90)
+
+__write_routines.py__ :
+>Functions that write needed .F90 files (e.g., duplicateMod.F90, Makefile)
+
+__interfaces.py__ :
+> Functions that help to resolve which subroutine in an interface is actually being called.
+
+__utilityFunctions.py__ :
+> Holds funtions that may be used in many different other modules.
 
 #### Notes
 SPEL has been developed mainly on the Summit computer at the Oak Ridge National Laboratory. Summit has 4,608 computing nodes, most of which contain two 22-core IBM POWER9 CPUs, six 16-GB NVIDIA Volta GPUs, and 512 GB of shared memory. The software environment includes NVIDIA HPC 21.3 and several libraries:  spectrum-mpi (10.4), NetCDF (4.8), pnetcdf(1.12), HDF (1.10), and CUDA (11.1).
