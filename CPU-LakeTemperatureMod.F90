@@ -209,8 +209,8 @@ contains
     real(r8) :: icesum(bounds%begc:bounds%endc) ! m
     logical  :: frzn(bounds%begc:bounds%endc)
     ! Tridiagonal
-    real(r8)                          :: gam(bounds%begc:bounds%endc,lbj:ubj)     ! temporary
-    real(r8)                          :: bet(bounds%begc:bounds%endc) 
+    real(r8)  :: gam(bounds%begc:bounds%endc,-nlevsno + 1:nlevlak + nlevgrnd)  ! temporary
+    real(r8)  :: bet(bounds%begc:bounds%endc) 
     !-----------------------------------------------------------------------
 
     associate(                                                       &
@@ -693,7 +693,7 @@ contains
 
    do j = nlevlak + nlevgrnd-1,-nlevsno + 1,-1
       do fc = 1,num_lakec
-         c = filter(fc)
+         c = filter_lakec(fc)
          if (j >= jtop(c)) then
            tx(c,j) = tx(c,j) - gam(c,j+1) * tx(c,j+1)
          end if
