@@ -20,7 +20,9 @@ def main():
     casename = "LakeTemperature"
     casename = unittests_dir+casename
     # Determines if SPEL should run to make optimizations 
-    opt = True
+    opt = False
+    add_acc = False 
+    adjust_allocation = False 
 
     sub_name_list = ["LakeTemperature"] #['DustEmission','DustDryDep']  # ["dyn_cnbal_patch"]
     # sub_name_list = ["HydrologyNoDrainage"] #["SnowWater"] , "AerosolMasses","LakeHydrology"]
@@ -104,8 +106,8 @@ def main():
         for s in sub_name_list: 
             local_vars = getLocalVariables(subroutines[s],verbose=False)
             subroutines[s].examineLoops(global_vars=[],varlist=var_list,verbose=False,
-                           add_acc=True,adjust_allocation=False)
-        sys.exit()
+                           add_acc=add_acc,adjust_allocation=adjust_allocation)
+        sys.exit("Done running in Optimization Mode")
     
     for s in sub_name_list:
         # Parsing means getting info on the variables read and written

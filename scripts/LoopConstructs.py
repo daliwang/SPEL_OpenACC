@@ -581,8 +581,6 @@ class Loop(object):
                             print(f"Order dependent calculation",l)
                             self.reduction = True
                             self.reduce_vars.append(var)
-                        else:
-                            print(f"Looks fine!",l)
 
                 # variable_dict.setdefault(varname,[]).append('rw')
                 variable_dict.setdefault(varname,[]).extend(['r','w'])
