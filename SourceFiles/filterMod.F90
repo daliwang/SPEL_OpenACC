@@ -663,7 +663,7 @@ contains
 
   end subroutine setFiltersOneGroup
 
-  subroutine setProcFilters(bounds, this_filter, include_inactive, icemask_grc)
+  subroutine setProcFilters(bounds, this_filter, include_inactive)
     !
     ! !DESCRIPTION:
     ! Set CLM filters for one group of filters.
@@ -681,7 +681,6 @@ contains
     type(bounds_type) , intent(in)   :: bounds
     type(procfilter)  , intent(inout) :: this_filter           ! the group of filters to set
     logical           , intent(in)   :: include_inactive            ! whether inactive points should be included in the filters
-    real(r8)          , intent(in)   :: icemask_grc(bounds%begg: ) ! ice sheet grid coverage mask [gridcell]
     !
     ! LOCAL VARAIBLES:
     integer :: nc        ! clump index
@@ -858,14 +857,7 @@ contains
     end do
     this_filter%num_hydrologyc = fu
     this_filter%num_hydrononsoic = fnu
-
-    !NOTE: shouldn't need to update these on the device 
-    !!!this_filter%num_soilc, this_filter%num_soilp, this_filter%num_pcropp, &  
-    !!!this_filter%num_urbanp ,this_filter%num_urbanc,&
-    !!!this_filter%num_urbanl ,this_filter%nourbanl  ,&
-    !!!this_filter%num_lakep  ,this_filter%num_lakec ,& 
-    !!!this_filter%num_nolakec 
-
+    
    !$acc exit data delete(fidx1,fidx2,fidx3,fidx4)
 
   end subroutine setProcFilters

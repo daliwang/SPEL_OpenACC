@@ -237,9 +237,7 @@ program main()
 
      !!!$acc update device(first_step, nlevgrnd, eccen, obliqr, lambm0, mvelpp )
      call update_acc_variables()
-     !$acc enter data copyin(filter(:),gpu_clumps(:), gpu_procinfo, proc_filter, bounds_proc )
-     call get_proc_bounds(bounds_proc)
-
+     
      !Note: copy/paste enter data directives here for FUT. 
      !      Will make this automatic in the future 
      !#ACC_COPYIN
@@ -259,6 +257,10 @@ program main()
       !$acc veg_ef     , &
       !$acc veg_pp      &
       !$acc   )
+
+      call get_proc_bounds(bounds_proc)
+      !$acc enter data copyin(filter(:),gpu_clumps(:), gpu_procinfo, proc_filter, bounds_proc )
+      call setProcFilters(bounds_proc, proc_filter, .false.)
 
 #if _CUDA
     ! Heap Limit may need to be increased for certain routines

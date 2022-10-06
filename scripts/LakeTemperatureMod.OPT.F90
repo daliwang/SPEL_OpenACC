@@ -832,7 +832,7 @@ contains
   
 
     ! Set t_soisno and t_lake
-    !$acc parallel loop independent gang vector  default(present) collapse(2) private(jprime) num_gangs(1) vector_length(1)
+    !$acc parallel loop independent gang vector  default(present) collapse(2) private(jprime) 
     do j = -nlevsno+1, nlevlak + nlevgrnd
        do fc = 1, num_lakec
           c = filter_lakec(fc)
